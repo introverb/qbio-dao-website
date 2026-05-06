@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/*  Local fonts                                                               */
+/* -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Apercu";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/apercu-regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Apercu";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/apercu-italic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Apercu";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/apercu-bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Chap";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/chap-medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Chap";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/chap-medium-italic.ttf") format("truetype");
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Design tokens — exposed to Tailwind via @theme                            */
+/* -------------------------------------------------------------------------- */
+
+@theme {
+  /* Brand palette (dark family) */
+  --color-plum-darkest: #25101d;
+  --color-plum-dark: #4b243c;
+  --color-mauve: #854b6e;
+
+  /* Brand palette (accent) */
+  --color-pink: #d57db2;
+  --color-pink-light: #ffceec;
+
+  /* Brand palette (light family) */
+  --color-cream: #eee8df;
+  --color-paper: #fffcf6;
+
+  /* Type families */
+  --font-sans: "Apercu", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Chap", Georgia, "Times New Roman", serif;
+}
