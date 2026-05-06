@@ -1,0 +1,53 @@
+---
+const members = [
+  { name: "Mike", role: "Founder", img: "/images/team/mike.jpeg" },
+  { name: "Ale", role: "Community", img: "/images/team/ale.jpeg" },
+  { name: "Geoff", role: "Operations", img: "/images/team/geoff.jpeg" },
+  { name: "Jen", role: "Research", img: "/images/team/jen.jpeg" },
+  { name: "Kyra", role: "Communications", img: "/images/team/kyra.jpeg" },
+  { name: "Clarice", role: "Strategy", img: "/images/team/clarice.jpeg" },
+];
+---
+
+<section class="bg-paper py-20 md:py-28">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="text-center mb-16">
+      <p
+        class="font-sans text-xs tracking-[0.25em] uppercase text-mauve mb-3"
+      >
+        Meet the Team
+      </p>
+      <h2 class="font-display text-3xl md:text-4xl text-plum-darkest">
+        The people behind the DAO
+      </h2>
+    </div>
+    <div
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10 max-w-6xl mx-auto"
+    >
+      {
+        members.map((person) => (
+          <div class="flex flex-col items-center text-center">
+            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-darkest mb-4 ring-1 ring-plum-darkest/10">
+              <img
+                src={person.img}
+                alt={person.name}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <h3 class="font-sans font-bold text-base text-plum-darkest mb-1">
+              {person.name}
+            </h3>
+            <p class="font-sans text-xs uppercase tracking-wider text-mauve mb-3">
+              {person.role}
+            </p>
+            <p class="font-sans text-xs text-plum-darkest/70 leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor.
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

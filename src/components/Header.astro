@@ -1,0 +1,67 @@
+---
+const navItems = [
+  { label: "Community", href: "#community" },
+  { label: "QBIO Token", href: "#token" },
+  { label: "Governance", href: "#governance" },
+  { label: "Science", href: "#science" },
+  { label: "FAQs", href: "#faqs" },
+];
+---
+
+<header class="absolute top-0 inset-x-0 z-50">
+  <div
+    class="max-w-7xl mx-auto px-6 lg:px-12 py-6 flex items-center justify-between gap-6"
+  >
+    <a
+      href="/"
+      class="flex items-center gap-3"
+      aria-label="Quantum Biology DAO home"
+    >
+      <img
+        src="/images/brand/logo-mark.png"
+        alt=""
+        width="40"
+        height="40"
+        class="w-10 h-10"
+      />
+      <span
+        class="font-sans text-xs uppercase tracking-[0.18em] text-cream hidden sm:block leading-tight"
+      >
+        Quantum<br />Biology DAO
+      </span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8" aria-label="Primary">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class="font-sans text-sm text-cream/70 hover:text-cream transition-colors"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <button
+      type="button"
+      aria-label="Open menu"
+      class="md:hidden p-2 text-cream"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+</header>

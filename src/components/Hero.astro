@@ -1,0 +1,40 @@
+---
+import Button from "./Button.astro";
+---
+
+<section
+  class="relative bg-plum-darkest text-cream pt-36 pb-20 md:pt-44 md:pb-32 overflow-hidden"
+>
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div class="relative z-10 max-w-xl">
+        <h1
+          class="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mb-6 text-cream"
+        >
+          A global community advancing quantum biology research.
+        </h1>
+        <p
+          class="font-sans text-base sm:text-lg text-cream/70 mb-10 leading-relaxed"
+        >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <Button href="#" variant="primary" size="md">Buy QBIO</Button>
+          <Button href="#" variant="outline-light" size="md"
+            >Join the Community</Button
+          >
+        </div>
+      </div>
+      <div class="relative">
+        <img
+          src="/images/graphics/cube.jpg"
+          alt=""
+          class="w-full h-auto max-w-md mx-auto"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </div>
+</section>

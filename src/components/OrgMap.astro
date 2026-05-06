@@ -1,0 +1,93 @@
+---
+import Button from "./Button.astro";
+
+const orgs = [
+  {
+    name: "Quantum Biology Ecosystem",
+    body: "The Quantum Biology Ecosystem is a collective of 3 organizations synergistically building the quantum biology industry by design.",
+    cta: "Visit Site",
+    href: "#",
+    external: true,
+    accent: "border-b-plum-darkest",
+    graphic: null,
+    youAreHere: false,
+  },
+  {
+    name: "Quantum Biology Institute",
+    body: "The Quantum Biology Institute is a 501(c)(3) California non-profit that performs the basic research underpinning the field in an open-science fashion.",
+    cta: "Visit Site",
+    href: "#",
+    external: true,
+    accent: "border-b-teal",
+    graphic: "/images/graphics/neuron.png",
+    youAreHere: false,
+  },
+  {
+    name: "Quantum Biology DAO",
+    body: "The Quantum Biology DAO accelerates the quantum biology field through community building, open governance, scientific experimentation, research grants, and IP development.",
+    cta: "Work with us",
+    href: "#",
+    external: false,
+    accent: "border-b-mauve",
+    graphic: null,
+    youAreHere: true,
+  },
+  {
+    name: "Quantum Biology Incubator",
+    body: "The QuantumBiology Incubator is a for-profit Delaware C-Corp that develops the technical workforce the industry needs while incubating the first batch of quantum biology startups. The Quantum Biology Institute and the Quantum Biology DAO both own a stake at the QuantumBiology Incubator.",
+    cta: "Visit Site",
+    href: "#",
+    external: true,
+    accent: "border-b-gold",
+    graphic: "/images/graphics/molecules.png",
+    youAreHere: false,
+  },
+];
+---
+
+<section id="ecosystem" class="bg-cream pb-20 md:pb-28">
+  <div class="max-w-6xl mx-auto px-6 lg:px-12">
+    <div class="grid md:grid-cols-2 gap-6 md:gap-8">
+      {
+        orgs.map((org) => (
+          <article
+            class={`relative bg-paper rounded-xl border-b-4 ${org.accent} px-8 pt-8 pb-10 md:px-10 md:pt-10 md:pb-12 flex flex-col min-h-[300px] overflow-hidden`}
+          >
+            {org.graphic && (
+              <img
+                src={org.graphic}
+                alt=""
+                class="absolute top-0 right-0 w-1/2 max-w-[240px] pointer-events-none select-none"
+                loading="lazy"
+              />
+            )}
+            <div class="relative flex flex-col grow">
+              {org.youAreHere && (
+                <span class="inline-flex self-start items-center gap-1.5 mb-4 px-2.5 py-1 rounded-md bg-mauve text-paper font-sans text-xs font-semibold tracking-wider uppercase">
+                  <span aria-hidden="true">#</span>
+                  You are here!
+                </span>
+              )}
+              <h3 class="font-sans font-bold text-2xl md:text-[28px] text-plum-darkest mb-4 leading-tight max-w-[16ch]">
+                {org.name}
+              </h3>
+              <p class="font-sans text-sm md:text-base text-plum-darkest/75 mb-8 leading-relaxed max-w-md grow">
+                {org.body}
+              </p>
+              <div class="mt-auto">
+                <Button
+                  href={org.href}
+                  variant="outline-dark"
+                  size="sm"
+                  external={org.external}
+                >
+                  {org.cta}
+                </Button>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
