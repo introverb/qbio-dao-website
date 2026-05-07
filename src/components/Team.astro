@@ -1,53 +1,226 @@
 ---
 const members = [
-  { name: "Mike", role: "Founder", img: "/images/team/mike.jpeg" },
-  { name: "Ale", role: "Community", img: "/images/team/ale.jpeg" },
-  { name: "Geoff", role: "Operations", img: "/images/team/geoff.jpeg" },
-  { name: "Jen", role: "Research", img: "/images/team/jen.jpeg" },
-  { name: "Kyra", role: "Communications", img: "/images/team/kyra.jpeg" },
-  { name: "Clarice", role: "Strategy", img: "/images/team/clarice.jpeg" },
+  {
+    name: "Dr. Alessandro Lodesani",
+    role: "COO · Institute",
+    img: "/images/team/ale.jpeg",
+    bio: "Alessandro Lodesani is the Institute's Chief Operating Officer, overseeing its daily research operations. With a strong background in physics and engineering, combined with extensive experience in biology research, Alessandro focuses on designing innovative devices and optimizing lab processes. Originally from Italy, Alessandro earned a Bachelor's in Mechanical Engineering and a PhD in Physics, graduating with honors from the Polytechnic University of Milan, with a specialization in spintronics and molecular interfaces. His previous research at MIT focused on topological qubits and superconducting thin films, where he successfully developed the world's most efficient superconducting diode platform. Alessandro then joined the Institute in its early days at UCLA, where he led several projects investigating the influence of weak magnetic fields on biological systems.",
+  },
+  {
+    name: "Dr. Clarice D. Aiello",
+    role: "Quantum Engineer",
+    img: "/images/team/clarice.jpeg",
+    bio: "Clarice is a quantum engineer interested in how quantum physics informs biology at the nanoscale. Born and raised in Brazil, Clarice obtained a Diploma d'Ingenieur in Physics from the École Polytechnique in France and an M.Phil. in Physics from the University of Cambridge, Trinity College, in England; she received her Ph.D. from MIT in Electrical Engineering. She further held postdoctoral appointments in Bioengineering at Stanford, and in Chemistry at Berkeley.",
+  },
+  {
+    name: "Dr. Geoff Anders",
+    role: "CEO · Institute",
+    img: "/images/team/geoff.jpeg",
+    bio: "Geoff Anders is the founder and CEO of Leverage, a research institute established in 2011 to support revolutionary scientific research. With a background in philosophy and social science, he leads Leverage's internal research and helps external research teams organize to make important scientific breakthroughs. His recent work focuses on the intersection of philosophy, science, and history, as it pertains especially to introspection, cognitive science, and artificial intelligence. Geoff is now the CEO of the Quantum Biology Institute and holds a PhD in Philosophy from Rutgers University and a BS in Economics from the Wharton School at the University of Pennsylvania.",
+  },
+  {
+    name: "Jennilyn Gaitan",
+    role: "Operations · Institute",
+    img: "/images/team/jen.jpeg",
+    bio: "Jennilyn Gaitan graduated with a Bachelor of Science in Electronic Media and Film from Towson University. Since 2004, she has worked in various administrative and operational roles across multiple industries, including retail, higher education, photography, real estate, and small business operations. Jennilyn has a passion for creating and refining the systems and processes that businesses use to run most efficiently, which has been a hallmark of her career. In November 2023, Jennilyn joined the Quantum Biology Institute, contributing her expertise to the administration and operations of the Institute.",
+  },
+  {
+    name: "Kyra Gardner",
+    role: "Communications · DAO",
+    img: "/images/team/kyra.jpeg",
+    bio: "Kyra Gardner is the Communications Working Group Leader for the Quantum Biology DAO, where she manages communications and social media. She joined the DAO in January of 2025 and carries out this work through Smarter with Science, a research education non-profit she co-founded. Smarter with Science is also pioneering innovative ways to make science more accessible through media, design, content creation tools, and storytelling. Despite not having a technical or science background as some of her DAO peers, she enjoys finding ways to connect complex topics to everyday life and make them accessible to broader audiences.",
+  },
+  {
+    name: "Dr. Mike Montague",
+    role: "Treasury · DAO",
+    img: "/images/team/mike.jpeg",
+    bio: "Michael Montague is the Treasury Management Working Group Leader for the Quantum Biology DAO and a scientist at the Quantum Biology Institute, where he conducts experimental research on microbial model organisms to study how quantum mechanical phenomena may influence biological processes. He received his Ph.D. in Microbiology from the University of North Carolina at Chapel Hill. Michael's background spans astrobiology, genetics, evolutionary science, and synthetic biology, with prior research roles at the J. Craig Venter Institute, the Johns Hopkins Center for Health Security, and the Future of Humanity Institute at the University of Oxford.",
+  },
 ];
+
+const slug = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 ---
 
-<section class="bg-paper py-20 md:py-28">
+<section class="bg-paper py-20 md:py-28" id="team">
   <div class="max-w-7xl mx-auto px-6 lg:px-12">
     <div class="text-center mb-16">
-      <p
-        class="font-sans text-xs tracking-[0.25em] uppercase text-mauve mb-3"
-      >
+      <p class="font-sans text-xs tracking-[0.25em] uppercase text-mauve mb-3">
         Meet the Team
       </p>
       <h2 class="font-display text-3xl md:text-4xl text-plum-darkest">
         The people behind the DAO
       </h2>
     </div>
-    <div
-      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10 max-w-6xl mx-auto"
+
+    <ul
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10 max-w-6xl mx-auto list-none p-0"
     >
       {
-        members.map((person) => (
-          <div class="flex flex-col items-center text-center">
-            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-darkest mb-4 ring-1 ring-plum-darkest/10">
-              <img
-                src={person.img}
-                alt={person.name}
-                class="w-full h-full object-cover"
-                loading="lazy"
-              />
+        members.map((person) => {
+          const id = `bio-${slug(person.name)}`;
+          return (
+            <li>
+              <button
+                type="button"
+                data-bio-open={id}
+                aria-haspopup="dialog"
+                aria-controls={id}
+                class="group flex flex-col items-center text-center w-full p-2 rounded-lg transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink"
+              >
+                <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-darkest mb-4 ring-1 ring-plum-darkest/10 transition-shadow duration-200 group-hover:ring-2 group-hover:ring-pink/60">
+                  <img
+                    src={person.img}
+                    alt={person.name}
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <h3 class="font-sans font-bold text-sm md:text-base text-plum-darkest mb-1 leading-tight">
+                  {person.name}
+                </h3>
+                <p class="font-sans text-[10px] md:text-xs uppercase tracking-wider text-mauve mb-2">
+                  {person.role}
+                </p>
+                <span class="font-sans text-xs text-mauve underline-offset-4 group-hover:underline">
+                  Read bio
+                </span>
+              </button>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  {
+    members.map((person) => {
+      const id = `bio-${slug(person.name)}`;
+      const labelId = `${id}-label`;
+      return (
+        <dialog id={id} aria-labelledby={labelId} class="bio-dialog">
+          <div class="bio-dialog__inner">
+            <button
+              type="button"
+              data-bio-close
+              aria-label="Close"
+              class="bio-dialog__close"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            </button>
+            <div class="flex flex-col items-center text-center">
+              <div class="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden bg-plum-darkest mb-5 ring-1 ring-plum-darkest/10">
+                <img
+                  src={person.img}
+                  alt={person.name}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <h3
+                id={labelId}
+                class="font-display text-2xl md:text-3xl text-plum-darkest mb-1"
+              >
+                {person.name}
+              </h3>
+              <p class="font-sans text-xs uppercase tracking-wider text-mauve mb-6">
+                {person.role}
+              </p>
             </div>
-            <h3 class="font-sans font-bold text-base text-plum-darkest mb-1">
-              {person.name}
-            </h3>
-            <p class="font-sans text-xs uppercase tracking-wider text-mauve mb-3">
-              {person.role}
-            </p>
-            <p class="font-sans text-xs text-plum-darkest/70 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor.
+            <p class="font-sans text-base text-plum-darkest/85 leading-relaxed">
+              {person.bio}
             </p>
           </div>
-        ))
-      }
-    </div>
-  </div>
+        </dialog>
+      );
+    })
+  }
 </section>
+
+<style is:global>
+  .bio-dialog {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: 600px;
+    width: calc(100% - 2rem);
+    max-height: calc(100vh - 2rem);
+    margin: auto;
+    color: inherit;
+  }
+  .bio-dialog::backdrop {
+    background: rgba(37, 16, 29, 0.7);
+    backdrop-filter: blur(4px);
+  }
+  .bio-dialog__inner {
+    position: relative;
+    background: #fffcf6;
+    border-radius: 16px;
+    padding: 2.5rem 1.75rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(37, 16, 29, 0.25);
+  }
+  @media (min-width: 640px) {
+    .bio-dialog__inner {
+      padding: 3rem 3rem;
+    }
+  }
+  .bio-dialog__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    color: #25101d;
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+  .bio-dialog__close:hover {
+    background-color: rgba(37, 16, 29, 0.08);
+  }
+  .bio-dialog__close:focus-visible {
+    outline: 2px solid #d57db2;
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-bio-open]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-bio-open");
+      if (!id) return;
+      const dialog = document.getElementById(id) as HTMLDialogElement | null;
+      dialog?.showModal();
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>("dialog.bio-dialog").forEach((dialog) => {
+    dialog
+      .querySelector<HTMLButtonElement>("[data-bio-close]")
+      ?.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (e) => {
+      const rect = dialog.getBoundingClientRect();
+      const inside =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+      if (!inside) dialog.close();
+    });
+  });
+</script>
