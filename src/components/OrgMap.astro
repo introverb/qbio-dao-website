@@ -4,12 +4,11 @@ import Button from "./Button.astro";
 const DEFAULT_GRAPHIC_CLASS =
   "absolute top-0 right-0 w-1/2 max-w-[240px] pointer-events-none select-none opacity-60";
 
-// Square/near-square images (cube, chain) are cropped to a wider band so they
-// take up the same visual real estate as the wide neuron/molecules graphics.
-// `object-[right_top]` anchors the source image to the top-right so the
-// visible band shows that corner — slightly cropped on the bottom-left.
+// Square/near-square images (cube, chain) bleed off the top-right corner of
+// the card so the card edge does the cropping — matching how the neuron and
+// molecules graphics naturally extend past their image canvas.
 const CROPPED_GRAPHIC_CLASS =
-  "absolute top-0 right-0 w-[260px] h-[140px] object-cover object-[right_top] pointer-events-none select-none opacity-60";
+  "absolute -top-16 -right-16 w-[240px] h-auto pointer-events-none select-none opacity-60";
 
 const orgs = [
   {
