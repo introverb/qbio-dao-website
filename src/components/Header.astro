@@ -1,11 +1,11 @@
 ---
 const navItems = [
-  { label: "Community", href: "/community" },
-  { label: "QBIO Token", href: "/qbio-token" },
-  { label: "Governance", href: "/qbio-token" },
-  { label: "Science", href: "/science" },
-  { label: "Grants", href: "#grants" },
-  { label: "FAQs", href: "/faqs" },
+  { label: "Community", href: "/community", inactive: false },
+  { label: "QBIO Token", href: "/qbio-token", inactive: false },
+  { label: "Governance", href: "/qbio-token", inactive: false },
+  { label: "Science", href: "/science", inactive: false },
+  { label: "Grants", href: "#grants", inactive: true },
+  { label: "FAQs", href: "/faqs", inactive: false },
 ];
 ---
 
@@ -36,7 +36,13 @@ const navItems = [
         navItems.map((item) => (
           <a
             href={item.href}
-            class="font-sans text-sm text-cream/70 hover:text-cream transition-colors"
+            class={
+              item.inactive
+                ? "font-sans text-sm text-red-400/70 hover:text-red-300 transition-colors line-through decoration-red-400/40 underline-offset-4"
+                : "font-sans text-sm text-cream/70 hover:text-cream transition-colors"
+            }
+            title={item.inactive ? "Page not yet live" : undefined}
+            aria-disabled={item.inactive ? "true" : undefined}
           >
             {item.label}
           </a>
