@@ -1,0 +1,224 @@
+---
+const xPath =
+  "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z";
+const linkedinPath =
+  "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.063 2.063 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z";
+
+const contributors = [
+  {
+    name: "Dr. Clarice D. Aiello",
+    role: "Quantum Engineer",
+    img: "/images/team/clarice.jpeg",
+    bio: "Clarice is a quantum engineer interested in how quantum physics informs biology at the nanoscale. Born and raised in Brazil, Clarice obtained a Diplome d'Ingenieur in Physics from the Ecole Polytechnique in France and an M.Phil. in Physics from the University of Cambridge, Trinity College, in England; she received her Ph.D. from MIT in Electrical Engineering. She further held postdoctoral appointments in Bioengineering at Stanford, and in Chemistry at Berkeley.",
+    x: "#",
+    linkedin: "#",
+  },
+  {
+    name: "Dr. Geoff Anders",
+    role: "CEO, Quantum Biology Institute",
+    img: "/images/team/geoff.jpeg",
+    bio: "Geoff Anders is the founder and CEO of Leverage, a research institute established in 2011 to support revolutionary scientific research. With a background in philosophy and social science, he leads Leverage's internal research and helps external research teams organize to make important scientific breakthroughs. His recent work focuses on the intersection of philosophy, science, and history, as it pertains especially to introspection, cognitive science, and artificial intelligence. Geoff is now the CEO of the Quantum Biology Institute and holds a PhD in Philosophy from Rutgers University and a BS in Economics from the Wharton School at the University of Pennsylvania.",
+    x: "#",
+  },
+  {
+    name: "Dr. Alessandro Lodesani",
+    role: "Chief Operating Officer",
+    img: "/images/team/ale.jpeg",
+    bio: "Alessandro Lodesani is the Institute's Chief Operating Officer, overseeing its daily research operations. With a strong background in physics and engineering, combined with extensive experience in biology research, Alessandro focuses on designing innovative devices and optimizing lab processes. Originally from Italy, Alessandro earned a Bachelor's in Mechanical Engineering and a PhD in Physics, graduating with honors from the Polytechnic University of Milan, with a specialization in spintronics and molecular interfaces. His previous research at MIT focused on topological qubits and superconducting thin films, where he successfully developed the world's most efficient superconducting diode platform. Alessandro then joined the Institute in its early days at UCLA, where he led several projects investigating the influence of weak magnetic fields on biological systems.",
+  },
+  {
+    name: "Jennilyn Gaitan",
+    role: "Operations",
+    img: "/images/team/jen.jpeg",
+    bio: "Jennilyn Gaitan graduated with a Bachelor of Science in Electronic Media and Film from Towson University. Since 2004, she has worked in various administrative and operational roles across multiple industries, including retail, higher education, photography, real estate, and small business operations. Jennilyn has a passion for creating and refining the systems and processes that businesses use, to run most efficiently, which has been a hallmark of her career. In November 2023, Jennilyn joined the Quantum Biology Institute, contributing her expertise to the administration and operations of the Institute.",
+  },
+  {
+    name: "Kyra Gardner",
+    role: "Communications Working Group Leader",
+    img: "/images/team/kyra.jpeg",
+    bio: "Kyra Gardner is the Communications Working Group Leader for the Quantum Biology DAO, where she manages communications and social media. She joined the DAO in January of 2025 and carries out this work through Smarter with Science, a company she co-founded whose team members are also deeply involved in the quantum biology ecosystem. Despite not having as technical of a science background as some of her DAO peers, she enjoys finding ways to connect complex topics to everyday life and make them accessible to broader audiences.",
+  },
+  {
+    name: "Dr. Mike Montague",
+    role: "Treasury Working Group Leader",
+    img: "/images/team/mike.jpeg",
+    bio: "Michael Montague is the Treasury Management Working Group Leader for the Quantum Biology DAO and a scientist at the Quantum Biology Institute, where he conducts experimental research on microbial model organisms to study how quantum mechanical phenomena may influence biological processes. He received his Ph.D. in Microbiology from the University of North Carolina at Chapel Hill. Michael's background spans microbiology, genetics, evolutionary science, and synthetic biology, with previous research roles at the J. Craig Venter Institute, the Johns Hopkins Center for Health Security, and the Future of Humanity Institute at the University of Oxford.",
+  },
+];
+---
+
+<section class="bg-paper text-plum-darkest py-20 md:py-28">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <h2 class="font-display text-3xl md:text-4xl mb-12">Core contributors</h2>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12"
+    >
+      {
+        contributors.map((c, i) => (
+          <button
+            type="button"
+            data-bio-trigger={i}
+            class="group flex flex-col items-center text-center p-4 -m-4 rounded-2xl bg-transparent hover:bg-pink/10 transition-colors cursor-pointer outline-none appearance-none border-0 focus-visible:ring-2 focus-visible:ring-pink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+            aria-haspopup="dialog"
+            aria-controls={`bio-${i}`}
+          >
+            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-darkest/10 mb-4 ring-1 ring-plum-darkest/10 group-hover:ring-mauve transition">
+              <img
+                src={c.img}
+                alt={c.name}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <h3 class="font-sans font-bold text-base text-plum-darkest mb-1">
+              {c.name}
+            </h3>
+            <p class="font-sans text-xs uppercase tracking-wider text-mauve mb-3">
+              {c.role}
+            </p>
+            <span class="font-sans text-xs text-mauve/80 group-hover:text-pink transition-colors">
+              Read bio →
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      contributors.map((c, i) => (
+        <dialog
+          id={`bio-${i}`}
+          class="bio-dialog p-0 rounded-3xl bg-paper text-plum-darkest max-w-2xl w-[92vw] m-auto"
+        >
+          <div class="relative p-8 md:p-10">
+            <button
+              type="button"
+              data-bio-close
+              aria-label="Close"
+              class="absolute top-4 right-4 p-2 rounded-full text-plum-darkest/60 hover:text-plum-darkest hover:bg-plum-darkest/5 transition-colors"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-5 mb-6 pr-8">
+              <div class="w-20 h-20 shrink-0 rounded-full overflow-hidden bg-plum-darkest/10 ring-1 ring-plum-darkest/10">
+                <img
+                  src={c.img}
+                  alt={c.name}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 class="font-display text-2xl text-plum-darkest mb-1">
+                  {c.name}
+                </h3>
+                <p class="font-sans text-xs uppercase tracking-wider text-mauve">
+                  {c.role}
+                </p>
+              </div>
+            </div>
+            <p class="font-sans text-sm md:text-base text-plum-darkest/80 leading-relaxed mb-6">
+              {c.bio}
+            </p>
+            {(c.x || c.linkedin) && (
+              <div class="flex items-center gap-4 pt-4 border-t border-plum-darkest/10">
+                {c.x && (
+                  <a
+                    href={c.x}
+                    aria-label={`${c.name} on X`}
+                    class="text-mauve hover:text-pink transition-colors"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d={xPath} />
+                    </svg>
+                  </a>
+                )}
+                {c.linkedin && (
+                  <a
+                    href={c.linkedin}
+                    aria-label={`${c.name} on LinkedIn`}
+                    class="text-mauve hover:text-pink transition-colors"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d={linkedinPath} />
+                    </svg>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </dialog>
+      ))
+    }
+  </div>
+</section>
+
+<style is:global>
+  .bio-dialog::backdrop {
+    background: rgba(37, 16, 29, 0.7);
+    backdrop-filter: blur(4px);
+  }
+  .bio-dialog[open] {
+    animation: bio-dialog-in 180ms ease-out;
+  }
+  @keyframes bio-dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  const triggers = document.querySelectorAll<HTMLButtonElement>(
+    "[data-bio-trigger]",
+  );
+  triggers.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-bio-trigger");
+      const dialog = document.getElementById(
+        `bio-${id}`,
+      ) as HTMLDialogElement | null;
+      dialog?.showModal();
+    });
+  });
+
+  const dialogs =
+    document.querySelectorAll<HTMLDialogElement>(".bio-dialog");
+  dialogs.forEach((d) => {
+    d.addEventListener("click", (e) => {
+      if (e.target === d) d.close();
+    });
+    d.querySelector("[data-bio-close]")?.addEventListener("click", () =>
+      d.close(),
+    );
+  });
+</script>

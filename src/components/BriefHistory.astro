@@ -1,0 +1,75 @@
+---
+const foundations = [
+  { label: "FAQ", href: "/faqs", external: false },
+  { label: "Vision paper", href: "#", external: false },
+  { label: "Briefs", href: "#", external: false },
+  { label: "QBI study — tadpole", href: "#", external: false },
+  {
+    label: "PMC: Quantum biology review",
+    href: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6304024/",
+    external: true,
+  },
+  {
+    label: "SciAm: Bird navigation",
+    href: "https://www.scientificamerican.com/article/how-migrating-birds-use-quantum-effects-to-navigate/",
+    external: true,
+  },
+  { label: "TBD", href: "#", external: false },
+  { label: "TBD", href: "#", external: false },
+];
+---
+
+<section class="bg-plum-darkest text-cream py-20 md:py-24">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <h2 class="font-display text-3xl md:text-4xl mb-6">A brief history</h2>
+    <p
+      class="max-w-4xl font-sans text-base text-cream/80 leading-relaxed mb-14"
+    >
+      Soon after the birth of quantum physics in the 1920s and 30s, scientists
+      began searching for ways to apply quantum ideas in biology. Erwin
+      Schrödinger, one of the fathers of quantum theory, wrote "What is Life?"
+      in 1944, postulating the need for quantum mechanics to explain heredity,
+      prior to the discovery of DNA. In the 1960s and 70s, researchers began
+      finding examples of natural phenomena, including tunneling in enzymes and
+      bird navigation, which depended on quantum phenomena. Now, researchers are
+      aiming to construct new instruments to directly probe quantum states and
+      help unlock the quantum secrets of life.
+    </p>
+
+    <h3 class="font-display text-xl md:text-2xl text-cream mb-6">
+      Explore the foundations
+    </h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {
+        foundations.map((f) => (
+          <a
+            href={f.href}
+            target={f.external ? "_blank" : undefined}
+            rel={f.external ? "noopener noreferrer" : undefined}
+            class="group flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-mauve/30 border border-cream/15 text-cream font-sans text-sm hover:bg-mauve/50 transition-colors text-center"
+          >
+            <span>{f.label}</span>
+            {f.external && (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="opacity-70 group-hover:opacity-100 shrink-0"
+                aria-hidden="true"
+              >
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            )}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

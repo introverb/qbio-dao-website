@@ -1,0 +1,118 @@
+---
+const slices = [
+  { label: "core team", value: 20, color: "#4b243c" },
+  { label: "service providers", value: 7, color: "#5c2d49" },
+  { label: "community auction", value: 15, color: "#854b6e" },
+  { label: "community incentives", value: 3, color: "#d57db2" },
+  { label: "treasury", value: 55, color: "#ffceec" },
+];
+
+const cx = 240;
+const cy = 200;
+const rO = 110;
+const rI = 65;
+const labelGap = 35;
+
+let acc = -Math.PI / 2;
+const computed = slices.map((s) => {
+  const a1 = acc;
+  const a2 = acc + (s.value / 100) * 2 * Math.PI;
+  acc = a2;
+  const mid = (a1 + a2) / 2;
+
+  const sx = cx + rO * Math.cos(a1);
+  const sy = cy + rO * Math.sin(a1);
+  const ex = cx + rO * Math.cos(a2);
+  const ey = cy + rO * Math.sin(a2);
+  const sxi = cx + rI * Math.cos(a2);
+  const syi = cy + rI * Math.sin(a2);
+  const exi = cx + rI * Math.cos(a1);
+  const eyi = cy + rI * Math.sin(a1);
+  const large = a2 - a1 > Math.PI ? 1 : 0;
+  const path = `M ${sx} ${sy} A ${rO} ${rO} 0 ${large} 1 ${ex} ${ey} L ${sxi} ${syi} A ${rI} ${rI} 0 ${large} 0 ${exi} ${eyi} Z`;
+
+  const lineStartX = cx + rO * Math.cos(mid);
+  const lineStartY = cy + rO * Math.sin(mid);
+  const labelX = cx + (rO + labelGap) * Math.cos(mid);
+  const labelY = cy + (rO + labelGap) * Math.sin(mid);
+  const anchor = Math.cos(mid) > 0 ? "start" : "end";
+  const textOffset = anchor === "start" ? 5 : -5;
+
+  return {
+    ...s,
+    path,
+    lineStartX,
+    lineStartY,
+    labelX,
+    labelY,
+    textX: labelX + textOffset,
+    anchor,
+  };
+});
+---
+
+<section class="bg-plum-darkest text-cream py-20 md:py-28">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <h2 class="font-display text-3xl md:text-4xl mb-10">Tokenomics</h2>
+    <div class="bg-paper rounded-3xl p-6 md:p-10 max-w-3xl mx-auto flex justify-center">
+      <svg
+        viewBox="0 0 540 400"
+        preserveAspectRatio="xMidYMid meet"
+        width="540"
+        height="400"
+        class="max-w-full h-auto"
+        role="img"
+        aria-labelledby="tokenomics-title"
+      >
+        <title id="tokenomics-title">QBIO token allocation</title>
+        {computed.map((s) => <path d={s.path} fill={s.color} />)}
+        <image
+          href="/images/brand/logo-mark.png"
+          x={cx - 38}
+          y={cy - 38}
+          width="76"
+          height="76"
+          preserveAspectRatio="xMidYMid meet"
+        />
+        {computed.map((s) => (
+          <g>
+            <line
+              x1={s.lineStartX}
+              y1={s.lineStartY}
+              x2={s.labelX}
+              y2={s.labelY}
+              stroke="#25101d"
+              stroke-width="1"
+            />
+            <circle
+              cx={s.lineStartX}
+              cy={s.lineStartY}
+              r="2"
+              fill="#25101d"
+            />
+            <text
+              x={s.textX}
+              y={s.labelY - 3}
+              text-anchor={s.anchor}
+              font-family="Apercu, system-ui, sans-serif"
+              font-size="13"
+              fill="#25101d"
+            >
+              {s.label}
+            </text>
+            <text
+              x={s.textX}
+              y={s.labelY + 12}
+              text-anchor={s.anchor}
+              font-family="Apercu, system-ui, sans-serif"
+              font-size="13"
+              fill="#25101d"
+            >
+              {s.value}%
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  </div>
+</section>

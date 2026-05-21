@@ -1,0 +1,230 @@
+---
+interface Props {
+  category?: "Governance" | "Science" | "Community";
+  heading?: string;
+  subhead?: string;
+  background?: "plum" | "paper";
+}
+
+const {
+  category,
+  heading = "Testimonials",
+  subhead = "Hear what our community is saying",
+  background = "plum",
+} = Astro.props;
+
+const allTestimonials = [
+  {
+    category: "Governance",
+    quote:
+      "The DAO is letting us explore new governance methods in science. It's very exciting.",
+    author: "Geoff Anders",
+    role: "Quantum Biology DAO Co-Founder",
+  },
+  {
+    category: "Governance",
+    quote:
+      "Governance matters because it gives every member a real voice in shaping the future of quantum biology. I value the token as more than an asset, it's a tool for participation and accountability. Voting on proposals makes me feel like I'm not just a supporter, but a co-creator of this DAO.",
+    author: "Zicjoe",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Governance",
+    quote:
+      "I joined because I'm fascinated by the interface between matter and mind, and also because I wanted to witness first hand and participate in the creation of an entire new ecosystem, that runs using a new logic of incentivization.",
+    author: "Panetone",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Governance",
+    quote:
+      "I believe Desci will overcome tradsci in the future. I love it that QBIO DAO is open, collaborative and focused on long-term impact not just only profit.",
+    author: "Cryptonurse",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Science",
+    quote:
+      "There is a quantum biology sized hole in biological science that the DAO is needed for - until quantum biology is taught in high school biology classes, it will continue to be needed.",
+    author: "Chris Rourk",
+    role: "Science Working Group Leader",
+  },
+  {
+    category: "Science",
+    quote:
+      "The research we're supporting isn't abstract, it's about unlocking discoveries that impact life itself. Advancing quantum biology through grants ensures ideas with potential don't stay trapped in theory, and the granting process here feels transparent, mission-driven, and built to accelerate breakthroughs.",
+    author: "Zicjoe",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Community",
+    quote:
+      "Being part of the Quantum DAO community means building with people who believe science should be open and collective. I contribute because collaboration here feels like belonging to something bigger than myself, and through this DAO I've connected with people I never would have met, which makes the work feel alive.",
+    author: "Zicjoe",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Community",
+    quote:
+      "What makes this DAO special is the mix of science, community, and shared ownership. It's rare to see governance, research, and passion aligned, this DAO manages to hold all three. This isn't just a community; it's a movement to change how science is funded and shared.",
+    author: "Zicjoe",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Community",
+    quote:
+      "Quantum Biology DAO represents an important advancement in decentralized science, opening doors for new, lesser-known possibilities, such as how weak magnetic fields could impact DNA repair for longevity, blood viscosity, and many more unknowns. I'm thrilled to be part of the community and excited for the journey ahead.",
+    author: "Timmygram",
+    role: "DAO Community Member",
+  },
+  {
+    category: "Community",
+    quote:
+      "I joined because I believe scientists are the one uplifting our society so that all humans can advance.",
+    author: "Misery",
+    role: "DAO Community Member",
+  },
+];
+
+const testimonials = category
+  ? allTestimonials.filter((t) => t.category === category)
+  : allTestimonials;
+
+const isPaper = background === "paper";
+const sectionClass = isPaper
+  ? "bg-paper text-plum-darkest py-20 md:py-28"
+  : "bg-plum-darkest text-cream py-20 md:py-28";
+const subheadClass = isPaper
+  ? "font-sans text-base text-plum-darkest/70"
+  : "font-sans text-base text-cream/70";
+const cardClass = isPaper
+  ? "flex-shrink-0 w-80 md:w-96 bg-plum-darkest/[0.04] border border-plum-darkest/10 rounded-2xl p-7 snap-start flex flex-col"
+  : "flex-shrink-0 w-80 md:w-96 bg-plum-dark/40 border border-cream/10 rounded-2xl p-7 snap-start flex flex-col";
+const quoteClass = isPaper
+  ? "font-sans text-base text-plum-darkest/85 leading-relaxed mb-6 flex-grow"
+  : "font-sans text-base text-cream/85 leading-relaxed mb-6 flex-grow";
+const authorNameClass = isPaper
+  ? "text-plum-darkest font-semibold"
+  : "text-cream font-semibold";
+const authorRoleClass = isPaper
+  ? "text-plum-darkest/60 text-xs mt-0.5"
+  : "text-cream/60 text-xs mt-0.5";
+const dividerClass = isPaper
+  ? "font-sans text-sm border-t border-plum-darkest/10 pt-4"
+  : "font-sans text-sm border-t border-cream/10 pt-4";
+
+const navBtnClass = isPaper
+  ? "inline-flex items-center justify-center w-11 h-11 rounded-full border border-plum-darkest/20 text-plum-darkest hover:bg-plum-darkest/5 hover:border-plum-darkest/40 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+  : "inline-flex items-center justify-center w-11 h-11 rounded-full border border-cream/30 text-cream hover:bg-cream/10 hover:border-cream transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+---
+
+<section class={sectionClass}>
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="mb-10 flex items-end justify-between gap-6 flex-wrap">
+      <div>
+        <h2 class="font-display text-3xl md:text-4xl mb-3">{heading}</h2>
+        <p class={subheadClass}>{subhead}</p>
+      </div>
+      <div class="flex items-center gap-3" data-testimonial-nav>
+        <button
+          type="button"
+          class={navBtnClass}
+          data-testimonial-prev
+          aria-label="Previous testimonial"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class={navBtnClass}
+          data-testimonial-next
+          aria-label="Next testimonial"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="flex gap-6 overflow-x-auto pb-6 -mx-6 px-6 lg:-mx-12 lg:px-12 snap-x snap-mandatory testimonial-track"
+      data-testimonial-track
+    >
+      {
+        testimonials.map((t) => (
+          <article class={cardClass}>
+            <span class="inline-block self-start px-3 py-1 rounded-full bg-pink/15 text-pink text-[10px] font-sans tracking-[0.2em] uppercase mb-5">
+              {t.category}
+            </span>
+            <p class={quoteClass}>
+              <span class="text-pink/60">&ldquo;</span>{t.quote}<span class="text-pink/60">&rdquo;</span>
+            </p>
+            <div class={dividerClass}>
+              <p class={authorNameClass}>{t.author}</p>
+              <p class={authorRoleClass}>{t.role}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const tracks = document.querySelectorAll<HTMLDivElement>(
+    "[data-testimonial-track]",
+  );
+  tracks.forEach((track) => {
+    const section = track.closest("section");
+    if (!section) return;
+    const prev = section.querySelector<HTMLButtonElement>(
+      "[data-testimonial-prev]",
+    );
+    const next = section.querySelector<HTMLButtonElement>(
+      "[data-testimonial-next]",
+    );
+    const firstCard = track.querySelector("article");
+    const cardStep = () => {
+      if (!firstCard) return 320;
+      const gap = parseFloat(getComputedStyle(track).gap) || 24;
+      return firstCard.getBoundingClientRect().width + gap;
+    };
+    const updateState = () => {
+      if (!prev || !next) return;
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 0;
+      next.disabled = track.scrollLeft >= max;
+    };
+    prev?.addEventListener("click", () => {
+      track.scrollBy({ left: -cardStep(), behavior: "smooth" });
+    });
+    next?.addEventListener("click", () => {
+      track.scrollBy({ left: cardStep(), behavior: "smooth" });
+    });
+    track.addEventListener("scroll", updateState, { passive: true });
+    window.addEventListener("resize", updateState);
+    updateState();
+  });
+</script>

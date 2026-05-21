@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import CommunityHero from "../components/CommunityHero.astro";
+import WhatIsCommunity from "../components/WhatIsCommunity.astro";
+import HowToContribute from "../components/HowToContribute.astro";
+import CoreContributors from "../components/CoreContributors.astro";
+import Testimonials from "../components/Testimonials.astro";
+import QuestionsCTA from "../components/QuestionsCTA.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Community — Quantum Biology DAO"
+  description="How to contribute to the Quantum Biology DAO — join the community, get involved with a working group, and participate in governance."
+>
+  <Header />
+  <main>
+    <CommunityHero />
+    <WhatIsCommunity />
+    <HowToContribute />
+    <CoreContributors />
+    <Testimonials category="Community" />
+    <QuestionsCTA />
+  </main>
+  <Footer />
+</Layout>

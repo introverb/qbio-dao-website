@@ -1,0 +1,213 @@
+---
+import Button from "./Button.astro";
+
+const workingGroups = [
+  {
+    name: "Science",
+    description:
+      "Reviewing papers, developing and discussing hypotheses, contributing to scientific roadmaps, helping determine priorities for grants to scientists, and advising the DAO on the science-related matters",
+    icon: "atom",
+  },
+  {
+    name: "Communications",
+    description:
+      "Managing social media, maintaining community engagement, responding to general queries, deleting spam, enforcing community standards, educating people about quantum biology and the Quantum Biology DAO, and more",
+    icon: "chat",
+  },
+  {
+    name: "Operations",
+    description:
+      "Tracking community member contributions, helping with scheduling, maintaining compliance with laws, and more",
+    icon: "cog",
+  },
+  {
+    name: "Treasury",
+    description:
+      "Managing the DAO's treasury, overseeing token allocations, tracking grant disbursement, and maintaining financial transparency for the community.",
+    icon: "wallet",
+  },
+  {
+    name: "Product",
+    description:
+      "Developing products (e.g., scientific instruments) for the DAO to sell, identifying potential customers, creating marketing and distribution plans, perform market analyses to identify opportunities for products, and more",
+    icon: "product",
+  },
+];
+
+const bullets = [
+  "Introduce yourself in the #introductions channel.",
+  "Follow channels that interest you and join discussions as you feel comfortable.",
+  "Attend our weekly community calls to hear updates and contribute to DAO progress.",
+];
+---
+
+<section class="bg-plum-darkest text-cream py-20 md:py-28">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <h2 class="font-display text-3xl md:text-4xl mb-6">How to contribute</h2>
+    <p
+      class="max-w-3xl font-sans text-base text-cream/80 leading-relaxed mb-16"
+    >
+      Contribution is open to all! Joining the Quantum Biology DAO means
+      becoming part of a collaborative effort to push the boundaries of science
+      using decentralized tools and principles. Here are a few ways you can
+      participate:
+    </p>
+
+    <div class="mb-16">
+      <h3 class="font-display text-2xl md:text-3xl mb-6">
+        1. Join the Conversation
+      </h3>
+      <ul class="space-y-4 font-sans text-base text-cream/80 leading-relaxed">
+        <li class="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span class="text-cream/50">—</span>
+          <Button
+            href="https://quantumbiology.community"
+            variant="primary"
+            size="sm"
+            external>Join our Discord</Button
+          >
+          <span>to connect with other members.</span>
+        </li>
+        {
+          bullets.map((b) => (
+            <li class="flex gap-3">
+              <span class="text-cream/50">—</span>
+              <span>{b}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mb-16">
+      <h3 class="font-display text-2xl md:text-3xl mb-4">
+        2. Get Involved with a Working Group
+      </h3>
+      <p
+        class="max-w-3xl font-sans text-base text-cream/80 leading-relaxed mb-10"
+      >
+        Our working groups are where most of the collaboration happens. You can
+        listen in, share ideas, or volunteer when you're ready. Currently, we
+        have five main groups:
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6"
+      >
+        {
+          workingGroups.map((g) => (
+            <div class="flex flex-col">
+              <div class="aspect-[4/3] rounded-2xl border border-cream/15 bg-plum-dark/30 flex items-center justify-center mb-5 text-cream/70">
+                {g.icon === "atom" && (
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+                    <path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z" />
+                    <path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z" />
+                  </svg>
+                )}
+                {g.icon === "chat" && (
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                  </svg>
+                )}
+                {g.icon === "cog" && (
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                  </svg>
+                )}
+                {g.icon === "wallet" && (
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                    <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+                  </svg>
+                )}
+                {g.icon === "product" && (
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
+                )}
+              </div>
+              <h4 class="font-display text-xl text-cream mb-2">{g.name}</h4>
+              <p class="font-sans text-sm text-cream/70 leading-relaxed">
+                {g.description}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div>
+      <h3 class="font-display text-2xl md:text-3xl mb-4">
+        3. Participate in governance
+      </h3>
+      <p
+        class="max-w-3xl font-sans text-base text-cream/80 leading-relaxed mb-8"
+      >
+        As a DAO, we make decisions together. You can follow proposals, join
+        discussions, and vote if you hold QBIO tokens.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <Button href="/qbio-token" variant="outline-light" size="md"
+          >Learn how governance works</Button
+        >
+        <Button href="/qbio-token" variant="outline-light" size="md"
+          >Read about the QBIO token</Button
+        >
+      </div>
+    </div>
+  </div>
+</section>

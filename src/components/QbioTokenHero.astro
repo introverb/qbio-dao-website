@@ -1,0 +1,50 @@
+---
+import Button from "./Button.astro";
+---
+
+<section
+  class="relative bg-plum-darkest text-cream pt-36 pb-20 md:pt-44 md:pb-28 overflow-hidden"
+>
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div class="relative z-10 max-w-xl">
+        <h1
+          class="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mb-6 text-cream"
+        >
+          How we make decisions together to advance quantum biology
+        </h1>
+        <div
+          class="font-sans text-base sm:text-lg text-cream/70 leading-relaxed space-y-5 mb-10"
+        >
+          <p>
+            Quantum Biology DAO is a decentralized organization that supports
+            open scientific research at the frontier of biology and physics. We
+            support experiments, technologies, and ideas that explore how
+            quantum physics may influence living systems.
+          </p>
+          <p>
+            Instead of relying on a central leader or institution, decisions are
+            made collectively. Through transparent governance and shared digital
+            tools, our community directs funding, sets priorities, and helps
+            shape the future of quantum biology research.
+          </p>
+          <p>
+            At the center of this process is QBIO, the governance token that
+            powers the DAO.
+          </p>
+        </div>
+        <Button href="#what-is-qbio" variant="primary" size="md"
+          >Learn about QBIO</Button
+        >
+      </div>
+      <div class="relative">
+        <img
+          src="/images/graphics/coin.png"
+          alt="QBIO governance token"
+          class="w-full h-auto max-w-md mx-auto"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </div>
+</section>

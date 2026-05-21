@@ -1,0 +1,62 @@
+---
+import Button from "./Button.astro";
+
+const principles = [
+  {
+    label: "Resilience",
+    body: "No single person or institution controls the DAO",
+  },
+  {
+    label: "Inclusivity",
+    body: "Scientists, engineers, students, and supporters all have a voice",
+  },
+  {
+    label: "Scalability",
+    body: "Governance evolves as the ecosystem grows",
+  },
+];
+---
+
+<section class="bg-plum-darkest text-cream py-20 md:py-28">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <h2 class="font-display text-3xl md:text-4xl mb-8">
+      Progressive decentralization
+    </h2>
+    <div
+      class="max-w-3xl space-y-5 font-sans text-base text-cream/80 leading-relaxed"
+    >
+      <p>
+        Though originally founded by three people, the Quantum Biology DAO was
+        designed with progressive decentralization as an intentional goal.
+      </p>
+      <p>
+        Over time, governance power will shift from the founding team to the
+        broader community. This ensures:
+      </p>
+    </div>
+    <ul class="max-w-3xl my-8 space-y-3 font-sans text-base text-cream/80">
+      {
+        principles.map((p) => (
+          <li class="flex gap-3">
+            <span class="text-cream/50">—</span>
+            <span>
+              <span class="font-bold text-cream">{p.label}:</span> {p.body}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <p
+      class="max-w-3xl font-sans text-base text-cream/80 leading-relaxed mb-10"
+    >
+      This is how we build toward a truly global, community-owned system for
+      advancing open science.
+    </p>
+    <Button
+      href="https://saurikz.com/what-is-progressive-decentralization-web3"
+      variant="secondary"
+      size="md"
+      external>Read more about progressive decentralization</Button
+    >
+  </div>
+</section>

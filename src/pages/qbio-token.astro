@@ -1,0 +1,35 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import QbioTokenHero from "../components/QbioTokenHero.astro";
+import WhyGovernance from "../components/WhyGovernance.astro";
+import GovernancePhases from "../components/GovernancePhases.astro";
+import ProgressiveDecentralization from "../components/ProgressiveDecentralization.astro";
+import Testimonials from "../components/Testimonials.astro";
+import WhatIsQbio from "../components/WhatIsQbio.astro";
+import HowToBuyQbio from "../components/HowToBuyQbio.astro";
+import Tokenomics from "../components/Tokenomics.astro";
+import ReadyToShape from "../components/ReadyToShape.astro";
+import QuestionsCTA from "../components/QuestionsCTA.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="QBIO Token — Quantum Biology DAO"
+  description="QBIO is the governance token of the Quantum Biology DAO. Learn how decisions are made and how to buy QBIO."
+>
+  <Header />
+  <main>
+    <QbioTokenHero />
+    <WhyGovernance />
+    <GovernancePhases />
+    <ProgressiveDecentralization />
+    <Testimonials category="Governance" background="paper" />
+    <WhatIsQbio />
+    <HowToBuyQbio />
+    <Tokenomics />
+    <ReadyToShape />
+    <QuestionsCTA />
+  </main>
+  <Footer />
+</Layout>

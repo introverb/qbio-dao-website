@@ -1,0 +1,48 @@
+---
+const activities = [
+  "Fund research",
+  "Share knowledge",
+  "Build tools",
+  "Grow awareness about quantum biology",
+];
+---
+
+<section class="bg-plum-dark text-cream py-20 md:py-24">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <h2 class="font-display text-3xl md:text-4xl mb-8 max-w-3xl">
+      What is the Quantum Biology DAO community?
+    </h2>
+    <div
+      class="max-w-3xl space-y-5 font-sans text-base text-cream/80 leading-relaxed"
+    >
+      <p>
+        The Quantum Biology community is a decentralized group of people
+        (ranging from enthusiasts to quantum physicists) working at the
+        intersection of quantum physics and biology.
+      </p>
+      <p>
+        We're organized as a DAO (Decentralized Autonomous Organization), which
+        means our work is driven by the community, not by a single leader or
+        company. Members come together to:
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-3 my-8">
+      {
+        activities.map((label) => (
+          <span class="px-5 py-2 rounded-full border border-cream/30 text-cream text-sm font-sans">
+            {label}
+          </span>
+        ))
+      }
+    </div>
+    <p
+      class="max-w-3xl font-sans text-base text-cream/80 leading-relaxed"
+    >
+      Through open collaboration and blockchain-based governance, we're creating
+      a space where anyone can contribute to the future of science. <a
+        href="/qbio-token"
+        class="text-pink hover:text-pink-light underline underline-offset-2"
+      >Learn more about the governance process here</a>.
+    </p>
+  </div>
+</section>

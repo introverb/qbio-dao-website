@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import ScienceHero from "../components/ScienceHero.astro";
+import WhatIsQuantumBiology from "../components/WhatIsQuantumBiology.astro";
+import BriefHistory from "../components/BriefHistory.astro";
+import WhatKindOfQB from "../components/WhatKindOfQB.astro";
+import QuantumBiologyInstitute from "../components/QuantumBiologyInstitute.astro";
+import GrantingProcess from "../components/GrantingProcess.astro";
+import Testimonials from "../components/Testimonials.astro";
+import QuestionsCTA from "../components/QuestionsCTA.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Science — Quantum Biology DAO"
+  description="Learn what quantum biology is and how we're building a new, decentralized process to fund its most important experiments."
+>
+  <Header />
+  <main>
+    <ScienceHero />
+    <WhatIsQuantumBiology />
+    <BriefHistory />
+    <WhatKindOfQB />
+    <QuantumBiologyInstitute />
+    <GrantingProcess />
+    <Testimonials category="Science" background="paper" />
+    <QuestionsCTA />
+  </main>
+  <Footer />
+</Layout>
