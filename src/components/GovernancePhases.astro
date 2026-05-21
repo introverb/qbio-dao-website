@@ -43,17 +43,12 @@ const phases = [
       {
         phases.map((p) => (
           <div class="flex flex-col">
-            <div class="relative aspect-[3/2] rounded-3xl bg-mauve/40 border border-cream/10 flex items-center justify-center mb-6 shadow-xl text-cream overflow-hidden">
-              <span
-                class="absolute inset-0 flex items-center justify-center font-display text-cream/20 leading-none select-none pointer-events-none text-[11rem] md:text-[13rem]"
-                aria-hidden="true"
-              >
-                {p.number}
-              </span>
+            <div class="relative aspect-[3/2] rounded-3xl bg-mauve/40 border border-cream/10 flex items-center justify-center mb-6 shadow-xl text-cream overflow-hidden hex-bg">
               {p.icon === "draft" && (
                 <svg
-                  width="96"
-                  height="96"
+                  class="relative"
+                  width="160"
+                  height="160"
                   viewBox="0 0 64 64"
                   fill="none"
                   stroke="currentColor"
@@ -71,8 +66,9 @@ const phases = [
               )}
               {p.icon === "community" && (
                 <svg
-                  width="96"
-                  height="96"
+                  class="relative"
+                  width="160"
+                  height="160"
                   viewBox="0 0 64 64"
                   fill="none"
                   stroke="currentColor"
@@ -91,8 +87,9 @@ const phases = [
               )}
               {p.icon === "token" && (
                 <svg
-                  width="96"
-                  height="96"
+                  class="relative"
+                  width="160"
+                  height="160"
                   viewBox="0 0 64 64"
                   fill="none"
                   stroke="currentColor"
@@ -127,3 +124,16 @@ const phases = [
     </div>
   </div>
 </section>
+
+<style>
+  /* Tessellating honeycomb hex pattern as a subtle background on the
+     phase panels. The data-URI SVG draws one flat-top hexagon centered
+     in a tile sized to its row/column repeat so the tiling reads as a
+     continuous honeycomb. */
+  .hex-bg {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='42' height='73' viewBox='0 0 42 73'><path d='M21 13.875 L40.5 25.125 L40.5 47.625 L21 58.875 L1.5 47.625 L1.5 25.125 Z' fill='none' stroke='%23eee8df' stroke-width='1.2' stroke-opacity='0.18'/></svg>");
+    background-size: 42px 73px;
+    background-position: center;
+    background-repeat: repeat;
+  }
+</style>
