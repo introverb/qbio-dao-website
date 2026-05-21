@@ -1,6 +1,16 @@
 ---
 import Button from "./Button.astro";
 
+const DEFAULT_GRAPHIC_CLASS =
+  "absolute top-0 right-0 w-1/2 max-w-[240px] pointer-events-none select-none opacity-60";
+
+// Square/near-square images (cube, chain) are cropped to a wider band so they
+// take up the same visual real estate as the wide neuron/molecules graphics.
+// `object-[right_top]` anchors the source image to the top-right so the
+// visible band shows that corner — slightly cropped on the bottom-left.
+const CROPPED_GRAPHIC_CLASS =
+  "absolute top-0 right-0 w-[260px] h-[140px] object-cover object-[right_top] pointer-events-none select-none opacity-60";
+
 const orgs = [
   {
     name: "Quantum Biology Ecosystem",
@@ -10,6 +20,7 @@ const orgs = [
     external: true,
     accent: "border-b-plum-darkest",
     graphic: "/images/graphics/chain.png",
+    graphicClass: CROPPED_GRAPHIC_CLASS,
     youAreHere: false,
   },
   {
@@ -20,6 +31,7 @@ const orgs = [
     external: true,
     accent: "border-b-teal",
     graphic: "/images/graphics/neuron.png",
+    graphicClass: DEFAULT_GRAPHIC_CLASS,
     youAreHere: false,
   },
   {
@@ -30,6 +42,7 @@ const orgs = [
     external: false,
     accent: "border-b-mauve",
     graphic: "/images/graphics/cube-cutout.png",
+    graphicClass: CROPPED_GRAPHIC_CLASS,
     youAreHere: true,
   },
   {
@@ -40,6 +53,7 @@ const orgs = [
     external: true,
     accent: "border-b-gold",
     graphic: "/images/graphics/molecules.png",
+    graphicClass: DEFAULT_GRAPHIC_CLASS,
     youAreHere: false,
   },
 ];
@@ -51,13 +65,13 @@ const orgs = [
       {
         orgs.map((org) => (
           <article
-            class={`relative bg-paper rounded-xl border-b-4 ${org.accent} px-8 pt-8 pb-10 md:px-10 md:pt-10 md:pb-12 flex flex-col min-h-[460px] overflow-hidden`}
+            class={`relative bg-paper rounded-xl border-b-4 ${org.accent} px-8 pt-8 pb-10 md:px-10 md:pt-10 md:pb-12 flex flex-col min-h-[360px] overflow-hidden`}
           >
             {org.graphic && (
               <img
                 src={org.graphic}
                 alt=""
-                class="absolute top-0 right-0 w-1/2 max-w-[240px] pointer-events-none select-none opacity-60"
+                class={org.graphicClass}
                 loading="lazy"
               />
             )}
