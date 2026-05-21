@@ -1,20 +1,60 @@
 ---
 const members = [
-  { name: "Mike", role: "Founder", img: "/images/team/mike.jpeg" },
-  { name: "Ale", role: "Community", img: "/images/team/ale.jpeg" },
-  { name: "Geoff", role: "Operations", img: "/images/team/geoff.jpeg" },
-  { name: "Jen", role: "Research", img: "/images/team/jen.jpeg" },
-  { name: "Kyra", role: "Communications", img: "/images/team/kyra.jpeg" },
-  { name: "Clarice", role: "Strategy", img: "/images/team/clarice.jpeg" },
+  {
+    name: "Dr. Clarice D. Aiello",
+    role: "Quantum Engineer",
+    img: "/images/team/clarice.jpeg",
+    summary:
+      "Quantum engineer exploring how quantum physics informs biology at the nanoscale.",
+    bio: "Clarice is a quantum engineer interested in how quantum physics informs biology at the nanoscale. Born and raised in Brazil, Clarice obtained a Diplome d'Ingenieur in Physics from the Ecole Polytechnique in France and an M.Phil. in Physics from the University of Cambridge, Trinity College, in England; she received her Ph.D. from MIT in Electrical Engineering. She further held postdoctoral appointments in Bioengineering at Stanford, and in Chemistry at Berkeley.",
+  },
+  {
+    name: "Dr. Geoff Anders",
+    role: "CEO, Quantum Biology Institute",
+    img: "/images/team/geoff.jpeg",
+    summary:
+      "CEO of the Quantum Biology Institute and founder of Leverage, focused on supporting revolutionary scientific research.",
+    bio: "Geoff Anders is the founder and CEO of Leverage, a research institute established in 2011 to support revolutionary scientific research. With a background in philosophy and social science, he leads Leverage's internal research and helps external research teams organize to make important scientific breakthroughs. His recent work focuses on the intersection of philosophy, science, and history, as it pertains especially to introspection, cognitive science, and artificial intelligence. Geoff is now the CEO of the Quantum Biology Institute and holds a PhD in Philosophy from Rutgers University and a BS in Economics from the Wharton School at the University of Pennsylvania.",
+  },
+  {
+    name: "Dr. Alessandro Lodesani",
+    role: "Chief Operating Officer",
+    img: "/images/team/ale.jpeg",
+    summary:
+      "COO of the Quantum Biology Institute, designing innovative lab equipment and optimizing research operations.",
+    bio: "Alessandro Lodesani is the Institute's Chief Operating Officer, overseeing its daily research operations. With a strong background in physics and engineering, combined with extensive experience in biology research, Alessandro focuses on designing innovative devices and optimizing lab processes. Originally from Italy, Alessandro earned a Bachelor's in Mechanical Engineering and a PhD in Physics, graduating with honors from the Polytechnic University of Milan, with a specialization in spintronics and molecular interfaces. His previous research at MIT focused on topological qubits and superconducting thin films, where he successfully developed the world's most efficient superconducting diode platform. Alessandro then joined the Institute in its early days at UCLA, where he led several projects investigating the influence of weak magnetic fields on biological systems.",
+  },
+  {
+    name: "Jennilyn Gaitan",
+    role: "Operations",
+    img: "/images/team/jen.jpeg",
+    summary:
+      "Operations and administration lead for the Quantum Biology Institute, with two decades of experience refining systems and processes.",
+    bio: "Jennilyn Gaitan graduated with a Bachelor of Science in Electronic Media and Film from Towson University. Since 2004, she has worked in various administrative and operational roles across multiple industries, including retail, higher education, photography, real estate, and small business operations. Jennilyn has a passion for creating and refining the systems and processes that businesses use, to run most efficiently, which has been a hallmark of her career. In November 2023, Jennilyn joined the Quantum Biology Institute, contributing her expertise to the administration and operations of the Institute.",
+  },
+  {
+    name: "Kyra Gardner",
+    role: "Communications Working Group Leader",
+    img: "/images/team/kyra.jpeg",
+    summary:
+      "Communications Working Group Leader and co-founder of Smarter with Science, connecting complex topics to broader audiences.",
+    bio: "Kyra Gardner is the Communications Working Group Leader for the Quantum Biology DAO, where she manages communications and social media. She joined the DAO in January of 2025 and carries out this work through Smarter with Science, a company she co-founded whose team members are also deeply involved in the quantum biology ecosystem. Despite not having as technical of a science background as some of her DAO peers, she enjoys finding ways to connect complex topics to everyday life and make them accessible to broader audiences.",
+  },
+  {
+    name: "Dr. Mike Montague",
+    role: "Treasury Working Group Leader",
+    img: "/images/team/mike.jpeg",
+    summary:
+      "Treasury Working Group Leader and scientist at the Quantum Biology Institute, researching microbial models for quantum biological processes.",
+    bio: "Michael Montague is the Treasury Management Working Group Leader for the Quantum Biology DAO and a scientist at the Quantum Biology Institute, where he conducts experimental research on microbial model organisms to study how quantum mechanical phenomena may influence biological processes. He received his Ph.D. in Microbiology from the University of North Carolina at Chapel Hill. Michael's background spans microbiology, genetics, evolutionary science, and synthetic biology, with previous research roles at the J. Craig Venter Institute, the Johns Hopkins Center for Health Security, and the Future of Humanity Institute at the University of Oxford.",
+  },
 ];
 ---
 
 <section class="bg-paper py-20 md:py-28">
   <div class="max-w-7xl mx-auto px-6 lg:px-12">
     <div class="text-center mb-16">
-      <p
-        class="font-sans text-xs tracking-[0.25em] uppercase text-mauve mb-3"
-      >
+      <p class="font-sans text-xs tracking-[0.25em] uppercase text-mauve mb-3">
         Meet the Team
       </p>
       <h2 class="font-display text-3xl md:text-4xl text-plum-darkest">
@@ -25,9 +65,15 @@ const members = [
       class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-10 max-w-6xl mx-auto"
     >
       {
-        members.map((person) => (
-          <div class="flex flex-col items-center text-center">
-            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-darkest mb-4 ring-1 ring-plum-darkest/10">
+        members.map((person, i) => (
+          <button
+            type="button"
+            data-bio-trigger={`team-${i}`}
+            class="group flex flex-col items-center text-center p-4 -m-4 rounded-2xl bg-transparent hover:bg-pink/10 transition-colors cursor-pointer outline-none appearance-none border-0 focus-visible:ring-2 focus-visible:ring-pink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+            aria-haspopup="dialog"
+            aria-controls={`bio-team-${i}`}
+          >
+            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-darkest mb-4 ring-1 ring-plum-darkest/10 group-hover:ring-mauve transition">
               <img
                 src={person.img}
                 alt={person.name}
@@ -41,13 +87,93 @@ const members = [
             <p class="font-sans text-xs uppercase tracking-wider text-mauve mb-3">
               {person.role}
             </p>
-            <p class="font-sans text-xs text-plum-darkest/70 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor.
+            <p class="font-sans text-xs text-plum-darkest/70 leading-relaxed mb-2">
+              {person.summary}
             </p>
-          </div>
+            <span class="font-sans text-xs text-mauve/80 group-hover:text-pink transition-colors">
+              Read bio →
+            </span>
+          </button>
         ))
       }
     </div>
+
+    {
+      members.map((person, i) => (
+        <dialog
+          id={`bio-team-${i}`}
+          class="bio-dialog p-0 rounded-3xl bg-paper text-plum-darkest max-w-2xl w-[92vw] m-auto"
+        >
+          <div class="relative p-8 md:p-10">
+            <button
+              type="button"
+              data-bio-close
+              aria-label="Close"
+              class="absolute top-4 right-4 p-2 rounded-full text-plum-darkest/60 hover:text-plum-darkest hover:bg-plum-darkest/5 transition-colors"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-5 mb-6 pr-8">
+              <div class="w-20 h-20 shrink-0 rounded-full overflow-hidden bg-plum-darkest/10 ring-1 ring-plum-darkest/10">
+                <img
+                  src={person.img}
+                  alt={person.name}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 class="font-display text-2xl text-plum-darkest mb-1">
+                  {person.name}
+                </h3>
+                <p class="font-sans text-xs uppercase tracking-wider text-mauve">
+                  {person.role}
+                </p>
+              </div>
+            </div>
+            <p class="font-sans text-sm md:text-base text-plum-darkest/80 leading-relaxed">
+              {person.bio}
+            </p>
+          </div>
+        </dialog>
+      ))
+    }
   </div>
 </section>
+
+<script>
+  const triggers = document.querySelectorAll<HTMLButtonElement>(
+    "[data-bio-trigger]",
+  );
+  triggers.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-bio-trigger");
+      const dialog = document.getElementById(
+        `bio-${id}`,
+      ) as HTMLDialogElement | null;
+      dialog?.showModal();
+    });
+  });
+
+  const dialogs = document.querySelectorAll<HTMLDialogElement>(".bio-dialog");
+  dialogs.forEach((d) => {
+    d.addEventListener("click", (e) => {
+      if (e.target === d) d.close();
+    });
+    d.querySelector("[data-bio-close]")?.addEventListener("click", () =>
+      d.close(),
+    );
+  });
+</script>
