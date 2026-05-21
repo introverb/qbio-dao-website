@@ -29,7 +29,7 @@ const orgs = [
     href: "/community",
     external: false,
     accent: "border-b-mauve",
-    graphic: "/images/graphics/coin.png",
+    graphic: "/images/graphics/cube-cutout.png",
     youAreHere: true,
   },
   {
@@ -51,13 +51,13 @@ const orgs = [
       {
         orgs.map((org) => (
           <article
-            class={`relative bg-paper rounded-xl border-b-4 ${org.accent} px-8 pt-8 pb-10 md:px-10 md:pt-10 md:pb-12 flex flex-col min-h-[300px] overflow-hidden`}
+            class={`relative bg-paper rounded-xl border-b-4 ${org.accent} px-8 pt-8 pb-10 md:px-10 md:pt-10 md:pb-12 flex flex-col min-h-[460px] overflow-hidden`}
           >
             {org.graphic && (
               <img
                 src={org.graphic}
                 alt=""
-                class="absolute top-0 right-0 w-1/2 max-w-[240px] pointer-events-none select-none"
+                class="absolute top-0 right-0 w-1/2 max-w-[240px] pointer-events-none select-none opacity-60"
                 loading="lazy"
               />
             )}
