@@ -43,7 +43,13 @@ const phases = [
       {
         phases.map((p) => (
           <div class="flex flex-col">
-            <div class="aspect-[3/2] rounded-3xl bg-mauve/40 border border-cream/10 flex items-center justify-center mb-6 shadow-xl text-cream">
+            <div class="relative aspect-[3/2] rounded-3xl bg-mauve/40 border border-cream/10 flex items-center justify-center mb-6 shadow-xl text-cream overflow-hidden">
+              <span
+                class="absolute inset-0 flex items-center justify-center font-display text-cream/20 leading-none select-none pointer-events-none text-[11rem] md:text-[13rem]"
+                aria-hidden="true"
+              >
+                {p.number}
+              </span>
               {p.icon === "draft" && (
                 <svg
                   width="96"
