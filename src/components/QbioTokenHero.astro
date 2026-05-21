@@ -37,14 +37,39 @@ import Button from "./Button.astro";
           >Learn about QBIO</Button
         >
       </div>
-      <div class="relative">
+      <div class="relative coin-stage">
         <img
           src="/images/graphics/coin.png"
           alt="QBIO governance token"
-          class="w-full h-auto max-w-md mx-auto"
+          class="coin w-full h-auto max-w-md mx-auto"
           loading="eager"
         />
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .coin-stage {
+    perspective: 1200px;
+  }
+  .coin {
+    transform-style: preserve-3d;
+    transform-origin: center center;
+    animation: coin-spin 14s linear infinite;
+    will-change: transform;
+  }
+  @keyframes coin-spin {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .coin {
+      animation: none;
+    }
+  }
+</style>
