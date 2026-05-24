@@ -85,10 +85,12 @@ import Button from "./Button.astro";
     resize();
     mount.appendChild(renderer.domElement);
 
-    // Coin geometry: smooth round disc, 96 segments around for clean curvature
+    // Modeled on QBIOTOKEN.png: a hexagonal coin with the QBD logo
+    // embossed (not painted) on its face, a mauve metallic body, and a
+    // reeded edge.
     const radius = 2;
-    const thickness = 0.32;
-    const radialSegments = 96;
+    const thickness = 0.42;
+    const radialSegments = 6; // hexagon
     const geometry = new THREE.CylinderGeometry(
       radius,
       radius,
@@ -96,40 +98,37 @@ import Button from "./Button.astro";
       radialSegments,
     );
 
-    // Face texture — the QBD hexagonal logo. We use it both as the diffuse
-    // map AND as a bump map so the lines/glyphs read as embossed.
+    // Face: the logo-mark serves as bump only — the coin body is one solid
+    // mauve material, the logo glyph reads as raised metal because the
+    // bright pixels in the texture deform the surface normal.
     const loader = new THREE.TextureLoader();
-    const logoTexture = loader.load("/images/brand/logo-mark.png");
-    logoTexture.colorSpace = THREE.SRGBColorSpace;
-    logoTexture.anisotropy = 8;
-
     const logoBump = loader.load("/images/brand/logo-mark.png");
     logoBump.anisotropy = 8;
 
+    const COIN_MAUVE = 0x9a5b7e; // mauve-pink body
+    const COIN_DARK = 0x4b243c; // shadow plum
+
     const faceMaterial = new THREE.MeshStandardMaterial({
-      map: logoTexture,
+      color: COIN_MAUVE,
       bumpMap: logoBump,
-      bumpScale: 0.04,
-      metalness: 0.55,
-      roughness: 0.38,
+      bumpScale: 0.18,
+      metalness: 0.65,
+      roughness: 0.32,
     });
 
-    // Edge texture — procedural reeded grooves, like the milled edge of a
-    // real coin. Generated on a 2D canvas, wrapped around the cylinder.
-    const grooveCount = 180;
+    // Edge: procedurally drawn reeded grooves wrapped around the rim.
+    const grooveCount = 120;
     const grooveCanvas = document.createElement("canvas");
     grooveCanvas.width = grooveCount * 4;
     grooveCanvas.height = 32;
     const gctx = grooveCanvas.getContext("2d")!;
-    // Base plum
-    gctx.fillStyle = "#4b243c";
+    gctx.fillStyle = "#7a4263"; // mid mauve base
     gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
-    // Vertical groove lines (alternating bright and shadow for relief)
     for (let i = 0; i < grooveCount; i++) {
       const x = (i / grooveCount) * grooveCanvas.width;
-      gctx.fillStyle = "#854b6e";
+      gctx.fillStyle = "#c08aa6"; // highlight ridge
       gctx.fillRect(x, 0, 2, grooveCanvas.height);
-      gctx.fillStyle = "#25101d";
+      gctx.fillStyle = "#3a1a2c"; // shadow groove
       gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
     }
     const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
@@ -138,8 +137,7 @@ import Button from "./Button.astro";
     grooveTexture.wrapT = THREE.ClampToEdgeWrapping;
     grooveTexture.anisotropy = 8;
 
-    // Bump map for the edge — same canvas geometry but grayscale-ish so the
-    // light catches the ridges.
+    // Bump map for the edge — grayscale stripes
     const bumpCanvas = document.createElement("canvas");
     bumpCanvas.width = grooveCount * 4;
     bumpCanvas.height = 32;
@@ -160,9 +158,9 @@ import Button from "./Button.astro";
     const edgeMaterial = new THREE.MeshStandardMaterial({
       map: grooveTexture,
       bumpMap: grooveBump,
-      bumpScale: 0.08,
-      metalness: 0.7,
-      roughness: 0.35,
+      bumpScale: 0.15,
+      metalness: 0.75,
+      roughness: 0.3,
     });
 
     // CylinderGeometry materials order: [side, top, bottom]
@@ -181,19 +179,20 @@ import Button from "./Button.astro";
     group.rotation.x = -0.18;
     scene.add(group);
 
-    // Lighting
-    const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+    // Lighting tuned for the mauve coin body — warm key + pink rim so the
+    // embossing and the reeded edge catch the light.
+    const ambient = new THREE.AmbientLight(0xfff5ee, 0.5);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffeede, 1.1);
+    const keyLight = new THREE.DirectionalLight(0xffeede, 1.4);
     keyLight.position.set(3, 4, 5);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.7);
-    rimLight.position.set(-4, -2, -3);
+    const rimLight = new THREE.DirectionalLight(0xffceec, 0.9);
+    rimLight.position.set(-4, -1, -2);
     scene.add(rimLight);
 
-    const fillLight = new THREE.DirectionalLight(0x854b6e, 0.4);
+    const fillLight = new THREE.DirectionalLight(0x854b6e, 0.35);
     fillLight.position.set(2, -3, 4);
     scene.add(fillLight);
 
