@@ -149,14 +149,15 @@ import Button from "./Button.astro";
     const RIM_INNER_R = HALF * 0.879; // 225 / 256
     const BUMP_RIM_INNER_R = HALF * 0.891; // 228 / 256
     const BUMP_STEP_INNER_R = HALF * 0.852; // 218 / 256
-    const LOGO_DRAW_SIZE = HALF * 1.25; // 320 / 256
+    const LOGO_DRAW_SIZE = HALF * 1.25 * 1.15; // 15% larger than before
 
     // --- COLOR CANVAS ---
     const colorCanvas = document.createElement("canvas");
     colorCanvas.width = FACE_SIZE;
     colorCanvas.height = FACE_SIZE;
     const cctx = colorCanvas.getContext("2d")!;
-    // Recessed background field — dark radial gradient (sunken look)
+    // Recessed background field — darker radial gradient so the field
+    // reads as more deeply sunken than before
     const bgGrad = cctx.createRadialGradient(
       HALF,
       HALF,
@@ -165,11 +166,51 @@ import Button from "./Button.astro";
       HALF,
       HALF,
     );
-    bgGrad.addColorStop(0.0, "#5a2d52"); // slightly lighter center
-    bgGrad.addColorStop(0.7, "#3d1a38"); // dark mid
-    bgGrad.addColorStop(1.0, "#25101d"); // darkest at edge
+    bgGrad.addColorStop(0.0, "#3a1832"); // slightly lighter center, darker
+    bgGrad.addColorStop(0.7, "#251018"); // dark mid
+    bgGrad.addColorStop(1.0, "#160a10"); // darkest at edge
     cctx.fillStyle = bgGrad;
     cctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+
+    // Faint repeating hex grid texture across the field — drawn on a
+    // small offscreen canvas and tiled via createPattern, then clipped
+    // to the field area only (inside the rim).
+    const HEX_TILE = 22;
+    const hexTile = document.createElement("canvas");
+    hexTile.width = HEX_TILE * 1.5; // 3 * sideLength
+    hexTile.height = HEX_TILE * Math.sqrt(3); // 2 * apothem
+    const htctx = hexTile.getContext("2d")!;
+    htctx.strokeStyle = "rgba(255, 206, 236, 0.09)"; // very faint pale pink
+    htctx.lineWidth = 0.6;
+    const drawHex = (cx0: number, cy0: number) => {
+      const r = HEX_TILE * 0.5;
+      htctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = (i * Math.PI) / 3;
+        const px = cx0 + Math.cos(a) * r;
+        const py = cy0 + Math.sin(a) * r;
+        if (i === 0) htctx.moveTo(px, py);
+        else htctx.lineTo(px, py);
+      }
+      htctx.closePath();
+      htctx.stroke();
+    };
+    // Tessellating pair: one hex centered, one offset for the
+    // brick-style tile so the grid reads continuous when tiled.
+    drawHex(HEX_TILE * 0.5, hexTile.height * 0.5);
+    drawHex(HEX_TILE * 0.5 + HEX_TILE * 1.5, 0);
+    drawHex(HEX_TILE * 0.5 + HEX_TILE * 1.5, hexTile.height);
+    drawHex(-HEX_TILE * 0.5, 0);
+    drawHex(-HEX_TILE * 0.5, hexTile.height);
+    const hexPattern = cctx.createPattern(hexTile, "repeat")!;
+    cctx.save();
+    cctx.beginPath();
+    cctx.arc(HALF, HALF, RIM_INNER_R, 0, Math.PI * 2);
+    cctx.clip();
+    cctx.fillStyle = hexPattern;
+    cctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+    cctx.restore();
+
     // Raised rim ring — brighter purple
     cctx.beginPath();
     cctx.arc(HALF, HALF, RIM_OUTER_R, 0, Math.PI * 2);
@@ -186,8 +227,8 @@ import Button from "./Button.astro";
     bumpCanvas.width = FACE_SIZE;
     bumpCanvas.height = FACE_SIZE;
     const bctx = bumpCanvas.getContext("2d")!;
-    // Everything starts near-black = maximally recessed
-    bctx.fillStyle = "#111111";
+    // Pure black field = deeper recess than v10's #111111
+    bctx.fillStyle = "#000000";
     bctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
     // Outer rim = bright = raised
     bctx.beginPath();
@@ -217,15 +258,19 @@ import Button from "./Button.astro";
       console.log("[coin v10] logo loaded — alpha-keying + tinting");
       const logoOffset = HALF - LOGO_DRAW_SIZE / 2;
 
-      // --- Helper: draw logo to a canvas, key out dark bg, replace
-      //     surviving pixels with the given tint color. Returns the
-      //     prepared canvas, ready to composite onto a destination.
+      // --- Helper: draw logo to a canvas (flipped horizontally), key
+      //     out dark bg, replace surviving pixels with the given tint
+      //     color. Returns the prepared canvas, ready to composite.
       const tintLogo = (tintHex: string) => {
         const c = document.createElement("canvas");
         c.width = LOGO_DRAW_SIZE;
         c.height = LOGO_DRAW_SIZE;
         const ctx = c.getContext("2d")!;
+        // Horizontal flip while drawing
+        ctx.translate(LOGO_DRAW_SIZE, 0);
+        ctx.scale(-1, 1);
         ctx.drawImage(logoImg, 0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset for pixel ops
         const tintR = parseInt(tintHex.slice(1, 3), 16);
         const tintG = parseInt(tintHex.slice(3, 5), 16);
         const tintB = parseInt(tintHex.slice(5, 7), 16);
@@ -259,17 +304,17 @@ import Button from "./Button.astro";
     };
     logoImg.src = "/images/brand/logo-mark.png";
 
-    // ====== Face material (high bumpScale + high metalness for real relief)
+    // ====== Face material (high bumpScale + heavy shimmer) ================
     const faceMaterial = new THREE.MeshPhysicalMaterial({
       color: 0x854b6e, // mid purple base metal
       map: colorTexture,
       bumpMap: bumpTexture,
-      bumpScale: 3.5, // strong relief — black→white delta in bump is max
-      metalness: 0.9,
-      roughness: 0.3,
-      envMapIntensity: 2.0,
-      clearcoat: 0.2,
-      clearcoatRoughness: 0.2,
+      bumpScale: 4.0, // strong relief
+      metalness: 1.0, // full metal
+      roughness: 0.18, // smoother → sharper specular sweep = more shimmer
+      envMapIntensity: 3.2, // amplified env reflections
+      clearcoat: 0.6, // pronounced lacquer sheen
+      clearcoatRoughness: 0.08, // glossy clearcoat
     });
 
     // ====== Edge (reeded purple grooves on a hollow cylinder) ==============
@@ -314,12 +359,12 @@ import Button from "./Button.astro";
       color: 0x4b243c, // darker purple for the rim metal
       map: grooveTexture,
       bumpMap: grooveBump,
-      bumpScale: 0.25,
-      metalness: 0.9,
-      roughness: 0.35,
-      envMapIntensity: 2.0,
-      clearcoat: 0.2,
-      clearcoatRoughness: 0.2,
+      bumpScale: 0.3,
+      metalness: 1.0,
+      roughness: 0.22,
+      envMapIntensity: 3.0,
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.12,
     });
 
     // ====== Coin construction ==============================================
