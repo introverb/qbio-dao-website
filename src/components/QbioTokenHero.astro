@@ -96,145 +96,32 @@ import Button from "./Button.astro";
       radialSegments,
     );
 
-    // Face: build a HEIGHT map and a COLOR map from logo-mark.png, then
-    // derive a NORMAL map from the height map. Normal maps give much
-    // more reliable relief than bumpMap with MeshStandardMaterial,
-    // especially when metalness > 0.
-    const FACE_SIZE = 1024;
-    // === v3 coin face — if you're seeing this commit live, the console
-    //     should print "[coin v3] ..." messages below. ===
-    console.log("[coin v3] script loaded");
+    // === v5 DIAGNOSTIC: minimal path. Load logo-mark.png with the
+    // standard THREE.TextureLoader and use it AS-IS for both the color
+    // map and the bump map. No canvas, no compositing, no normal map
+    // generation. If the QBD logo shows on the face after this, the
+    // texture pipeline works and any earlier issue was in my custom
+    // canvas code. If it still doesn't show, the geometry/material
+    // binding is the actual problem. ===
+    console.log("[coin v5] DIAGNOSTIC build — flat logo texture, no canvas");
 
-    const BASE_PURPLE = "#5a3a5e";
-    const PEAK_PURPLE = "#e6b8e6"; // very light for clear contrast
-
-    // Color canvas — populated via putImageData (bypassing canvas
-    // transforms, which were silently breaking the compositing).
-    const faceColorCanvas = document.createElement("canvas");
-    faceColorCanvas.width = FACE_SIZE;
-    faceColorCanvas.height = FACE_SIZE;
-    const fcctx = faceColorCanvas.getContext("2d")!;
-
-    // Normal map canvas — same pattern
-    const normalCanvas = document.createElement("canvas");
-    normalCanvas.width = FACE_SIZE;
-    normalCanvas.height = FACE_SIZE;
-    const nctx = normalCanvas.getContext("2d")!;
-    // Default "flat up" normal so the texture is valid pre-logo-load
-    nctx.fillStyle = "rgb(128, 128, 255)";
-    nctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-
-    const faceColorTexture = new THREE.CanvasTexture(faceColorCanvas);
-    faceColorTexture.colorSpace = THREE.SRGBColorSpace;
-    faceColorTexture.anisotropy = 8;
-
-    const faceNormalTexture = new THREE.CanvasTexture(normalCanvas);
-    faceNormalTexture.colorSpace = THREE.NoColorSpace;
-    faceNormalTexture.anisotropy = 8;
-
-    const logoImg = new Image();
-    logoImg.onload = () => {
-      console.log("[coin v4] logo loaded, building maps directly via ImageData");
-
-      try {
-        // 1) Draw logo onto a temp canvas to read its pixels.
-        const temp = document.createElement("canvas");
-        temp.width = FACE_SIZE;
-        temp.height = FACE_SIZE;
-        const tctx = temp.getContext("2d")!;
-        tctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
-        const logoData = tctx.getImageData(0, 0, FACE_SIZE, FACE_SIZE);
-        const lpx = logoData.data;
-
-        // Pre-parse the base + peak colors
-        const baseR = parseInt(BASE_PURPLE.slice(1, 3), 16);
-        const baseG = parseInt(BASE_PURPLE.slice(3, 5), 16);
-        const baseB = parseInt(BASE_PURPLE.slice(5, 7), 16);
-        const peakR = parseInt(PEAK_PURPLE.slice(1, 3), 16);
-        const peakG = parseInt(PEAK_PURPLE.slice(3, 5), 16);
-        const peakB = parseInt(PEAK_PURPLE.slice(5, 7), 16);
-
-        // 2) Build the color map AND a grayscale height map in one
-        //    pass. Mirror X manually by reading from src x = W-1-x.
-        const colorImg = fcctx.createImageData(FACE_SIZE, FACE_SIZE);
-        const cpx = colorImg.data;
-        const heightArr = new Uint8ClampedArray(FACE_SIZE * FACE_SIZE);
-        for (let y = 0; y < FACE_SIZE; y++) {
-          for (let x = 0; x < FACE_SIZE; x++) {
-            const destIdx = (y * FACE_SIZE + x) * 4;
-            const srcX = FACE_SIZE - 1 - x; // mirror
-            const srcIdx = (y * FACE_SIZE + srcX) * 4;
-            const lum =
-              0.299 * lpx[srcIdx] +
-              0.587 * lpx[srcIdx + 1] +
-              0.114 * lpx[srcIdx + 2];
-            const h = Math.max(0, Math.min(255, (lum - 40) * 2.2));
-            heightArr[y * FACE_SIZE + x] = h;
-            const t = h / 255;
-            cpx[destIdx] = Math.round(baseR + (peakR - baseR) * t);
-            cpx[destIdx + 1] = Math.round(baseG + (peakG - baseG) * t);
-            cpx[destIdx + 2] = Math.round(baseB + (peakB - baseB) * t);
-            cpx[destIdx + 3] = 255;
-          }
-        }
-        fcctx.putImageData(colorImg, 0, 0);
-        faceColorTexture.needsUpdate = true;
-        console.log("[coin v4] color map written");
-
-        // 3) Build the normal map from the height array via finite
-        //    differences.
-        const normalImg = nctx.createImageData(FACE_SIZE, FACE_SIZE);
-        const nd = normalImg.data;
-        const strength = 10.0;
-        const w = FACE_SIZE;
-        for (let y = 0; y < FACE_SIZE; y++) {
-          for (let x = 0; x < FACE_SIZE; x++) {
-            const xL = x === 0 ? 0 : x - 1;
-            const xR = x === w - 1 ? w - 1 : x + 1;
-            const yU = y === 0 ? 0 : y - 1;
-            const yD = y === FACE_SIZE - 1 ? FACE_SIZE - 1 : y + 1;
-            const hL = heightArr[y * w + xL];
-            const hR = heightArr[y * w + xR];
-            const hU = heightArr[yU * w + x];
-            const hD = heightArr[yD * w + x];
-            const dx = ((hR - hL) / 255) * strength;
-            const dy = ((hD - hU) / 255) * strength;
-            const nx = -dx;
-            const ny = -dy;
-            const nz = 1.0;
-            const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-            const idx = (y * w + x) * 4;
-            nd[idx] = Math.round((nx / len) * 0.5 * 255 + 127.5);
-            nd[idx + 1] = Math.round((ny / len) * 0.5 * 255 + 127.5);
-            nd[idx + 2] = Math.round((nz / len) * 0.5 * 255 + 127.5);
-            nd[idx + 3] = 255;
-          }
-        }
-        nctx.putImageData(normalImg, 0, 0);
-        faceNormalTexture.needsUpdate = true;
-        console.log("[coin v4] normal map written");
-      } catch (err) {
-        console.error("[coin v4] map build failed:", err);
-      }
-    };
-    logoImg.onerror = (err) => {
-      console.error("Failed to load /images/brand/logo-mark.png", err);
-    };
-    logoImg.src = "/images/brand/logo-mark.png";
-
-    // Pre-fill the color canvas with base purple so the coin isn't
-    // a blank canvas while the logo image loads.
-    fcctx.fillStyle = BASE_PURPLE;
-    fcctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-    faceColorTexture.needsUpdate = true;
+    const loader = new THREE.TextureLoader();
+    const logoTexture = loader.load(
+      "/images/brand/logo-mark.png",
+      (t) => console.log("[coin v5] logo texture loaded", t.image?.width, "x", t.image?.height),
+      undefined,
+      (e) => console.error("[coin v5] logo texture FAILED", e),
+    );
+    logoTexture.colorSpace = THREE.SRGBColorSpace;
+    logoTexture.anisotropy = 8;
 
     const faceMaterial = new THREE.MeshStandardMaterial({
-      map: faceColorTexture,
-      normalMap: faceNormalTexture,
-      normalScale: new THREE.Vector2(5.0, 5.0), // very pronounced relief
-      metalness: 0.0, // no metallic — fully diffuse responds to normals
-      roughness: 0.7,
-      envMapIntensity: 0.0, // disable env reflection drowning the bump
+      map: logoTexture, // logo as direct color map — diagnostic
+      bumpMap: logoTexture, // and as bump source
+      bumpScale: 0.5,
+      metalness: 0.0,
+      roughness: 0.6,
+      envMapIntensity: 0.0,
     });
 
     // Edge: reeded grooves with colors picked from QBIOTOKEN.png — mauve
