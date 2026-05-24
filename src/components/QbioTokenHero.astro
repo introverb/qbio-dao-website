@@ -207,41 +207,55 @@ import Button from "./Button.astro";
     bumpTexture.anisotropy = 8;
 
     // ====== Logo composite — magenta on color, white on bump ===============
+    // Important: logo-mark.png is NOT transparent — it has a solid dark
+    // plum background. So source-atop / source-in alone would still fill
+    // the whole bounding box. We have to alpha-key the dark background
+    // out first (luminance threshold), then tint the surviving glyph
+    // pixels with the brand colors.
     const logoImg = new Image();
     logoImg.onload = () => {
-      console.log("[coin v9] logo loaded — painting magenta logo + bump");
+      console.log("[coin v10] logo loaded — alpha-keying + tinting");
       const logoOffset = HALF - LOGO_DRAW_SIZE / 2;
 
-      // --- Magenta-tinted logo for the COLOR canvas ---
-      const magentaLogo = document.createElement("canvas");
-      magentaLogo.width = LOGO_DRAW_SIZE;
-      magentaLogo.height = LOGO_DRAW_SIZE;
-      const mlctx = magentaLogo.getContext("2d")!;
-      mlctx.drawImage(logoImg, 0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
-      // source-atop tints only the logo's existing opaque pixels
-      mlctx.globalCompositeOperation = "source-atop";
-      mlctx.fillStyle = "#d57db2";
-      mlctx.fillRect(0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
-      mlctx.globalCompositeOperation = "source-over";
-      cctx.drawImage(magentaLogo, logoOffset, logoOffset);
+      // --- Helper: draw logo to a canvas, key out dark bg, replace
+      //     surviving pixels with the given tint color. Returns the
+      //     prepared canvas, ready to composite onto a destination.
+      const tintLogo = (tintHex: string) => {
+        const c = document.createElement("canvas");
+        c.width = LOGO_DRAW_SIZE;
+        c.height = LOGO_DRAW_SIZE;
+        const ctx = c.getContext("2d")!;
+        ctx.drawImage(logoImg, 0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+        const tintR = parseInt(tintHex.slice(1, 3), 16);
+        const tintG = parseInt(tintHex.slice(3, 5), 16);
+        const tintB = parseInt(tintHex.slice(5, 7), 16);
+        const data = ctx.getImageData(0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+        const px = data.data;
+        for (let i = 0; i < px.length; i += 4) {
+          const lum = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+          // Bright glyph pixels (cream outlines + pink swoosh) → opaque tint.
+          // Dark plum background → fully transparent.
+          const a = Math.max(0, Math.min(255, (lum - 40) * 2.4));
+          px[i] = tintR;
+          px[i + 1] = tintG;
+          px[i + 2] = tintB;
+          px[i + 3] = a;
+        }
+        ctx.putImageData(data, 0, 0);
+        return c;
+      };
+
+      // Magenta-tinted glyph layer for the COLOR canvas
+      cctx.drawImage(tintLogo("#d57db2"), logoOffset, logoOffset);
       colorTexture.needsUpdate = true;
 
-      // --- Pure white logo for the BUMP canvas (max raise) ---
-      const whiteLogo = document.createElement("canvas");
-      whiteLogo.width = LOGO_DRAW_SIZE;
-      whiteLogo.height = LOGO_DRAW_SIZE;
-      const wctx = whiteLogo.getContext("2d")!;
-      wctx.drawImage(logoImg, 0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
-      wctx.globalCompositeOperation = "source-atop";
-      wctx.fillStyle = "#ffffff";
-      wctx.fillRect(0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
-      wctx.globalCompositeOperation = "source-over";
-      bctx.drawImage(whiteLogo, logoOffset, logoOffset);
+      // Pure-white glyph layer for the BUMP canvas (max raise)
+      bctx.drawImage(tintLogo("#ffffff"), logoOffset, logoOffset);
       bumpTexture.needsUpdate = true;
-      console.log("[coin v9] logo composited onto both canvases");
+      console.log("[coin v10] alpha-keyed logo composited onto both canvases");
     };
     logoImg.onerror = (err) => {
-      console.error("[coin v9] FAILED to load logo-mark.png", err);
+      console.error("[coin v10] FAILED to load logo-mark.png", err);
     };
     logoImg.src = "/images/brand/logo-mark.png";
 
