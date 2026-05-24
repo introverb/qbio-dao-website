@@ -127,12 +127,15 @@ import Button from "./Button.astro";
     faceBumpCanvas.width = FACE_SIZE;
     faceBumpCanvas.height = FACE_SIZE;
     const fbctx = faceBumpCanvas.getContext("2d")!;
+    // Pre-mirror the canvas so we don't have to use texture.repeat.x = -1,
+    // which appears to confuse Three.js's bump-derivative calculation and
+    // flattens the emboss.
+    fbctx.translate(FACE_SIZE, 0);
+    fbctx.scale(-1, 1);
     // Black base = fully RECESSED field. White = fully RAISED.
-    // Using the full black-to-white range gives the bump map its strongest
-    // possible effect.
     fbctx.fillStyle = "#000000";
     fbctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-    // Raised outer rim band
+    // Raised outer rim band (symmetric, so the mirror is a no-op here)
     fbctx.fillStyle = "#ffffff";
     fbctx.beginPath();
     fbctx.arc(FACE_SIZE / 2, FACE_SIZE / 2, FACE_SIZE * 0.495, 0, Math.PI * 2);
@@ -148,11 +151,6 @@ import Button from "./Button.astro";
 
     const faceBumpTexture = new THREE.CanvasTexture(faceBumpCanvas);
     faceBumpTexture.anisotropy = 8;
-    // Mirror the texture horizontally — CylinderGeometry's top cap UVs
-    // come out flipped relative to how we view the coin face.
-    faceBumpTexture.wrapS = THREE.RepeatWrapping;
-    faceBumpTexture.repeat.x = -1;
-    faceBumpTexture.offset.x = 1;
 
     // Composite the logo on top once the image loads. We threshold the
     // logo image so bright pixels become white (raised) and the rest is
@@ -193,6 +191,9 @@ import Button from "./Button.astro";
     faceColorCanvas.width = FACE_SIZE;
     faceColorCanvas.height = FACE_SIZE;
     const fcctx = faceColorCanvas.getContext("2d")!;
+    // Same pre-mirror as the bump canvas so the two stay aligned.
+    fcctx.translate(FACE_SIZE, 0);
+    fcctx.scale(-1, 1);
     const RECESSED = "#2c1843"; // deep purple field
     const RAISED = "#a878ba"; // lighter mauve-pink raised
     fcctx.fillStyle = RECESSED;
@@ -213,10 +214,6 @@ import Button from "./Button.astro";
     const faceColorTexture = new THREE.CanvasTexture(faceColorCanvas);
     faceColorTexture.colorSpace = THREE.SRGBColorSpace;
     faceColorTexture.anisotropy = 8;
-    // Match the bump map's horizontal flip so color and bump stay aligned.
-    faceColorTexture.wrapS = THREE.RepeatWrapping;
-    faceColorTexture.repeat.x = -1;
-    faceColorTexture.offset.x = 1;
 
     const logoColorImg = new Image();
     logoColorImg.crossOrigin = "anonymous";
@@ -254,9 +251,9 @@ import Button from "./Button.astro";
     const faceMaterial = new THREE.MeshStandardMaterial({
       map: faceColorTexture,
       bumpMap: faceBumpTexture,
-      bumpScale: 2.0, // very bold relief
-      metalness: 0.35,
-      roughness: 0.55,
+      bumpScale: 4.0, // very bold relief
+      metalness: 0.3,
+      roughness: 0.6,
     });
 
     // Edge: procedurally drawn reeded grooves wrapped around the rim.
@@ -322,22 +319,19 @@ import Button from "./Button.astro";
     group.rotation.x = -0.18;
     scene.add(group);
 
-    // Lighting — directional lights now do most of the work, so the deep
-    // bumps cast strong shadows in the recessed areas.
-    const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+    // Dim ambient + one strong key light so the bumps cast clearly
+    // visible shadows in the recessed field. A softer rim from the
+    // opposite side keeps it from going pitch-dark on the shadow side.
+    const ambient = new THREE.AmbientLight(0xffffff, 0.15);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xfff1e0, 1.4);
-    keyLight.position.set(3, 4, 5);
+    const keyLight = new THREE.DirectionalLight(0xfff1e0, 2.0);
+    keyLight.position.set(4, 5, 4);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.6);
-    rimLight.position.set(-4, -1, -3);
+    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.5);
+    rimLight.position.set(-4, -2, -2);
     scene.add(rimLight);
-
-    const fillLight = new THREE.DirectionalLight(0x8855aa, 0.35);
-    fillLight.position.set(2, -3, 4);
-    scene.add(fillLight);
 
     // Animation
     const speed = 0.005;
