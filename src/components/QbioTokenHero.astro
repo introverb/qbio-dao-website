@@ -152,8 +152,8 @@ import Button from "./Button.astro";
     colorCanvas.width = FACE_SIZE;
     colorCanvas.height = FACE_SIZE;
     const cctx = colorCanvas.getContext("2d")!;
-    // Radial gold gradient: bright center, darker outer
-    const goldGrad = cctx.createRadialGradient(
+    // Radial purple gradient: bright center, darker outer
+    const purpleGrad = cctx.createRadialGradient(
       HALF,
       HALF,
       0,
@@ -161,13 +161,13 @@ import Button from "./Button.astro";
       HALF,
       HALF,
     );
-    goldGrad.addColorStop(0.0, "#e8c060");
-    goldGrad.addColorStop(1.0, "#a07010");
-    cctx.fillStyle = goldGrad;
+    purpleGrad.addColorStop(0.0, "#b48bc4");
+    purpleGrad.addColorStop(1.0, "#3a1850");
+    cctx.fillStyle = purpleGrad;
     cctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
 
     // Subtle radial hatching for engraving texture
-    cctx.strokeStyle = "rgba(120, 80, 20, 0.18)";
+    cctx.strokeStyle = "rgba(40, 18, 56, 0.22)";
     cctx.lineWidth = 1;
     for (let i = 0; i < 180; i++) {
       const angle = (i / 180) * Math.PI * 2;
@@ -184,12 +184,12 @@ import Button from "./Button.astro";
     }
 
     // Concentric groove ring near the rim — dark shadow + bright highlight
-    cctx.strokeStyle = "#7a5000";
+    cctx.strokeStyle = "#1f0e2a";
     cctx.lineWidth = 2;
     cctx.beginPath();
     cctx.arc(HALF, HALF, GROOVE_SHADOW_R, 0, Math.PI * 2);
     cctx.stroke();
-    cctx.strokeStyle = "#f0d080";
+    cctx.strokeStyle = "#c598d0";
     cctx.beginPath();
     cctx.arc(HALF, HALF, GROOVE_HIGHLIGHT_R, 0, Math.PI * 2);
     cctx.stroke();
@@ -255,16 +255,16 @@ import Button from "./Button.astro";
       }
       mctx.putImageData(maskImg, 0, 0);
 
-      // --- Paint logo on COLOR canvas in bright gold ---
-      const goldLogo = document.createElement("canvas");
-      goldLogo.width = FACE_SIZE;
-      goldLogo.height = FACE_SIZE;
-      const gctx = goldLogo.getContext("2d")!;
-      gctx.fillStyle = "#f0d060";
-      gctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-      gctx.globalCompositeOperation = "destination-in";
-      gctx.drawImage(logoMask, 0, 0);
-      cctx.drawImage(goldLogo, 0, 0);
+      // --- Paint logo on COLOR canvas in bright purple ---
+      const purpleLogo = document.createElement("canvas");
+      purpleLogo.width = FACE_SIZE;
+      purpleLogo.height = FACE_SIZE;
+      const plctx = purpleLogo.getContext("2d")!;
+      plctx.fillStyle = "#d3a0db";
+      plctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+      plctx.globalCompositeOperation = "destination-in";
+      plctx.drawImage(logoMask, 0, 0);
+      cctx.drawImage(purpleLogo, 0, 0);
       colorTexture.needsUpdate = true;
 
       // --- Paint logo on BUMP canvas in white (raised) ---
@@ -285,9 +285,9 @@ import Button from "./Button.astro";
     };
     logoImg.src = "/images/brand/logo-mark.png";
 
-    // ====== Materials (polished/satin gold) ================================
+    // ====== Materials (polished/satin metallic purple) =====================
     const faceMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xd4a017, // warm gold base
+      color: 0x6d3d8a, // warm metallic purple base
       map: colorTexture,
       roughnessMap: roughnessTexture,
       bumpMap: bumpTexture,
@@ -300,19 +300,19 @@ import Button from "./Button.astro";
       clearcoatRoughness: 0.15,
     });
 
-    // ====== Edge (reeded gold grooves on a hollow cylinder) ================
+    // ====== Edge (reeded purple grooves on a hollow cylinder) ==============
     const grooveCount = 100;
     const grooveCanvas = document.createElement("canvas");
     grooveCanvas.width = grooveCount * 4;
     grooveCanvas.height = 32;
     const gctx = grooveCanvas.getContext("2d")!;
-    gctx.fillStyle = "#b8861a"; // mid gold
+    gctx.fillStyle = "#7a4d80"; // mid purple
     gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
     for (let i = 0; i < grooveCount; i++) {
       const x = (i / grooveCount) * grooveCanvas.width;
-      gctx.fillStyle = "#f0d060"; // bright gold ridge
+      gctx.fillStyle = "#c39ad1"; // bright purple ridge
       gctx.fillRect(x, 0, 2, grooveCanvas.height);
-      gctx.fillStyle = "#6a4a08"; // dark gold groove
+      gctx.fillStyle = "#1f0d28"; // dark purple groove
       gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
     }
     const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
@@ -339,7 +339,7 @@ import Button from "./Button.astro";
     grooveBump.wrapT = THREE.ClampToEdgeWrapping;
 
     const edgeMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xd4a017,
+      color: 0x6d3d8a, // matches face base purple
       map: grooveTexture,
       bumpMap: grooveBump,
       bumpScale: 0.25,
