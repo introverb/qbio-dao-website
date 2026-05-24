@@ -87,7 +87,6 @@ import Button from "./Button.astro";
     // ====== Coin dimensions ================================================
     const RADIUS = 2;
     const THICKNESS = 0.4;
-    const BASE_COLOR = 0x7a4d7a; // purple coin body
     const FACE_SIZE = 512;
 
     // ====== Custom subdivided disc geometry ================================
@@ -140,36 +139,92 @@ import Button from "./Button.astro";
     // ~50k triangles — plenty of vertex density for displacement detail.
     const discGeometry = createDisc(RADIUS, 160, 192);
 
-    // ====== Logo → height map / displacement / color =======================
-    // All three maps share the same canvas pipeline. The logo's bright
-    // pixels become peaks (raised), dark pixels become recessed.
-    const heightCanvas = document.createElement("canvas");
-    heightCanvas.width = FACE_SIZE;
-    heightCanvas.height = FACE_SIZE;
-    const hctx = heightCanvas.getContext("2d")!;
-    hctx.fillStyle = "#000000";
-    hctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+    // ====== Face textures (gold coin) ======================================
+    // Two canvases:
+    //   1) color/roughness — radial gold gradient + raised logo + groove ring
+    //   2) bump            — neutral gray field, white logo, black groove
+    const HALF = FACE_SIZE / 2;
+    const GROOVE_SHADOW_R = HALF * 0.9;
+    const GROOVE_HIGHLIGHT_R = HALF * 0.92;
 
-    const heightTexture = new THREE.CanvasTexture(heightCanvas);
-    heightTexture.colorSpace = THREE.NoColorSpace;
-    heightTexture.anisotropy = 8;
+    // --- COLOR CANVAS ---
+    const colorCanvas = document.createElement("canvas");
+    colorCanvas.width = FACE_SIZE;
+    colorCanvas.height = FACE_SIZE;
+    const cctx = colorCanvas.getContext("2d")!;
+    // Radial gold gradient: bright center, darker outer
+    const goldGrad = cctx.createRadialGradient(
+      HALF,
+      HALF,
+      0,
+      HALF,
+      HALF,
+      HALF,
+    );
+    goldGrad.addColorStop(0.0, "#e8c060");
+    goldGrad.addColorStop(1.0, "#a07010");
+    cctx.fillStyle = goldGrad;
+    cctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
 
-    const normalCanvas = document.createElement("canvas");
-    normalCanvas.width = FACE_SIZE;
-    normalCanvas.height = FACE_SIZE;
-    const ncCtx = normalCanvas.getContext("2d")!;
-    ncCtx.fillStyle = "rgb(128, 128, 255)"; // flat normal default
-    ncCtx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+    // Subtle radial hatching for engraving texture
+    cctx.strokeStyle = "rgba(120, 80, 20, 0.18)";
+    cctx.lineWidth = 1;
+    for (let i = 0; i < 180; i++) {
+      const angle = (i / 180) * Math.PI * 2;
+      cctx.beginPath();
+      cctx.moveTo(
+        HALF + Math.cos(angle) * HALF * 0.15,
+        HALF + Math.sin(angle) * HALF * 0.15,
+      );
+      cctx.lineTo(
+        HALF + Math.cos(angle) * HALF * 0.85,
+        HALF + Math.sin(angle) * HALF * 0.85,
+      );
+      cctx.stroke();
+    }
 
-    const normalTexture = new THREE.CanvasTexture(normalCanvas);
-    normalTexture.colorSpace = THREE.NoColorSpace;
-    normalTexture.anisotropy = 8;
+    // Concentric groove ring near the rim — dark shadow + bright highlight
+    cctx.strokeStyle = "#7a5000";
+    cctx.lineWidth = 2;
+    cctx.beginPath();
+    cctx.arc(HALF, HALF, GROOVE_SHADOW_R, 0, Math.PI * 2);
+    cctx.stroke();
+    cctx.strokeStyle = "#f0d080";
+    cctx.beginPath();
+    cctx.arc(HALF, HALF, GROOVE_HIGHLIGHT_R, 0, Math.PI * 2);
+    cctx.stroke();
 
+    const colorTexture = new THREE.CanvasTexture(colorCanvas);
+    colorTexture.colorSpace = THREE.SRGBColorSpace;
+    colorTexture.anisotropy = 8;
+
+    // Used as roughnessMap too — brighter logo = slightly less rough
+    const roughnessTexture = colorTexture;
+
+    // --- BUMP CANVAS ---
+    const bumpCanvas = document.createElement("canvas");
+    bumpCanvas.width = FACE_SIZE;
+    bumpCanvas.height = FACE_SIZE;
+    const bctx = bumpCanvas.getContext("2d")!;
+    bctx.fillStyle = "#808080"; // neutral height
+    bctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+    // Groove ring (recessed)
+    bctx.strokeStyle = "#000000";
+    bctx.lineWidth = 4;
+    bctx.beginPath();
+    bctx.arc(HALF, HALF, GROOVE_SHADOW_R, 0, Math.PI * 2);
+    bctx.stroke();
+
+    const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
+    bumpTexture.colorSpace = THREE.NoColorSpace;
+    bumpTexture.anisotropy = 8;
+
+    // Load logo and overlay onto both canvases.
     const logoImg = new Image();
     logoImg.onload = () => {
-      console.log("[coin v6] logo loaded, painting displacement + normal");
+      console.log("[coin v7] logo loaded — painting gold face");
 
-      // Draw the logo onto a sampling canvas, then mirror-read for X.
+      // Sample logo pixels (mirrored on X so it isn't backwards on cap)
       const temp = document.createElement("canvas");
       temp.width = FACE_SIZE;
       temp.height = FACE_SIZE;
@@ -177,93 +232,87 @@ import Button from "./Button.astro";
       tctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
       const logoData = tctx.getImageData(0, 0, FACE_SIZE, FACE_SIZE).data;
 
-      // Build height map: stretch luminance so bright outlines saturate
-      // to white (peaks) and dark plum drops to black (valley).
-      const heightArr = new Uint8ClampedArray(FACE_SIZE * FACE_SIZE);
-      const heightImage = hctx.createImageData(FACE_SIZE, FACE_SIZE);
-      const hpx = heightImage.data;
+      // Build an alpha mask of the logo's bright pixels, mirrored.
+      const logoMask = document.createElement("canvas");
+      logoMask.width = FACE_SIZE;
+      logoMask.height = FACE_SIZE;
+      const mctx = logoMask.getContext("2d")!;
+      const maskImg = mctx.createImageData(FACE_SIZE, FACE_SIZE);
+      const mpx = maskImg.data;
       for (let y = 0; y < FACE_SIZE; y++) {
         for (let x = 0; x < FACE_SIZE; x++) {
-          // mirror X so the logo isn't backwards on the front face
           const srcX = FACE_SIZE - 1 - x;
-          const i = (y * FACE_SIZE + srcX) * 4;
+          const si = (y * FACE_SIZE + srcX) * 4;
           const lum =
-            0.299 * logoData[i] +
-            0.587 * logoData[i + 1] +
-            0.114 * logoData[i + 2];
-          const h = Math.max(0, Math.min(255, (lum - 35) * 2.5));
-          heightArr[y * FACE_SIZE + x] = h;
-          const j = (y * FACE_SIZE + x) * 4;
-          hpx[j] = hpx[j + 1] = hpx[j + 2] = h;
-          hpx[j + 3] = 255;
+            0.299 * logoData[si] +
+            0.587 * logoData[si + 1] +
+            0.114 * logoData[si + 2];
+          const a = Math.max(0, Math.min(255, (lum - 40) * 2.4));
+          const di = (y * FACE_SIZE + x) * 4;
+          mpx[di] = mpx[di + 1] = mpx[di + 2] = 255;
+          mpx[di + 3] = a;
         }
       }
-      hctx.putImageData(heightImage, 0, 0);
-      heightTexture.needsUpdate = true;
-      console.log("[coin v6] displacement map painted");
+      mctx.putImageData(maskImg, 0, 0);
 
-      // Build normal map from height array via finite differences.
-      const normalImage = ncCtx.createImageData(FACE_SIZE, FACE_SIZE);
-      const nd = normalImage.data;
-      const strength = 6.0;
-      const w = FACE_SIZE;
-      for (let y = 0; y < FACE_SIZE; y++) {
-        for (let x = 0; x < FACE_SIZE; x++) {
-          const xL = x === 0 ? 0 : x - 1;
-          const xR = x === w - 1 ? w - 1 : x + 1;
-          const yU = y === 0 ? 0 : y - 1;
-          const yD = y === FACE_SIZE - 1 ? FACE_SIZE - 1 : y + 1;
-          const hL = heightArr[y * w + xL];
-          const hR = heightArr[y * w + xR];
-          const hU = heightArr[yU * w + x];
-          const hD = heightArr[yD * w + x];
-          const dx = ((hR - hL) / 255) * strength;
-          const dy = ((hD - hU) / 255) * strength;
-          const nx = -dx;
-          const ny = -dy;
-          const nz = 1.0;
-          const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-          const idx = (y * w + x) * 4;
-          nd[idx] = Math.round((nx / len) * 0.5 * 255 + 127.5);
-          nd[idx + 1] = Math.round((ny / len) * 0.5 * 255 + 127.5);
-          nd[idx + 2] = Math.round((nz / len) * 0.5 * 255 + 127.5);
-          nd[idx + 3] = 255;
-        }
-      }
-      ncCtx.putImageData(normalImage, 0, 0);
-      normalTexture.needsUpdate = true;
-      console.log("[coin v6] normal map painted");
+      // --- Paint logo on COLOR canvas in bright gold ---
+      const goldLogo = document.createElement("canvas");
+      goldLogo.width = FACE_SIZE;
+      goldLogo.height = FACE_SIZE;
+      const gctx = goldLogo.getContext("2d")!;
+      gctx.fillStyle = "#f0d060";
+      gctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+      gctx.globalCompositeOperation = "destination-in";
+      gctx.drawImage(logoMask, 0, 0);
+      cctx.drawImage(goldLogo, 0, 0);
+      colorTexture.needsUpdate = true;
+
+      // --- Paint logo on BUMP canvas in white (raised) ---
+      const whiteLogo = document.createElement("canvas");
+      whiteLogo.width = FACE_SIZE;
+      whiteLogo.height = FACE_SIZE;
+      const wctx = whiteLogo.getContext("2d")!;
+      wctx.fillStyle = "#ffffff";
+      wctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+      wctx.globalCompositeOperation = "destination-in";
+      wctx.drawImage(logoMask, 0, 0);
+      bctx.drawImage(whiteLogo, 0, 0);
+      bumpTexture.needsUpdate = true;
+      console.log("[coin v7] gold logo + bump painted");
     };
     logoImg.onerror = (err) => {
-      console.error("[coin v6] FAILED to load logo-mark.png", err);
+      console.error("[coin v7] FAILED to load logo-mark.png", err);
     };
     logoImg.src = "/images/brand/logo-mark.png";
 
-    // ====== Materials ======================================================
-    const faceMaterial = new THREE.MeshStandardMaterial({
-      color: BASE_COLOR,
-      displacementMap: heightTexture,
-      displacementScale: 0.18, // strong, visible relief
-      displacementBias: -0.02, // slight pre-recess so the field sits below the rim
-      normalMap: normalTexture,
-      normalScale: new THREE.Vector2(1.5, 1.5),
-      metalness: 0.25,
-      roughness: 0.55,
+    // ====== Materials (polished/satin gold) ================================
+    const faceMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xd4a017, // warm gold base
+      map: colorTexture,
+      roughnessMap: roughnessTexture,
+      bumpMap: bumpTexture,
+      bumpScale: 0.8,
+      metalness: 0.95,
+      roughness: 0.25,
+      envMapIntensity: 2.5,
+      reflectivity: 1.0,
+      clearcoat: 0.3,
+      clearcoatRoughness: 0.15,
     });
 
-    // ====== Edge (reeded grooves on a hollow cylinder) =====================
+    // ====== Edge (reeded gold grooves on a hollow cylinder) ================
     const grooveCount = 100;
     const grooveCanvas = document.createElement("canvas");
     grooveCanvas.width = grooveCount * 4;
     grooveCanvas.height = 32;
     const gctx = grooveCanvas.getContext("2d")!;
-    gctx.fillStyle = "#5a3a5e";
+    gctx.fillStyle = "#b8861a"; // mid gold
     gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
     for (let i = 0; i < grooveCount; i++) {
       const x = (i / grooveCount) * grooveCanvas.width;
-      gctx.fillStyle = "#a878b4";
+      gctx.fillStyle = "#f0d060"; // bright gold ridge
       gctx.fillRect(x, 0, 2, grooveCanvas.height);
-      gctx.fillStyle = "#1f0e26";
+      gctx.fillStyle = "#6a4a08"; // dark gold groove
       gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
     }
     const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
@@ -289,12 +338,17 @@ import Button from "./Button.astro";
     grooveBump.wrapS = THREE.RepeatWrapping;
     grooveBump.wrapT = THREE.ClampToEdgeWrapping;
 
-    const edgeMaterial = new THREE.MeshStandardMaterial({
+    const edgeMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xd4a017,
       map: grooveTexture,
       bumpMap: grooveBump,
-      bumpScale: 0.18,
-      metalness: 0.3,
-      roughness: 0.5,
+      bumpScale: 0.25,
+      metalness: 0.95,
+      roughness: 0.35,
+      envMapIntensity: 2.5,
+      reflectivity: 1.0,
+      clearcoat: 0.3,
+      clearcoatRoughness: 0.15,
     });
 
     // ====== Coin construction ==============================================
@@ -323,33 +377,42 @@ import Button from "./Button.astro";
     edgeMesh.rotation.x = Math.PI / 2; // align with Z-aligned discs
     coin.add(edgeMesh);
 
-    // Tilt the whole coin slightly so it doesn't go fully edge-on
-    coin.rotation.x = -0.18;
+    // More pronounced tilt so the rim thickness reads
+    coin.rotation.x = -0.22;
     scene.add(coin);
 
-    // ====== Lighting =======================================================
-    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+    // ====== Lighting (gold-coin photo-style) ===============================
+    const ambient = new THREE.AmbientLight(0x222200, 0.3);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xfff1e0, 1.5);
-    keyLight.position.set(5, 8, 5);
+    const keyLight = new THREE.PointLight(0xfff0cc, 2.5);
+    keyLight.position.set(4, 6, 5);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.6);
-    rimLight.position.set(-4, -2, -2);
-    scene.add(rimLight);
+    const fillLight = new THREE.PointLight(0xffd090, 0.6);
+    fillLight.position.set(-3, -1, 3);
+    scene.add(fillLight);
 
-    // Subtle env so the metallic component has something to reflect.
+    // Studio-lightbox style HDR-ish environment: bright top, neutral
+    // mid, dark floor. Gives the coin a strong specular sweep from
+    // above and a dark bottom that sells the 3D form.
     const envCanvas = document.createElement("canvas");
-    envCanvas.width = 512;
-    envCanvas.height = 256;
+    envCanvas.width = 1024;
+    envCanvas.height = 512;
     const envCtx = envCanvas.getContext("2d")!;
-    const envGrad = envCtx.createLinearGradient(0, 0, 0, 256);
-    envGrad.addColorStop(0.0, "#e6d4e6");
-    envGrad.addColorStop(0.5, "#8a6a8e");
-    envGrad.addColorStop(1.0, "#1d0e1f");
-    envCtx.fillStyle = envGrad;
-    envCtx.fillRect(0, 0, 512, 256);
+    // Top zone (0–30%): bright warm studio light
+    const topGrad = envCtx.createLinearGradient(0, 0, 0, 512 * 0.3);
+    topGrad.addColorStop(0.0, "#ffffff");
+    topGrad.addColorStop(1.0, "#e8d090");
+    envCtx.fillStyle = topGrad;
+    envCtx.fillRect(0, 0, 1024, 512 * 0.3);
+    // Mid zone (30–80%): neutral gray
+    envCtx.fillStyle = "#aaaaaa";
+    envCtx.fillRect(0, 512 * 0.3, 1024, 512 * 0.5);
+    // Floor (80–100%): dark
+    envCtx.fillStyle = "#222222";
+    envCtx.fillRect(0, 512 * 0.8, 1024, 512 * 0.2);
+
     const envSource = new THREE.CanvasTexture(envCanvas);
     envSource.mapping = THREE.EquirectangularReflectionMapping;
     envSource.colorSpace = THREE.SRGBColorSpace;
@@ -359,7 +422,7 @@ import Button from "./Button.astro";
     pmrem.dispose();
 
     // ====== Animation ======================================================
-    const speed = 0.005;
+    const speed = 0.003; // slower, more premium rotation
     const animate = () => {
       if (!reducedMotion) coin.rotation.y += speed;
       renderer.render(scene, camera);
