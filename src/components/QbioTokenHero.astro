@@ -127,10 +127,12 @@ import Button from "./Button.astro";
     faceBumpCanvas.width = FACE_SIZE;
     faceBumpCanvas.height = FACE_SIZE;
     const fbctx = faceBumpCanvas.getContext("2d")!;
-    // Mid-gray base = neutral height (the inner field will sit here)
-    fbctx.fillStyle = "#3a3a3a";
+    // Black base = fully RECESSED field. White = fully RAISED.
+    // Using the full black-to-white range gives the bump map its strongest
+    // possible effect.
+    fbctx.fillStyle = "#000000";
     fbctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-    // Raised outer rim band — bright = up
+    // Raised outer rim band
     fbctx.fillStyle = "#ffffff";
     fbctx.beginPath();
     fbctx.arc(FACE_SIZE / 2, FACE_SIZE / 2, FACE_SIZE * 0.495, 0, Math.PI * 2);
@@ -146,6 +148,11 @@ import Button from "./Button.astro";
 
     const faceBumpTexture = new THREE.CanvasTexture(faceBumpCanvas);
     faceBumpTexture.anisotropy = 8;
+    // Mirror the texture horizontally — CylinderGeometry's top cap UVs
+    // come out flipped relative to how we view the coin face.
+    faceBumpTexture.wrapS = THREE.RepeatWrapping;
+    faceBumpTexture.repeat.x = -1;
+    faceBumpTexture.offset.x = 1;
 
     // Composite the logo on top once the image loads. We threshold the
     // logo image so bright pixels become white (raised) and the rest is
@@ -206,6 +213,10 @@ import Button from "./Button.astro";
     const faceColorTexture = new THREE.CanvasTexture(faceColorCanvas);
     faceColorTexture.colorSpace = THREE.SRGBColorSpace;
     faceColorTexture.anisotropy = 8;
+    // Match the bump map's horizontal flip so color and bump stay aligned.
+    faceColorTexture.wrapS = THREE.RepeatWrapping;
+    faceColorTexture.repeat.x = -1;
+    faceColorTexture.offset.x = 1;
 
     const logoColorImg = new Image();
     logoColorImg.crossOrigin = "anonymous";
@@ -243,7 +254,7 @@ import Button from "./Button.astro";
     const faceMaterial = new THREE.MeshStandardMaterial({
       map: faceColorTexture,
       bumpMap: faceBumpTexture,
-      bumpScale: 1.0, // deep, bold relief
+      bumpScale: 2.0, // very bold relief
       metalness: 0.35,
       roughness: 0.55,
     });
