@@ -96,39 +96,48 @@ import Button from "./Button.astro";
       radialSegments,
     );
 
-    // Face: build a bump map from logo-mark.png and put it on a
-    // MeshStandardMaterial. The logo's bright outlines become RAISED
-    // peaks (bright = up in Three.js bump convention), and the dark
-    // plum background sits as the recessed base — so the QBD glyph
-    // reads as physically embossed metal rather than a pasted sticker.
+    // Face: build a bump map AND a two-tone color map from logo-mark.png.
+    // Bump map → physical relief (bright = peak, dark = base).
+    // Color map → light purple paint on the peaks, dark purple base
+    // everywhere else, so the embossing reads visually even before
+    // the lighting kicks in.
     const FACE_SIZE = 1024;
+    const BASE_PURPLE = "#6b4c6b";
+    const PEAK_PURPLE = "#c190d0";
+
     const faceBumpCanvas = document.createElement("canvas");
     faceBumpCanvas.width = FACE_SIZE;
     faceBumpCanvas.height = FACE_SIZE;
     const fbctx = faceBumpCanvas.getContext("2d")!;
-    // Pre-mirror the canvas so the logo isn't backwards on the top
-    // cap. Doing this on the canvas avoids texture.repeat = -1, which
-    // confuses Three.js's bump-derivative calculation.
+    // Pre-mirror so the logo isn't backwards on the top cap (avoiding
+    // texture.repeat = -1, which confuses bump-derivative calc).
     fbctx.translate(FACE_SIZE, 0);
     fbctx.scale(-1, 1);
     fbctx.fillStyle = "#000000";
     fbctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
 
     const faceBumpTexture = new THREE.CanvasTexture(faceBumpCanvas);
-    faceBumpTexture.colorSpace = THREE.NoColorSpace; // bump maps are linear
+    faceBumpTexture.colorSpace = THREE.NoColorSpace;
     faceBumpTexture.anisotropy = 8;
 
+    const faceColorCanvas = document.createElement("canvas");
+    faceColorCanvas.width = FACE_SIZE;
+    faceColorCanvas.height = FACE_SIZE;
+    const fcctx = faceColorCanvas.getContext("2d")!;
+    fcctx.translate(FACE_SIZE, 0);
+    fcctx.scale(-1, 1);
+    fcctx.fillStyle = BASE_PURPLE;
+    fcctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+
+    const faceColorTexture = new THREE.CanvasTexture(faceColorCanvas);
+    faceColorTexture.colorSpace = THREE.SRGBColorSpace;
+    faceColorTexture.anisotropy = 8;
+
     const logoImg = new Image();
-    // No crossOrigin — same-origin images don't taint the canvas, and
-    // setting "anonymous" would require Access-Control headers from
-    // the server, which Cloudflare doesn't send for static assets.
     logoImg.onload = () => {
+      // 1) BUMP — draw logo, stretch luminance so outlines are pure
+      //    white (peaks) and background drops to black (base).
       fbctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
-      // Stretch contrast so the cream/white outlines saturate to white
-      // (full peaks) and the dark plum background drops to black (base
-      // level). The pink swoosh sits in the middle as a mid-height
-      // ramp, which gives the embossing some softer relief between
-      // the hard peaks of the outline.
       try {
         const data = fbctx.getImageData(0, 0, FACE_SIZE, FACE_SIZE);
         const px = data.data;
@@ -141,13 +150,39 @@ import Button from "./Button.astro";
         }
         fbctx.putImageData(data, 0, 0);
       } catch (err) {
-        // If getImageData throws (e.g. canvas tainted by a future
-        // cross-origin change), fall back to using the raw drawn logo
-        // as the bump map — outlines are still bright on dark, which
-        // produces correct relief, just less contrasty.
-        console.warn("Bump pixel processing failed, using raw image:", err);
+        console.warn("Bump pixel processing failed:", err);
       }
       faceBumpTexture.needsUpdate = true;
+
+      // 2) COLOR — composite PEAK_PURPLE onto the base wherever the
+      //    logo is bright. Uses an offscreen canvas so we can paint
+      //    PEAK_PURPLE with luminance-driven opacity over the base.
+      try {
+        const off = document.createElement("canvas");
+        off.width = FACE_SIZE;
+        off.height = FACE_SIZE;
+        const octx = off.getContext("2d")!;
+        octx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
+        const data = octx.getImageData(0, 0, FACE_SIZE, FACE_SIZE);
+        const px = data.data;
+        const pr = parseInt(PEAK_PURPLE.slice(1, 3), 16);
+        const pg = parseInt(PEAK_PURPLE.slice(3, 5), 16);
+        const pb = parseInt(PEAK_PURPLE.slice(5, 7), 16);
+        for (let i = 0; i < px.length; i += 4) {
+          const lum =
+            0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+          const alpha = Math.max(0, Math.min(255, (lum - 40) * 2.2));
+          px[i] = pr;
+          px[i + 1] = pg;
+          px[i + 2] = pb;
+          px[i + 3] = alpha;
+        }
+        octx.putImageData(data, 0, 0);
+        fcctx.drawImage(off, 0, 0);
+      } catch (err) {
+        console.warn("Color composite failed:", err);
+      }
+      faceColorTexture.needsUpdate = true;
     };
     logoImg.onerror = (err) => {
       console.error("Failed to load /images/brand/logo-mark.png", err);
@@ -155,11 +190,11 @@ import Button from "./Button.astro";
     logoImg.src = "/images/brand/logo-mark.png";
 
     const faceMaterial = new THREE.MeshStandardMaterial({
-      color: 0x6b4c6b, // dark purple-grey base
-      metalness: 0.7,
-      roughness: 0.35,
+      map: faceColorTexture,
       bumpMap: faceBumpTexture,
-      bumpScale: 0.12,
+      bumpScale: 0.35, // steeper embossing
+      metalness: 0.55,
+      roughness: 0.4,
     });
 
     // Edge: reeded grooves with colors picked from QBIOTOKEN.png — mauve
