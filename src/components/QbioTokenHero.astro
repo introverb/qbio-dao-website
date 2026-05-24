@@ -99,23 +99,19 @@ import Button from "./Button.astro";
     // Face: directly use the QBIOTOKEN render as the texture so the
     // embossment, colors, and rim band match the reference exactly.
     const loader = new THREE.TextureLoader();
-    const faceTexture = loader.load(
-      "/images/graphics/QBIOTOKEN.png",
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        tex.anisotropy = 8;
-      },
-    );
+    const faceTexture = loader.load("/images/graphics/QBIOTOKEN.png");
     faceTexture.colorSpace = THREE.SRGBColorSpace;
     faceTexture.anisotropy = 8;
-    // Pre-mirror via texture transform so the logo isn't flipped on the
-    // top cap. (No bump map here, so the derivative-flatten issue doesn't
-    // apply — but we still need correct orientation.)
-    faceTexture.center.set(0.5, 0.5);
-    faceTexture.repeat.set(-1, 1);
+    // Mirror horizontally so the logo isn't backwards on the top cap.
+    // RepeatWrapping is required for negative-repeat sampling to wrap
+    // back into the texture instead of clamping to an edge pixel.
+    faceTexture.wrapS = THREE.RepeatWrapping;
+    faceTexture.repeat.x = -1;
+    faceTexture.offset.x = 1;
 
     const faceMaterial = new THREE.MeshBasicMaterial({
       map: faceTexture,
+      color: 0xffffff,
     });
 
     // Edge: reeded grooves with colors picked from QBIOTOKEN.png — mauve
