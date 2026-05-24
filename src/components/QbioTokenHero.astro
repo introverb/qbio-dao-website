@@ -101,8 +101,12 @@ import Button from "./Button.astro";
     // more reliable relief than bumpMap with MeshStandardMaterial,
     // especially when metalness > 0.
     const FACE_SIZE = 1024;
-    const BASE_PURPLE = "#6b4c6b";
-    const PEAK_PURPLE = "#c190d0";
+    // === v3 coin face — if you're seeing this commit live, the console
+    //     should print "[coin v3] ..." messages below. ===
+    console.log("[coin v3] script loaded");
+
+    const BASE_PURPLE = "#5a3a5e";
+    const PEAK_PURPLE = "#e6b8e6"; // very light for clear contrast
 
     // Height canvas (grayscale, used to derive the normal map)
     const heightCanvas = document.createElement("canvas");
@@ -144,7 +148,7 @@ import Button from "./Button.astro";
 
     const logoImg = new Image();
     logoImg.onload = () => {
-      console.log("[coin] logo loaded, painting maps...");
+      console.log("[coin v3] logo loaded — painting normal + color maps");
 
       // 1) HEIGHT — draw logo and luminance-stretch it
       hctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
@@ -192,7 +196,7 @@ import Button from "./Button.astro";
         }
         nctx.putImageData(normalImg, 0, 0);
         faceNormalTexture.needsUpdate = true;
-        console.log("[coin] normal map generated");
+        console.log("[coin v3] normal map generated, normalScale = 5");
       } catch (err) {
         console.warn("Height/normal generation failed:", err);
       }
@@ -234,10 +238,10 @@ import Button from "./Button.astro";
     const faceMaterial = new THREE.MeshStandardMaterial({
       map: faceColorTexture,
       normalMap: faceNormalTexture,
-      normalScale: new THREE.Vector2(3.0, 3.0), // very pronounced relief
-      metalness: 0.25,
-      roughness: 0.55,
-      envMapIntensity: 0.4,
+      normalScale: new THREE.Vector2(5.0, 5.0), // very pronounced relief
+      metalness: 0.0, // no metallic — fully diffuse responds to normals
+      roughness: 0.7,
+      envMapIntensity: 0.0, // disable env reflection drowning the bump
     });
 
     // Edge: reeded grooves with colors picked from QBIOTOKEN.png — mauve
