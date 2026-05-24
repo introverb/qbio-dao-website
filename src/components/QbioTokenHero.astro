@@ -37,39 +37,126 @@ import Button from "./Button.astro";
           >Learn about QBIO</Button
         >
       </div>
-      <div class="relative coin-stage">
-        <img
-          src="/images/graphics/coin.png"
-          alt="QBIO governance token"
-          class="coin w-full h-auto max-w-md mx-auto"
-          loading="eager"
-        />
+      <div class="relative">
+        <div
+          id="qbio-coin-3d"
+          class="w-full max-w-md mx-auto aspect-square"
+          role="img"
+          aria-label="3D rendering of the QBIO governance token, slowly spinning"
+        ></div>
+        <noscript>
+          <img
+            src="/images/graphics/coin.png"
+            alt="QBIO governance token"
+            class="w-full h-auto max-w-md mx-auto"
+          />
+        </noscript>
       </div>
     </div>
   </div>
 </section>
 
-<style>
-  .coin-stage {
-    perspective: 1200px;
+<script>
+  import * as THREE from "three";
+
+  const mount = document.getElementById("qbio-coin-3d");
+  if (mount) {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+    camera.position.set(0, 0, 9);
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const resize = () => {
+      const size = Math.min(mount.clientWidth, 520);
+      renderer.setSize(size, size, false);
+      camera.aspect = 1;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    mount.appendChild(renderer.domElement);
+
+    // Coin geometry: hexagonal prism, 6 sides
+    const radius = 2;
+    const thickness = 0.25;
+    const geometry = new THREE.CylinderGeometry(
+      radius,
+      radius,
+      thickness,
+      6,
+    );
+
+    // Load the flat logo texture for the front and back faces
+    const loader = new THREE.TextureLoader();
+    const logoTexture = loader.load("/images/brand/logo-mark.png");
+    logoTexture.colorSpace = THREE.SRGBColorSpace;
+    logoTexture.anisotropy = 8;
+
+    const faceMaterial = new THREE.MeshStandardMaterial({
+      map: logoTexture,
+      metalness: 0.45,
+      roughness: 0.4,
+    });
+    const edgeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x4b243c, // plum-dark — edge of the coin
+      metalness: 0.55,
+      roughness: 0.45,
+    });
+
+    // CylinderGeometry materials order: [side, top, bottom]
+    const coin = new THREE.Mesh(geometry, [
+      edgeMaterial,
+      faceMaterial,
+      faceMaterial,
+    ]);
+
+    // Group lets us spin around world Y regardless of coin's tilt
+    const group = new THREE.Group();
+    group.add(coin);
+    // Tip the cylinder so its faces look at the camera
+    coin.rotation.x = Math.PI / 2;
+    // Subtle forward tilt so it doesn't go fully edge-on at 90°
+    group.rotation.x = -0.18;
+    scene.add(group);
+
+    // Lighting
+    const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+    scene.add(ambient);
+
+    const keyLight = new THREE.DirectionalLight(0xffeede, 1.1);
+    keyLight.position.set(3, 4, 5);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.7);
+    rimLight.position.set(-4, -2, -3);
+    scene.add(rimLight);
+
+    const fillLight = new THREE.DirectionalLight(0x854b6e, 0.4);
+    fillLight.position.set(2, -3, 4);
+    scene.add(fillLight);
+
+    // Animation
+    const speed = 0.005;
+    const animate = () => {
+      if (!reducedMotion) {
+        group.rotation.y += speed;
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+    animate();
+
+    // Respond to container resizing
+    const ro = new ResizeObserver(resize);
+    ro.observe(mount);
   }
-  .coin {
-    transform-style: preserve-3d;
-    transform-origin: center center;
-    animation: coin-spin 14s linear infinite;
-    will-change: transform;
-  }
-  @keyframes coin-spin {
-    0% {
-      transform: rotateY(0deg);
-    }
-    100% {
-      transform: rotateY(360deg);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .coin {
-      animation: none;
-    }
-  }
-</style>
+</script>
