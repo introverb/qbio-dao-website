@@ -96,30 +96,17 @@ import Button from "./Button.astro";
       radialSegments,
     );
 
-    // Rainbow environment map — drives the iridescent oil-slick sheen on
-    // the metal. Drawn on a canvas at runtime, then prefiltered through
-    // PMREMGenerator so it can be used as scene.environment for IBL.
+    // Soft warm environment so the metal has something to reflect.
     const envCanvas = document.createElement("canvas");
     envCanvas.width = 1024;
     envCanvas.height = 512;
     const ectx = envCanvas.getContext("2d")!;
-    const rainbow = ectx.createLinearGradient(0, 0, 1024, 0);
-    rainbow.addColorStop(0.0, "#ff4d8e");
-    rainbow.addColorStop(0.15, "#ff9344");
-    rainbow.addColorStop(0.32, "#ffe25c");
-    rainbow.addColorStop(0.5, "#5cffd2");
-    rainbow.addColorStop(0.68, "#5e9bff");
-    rainbow.addColorStop(0.85, "#b454ff");
-    rainbow.addColorStop(1.0, "#ff4d8e");
-    ectx.fillStyle = rainbow;
-    ectx.fillRect(0, 0, 1024, 512);
-    // A horizontal vignette so the top/bottom contribute neutral tones
-    // (prevents the rainbow from looking like a barcode on the coin).
-    const vignette = ectx.createLinearGradient(0, 0, 0, 512);
-    vignette.addColorStop(0.0, "rgba(20, 10, 30, 0.6)");
-    vignette.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-    vignette.addColorStop(1.0, "rgba(20, 10, 30, 0.6)");
-    ectx.fillStyle = vignette;
+    const envGrad = ectx.createLinearGradient(0, 0, 0, 512);
+    envGrad.addColorStop(0.0, "#fff1e0");
+    envGrad.addColorStop(0.45, "#e8c8de");
+    envGrad.addColorStop(0.55, "#9d6da0");
+    envGrad.addColorStop(1.0, "#241038");
+    ectx.fillStyle = envGrad;
     ectx.fillRect(0, 0, 1024, 512);
 
     const envSource = new THREE.CanvasTexture(envCanvas);
@@ -132,24 +119,133 @@ import Button from "./Button.astro";
     envSource.dispose();
     pmrem.dispose();
 
-    // Face: deep purple base, high metalness, deep embossed logo, plus
-    // iridescence for the oil-on-water rainbow sheen.
-    const loader = new THREE.TextureLoader();
-    const logoBump = loader.load("/images/brand/logo-mark.png");
-    logoBump.anisotropy = 8;
+    // The face needs a custom-composited bump map: a raised outer ring
+    // PLUS the logo glyph raised against a recessed inner field. We build
+    // it on a canvas from the logo-mark image.
+    const FACE_SIZE = 1024;
+    const faceBumpCanvas = document.createElement("canvas");
+    faceBumpCanvas.width = FACE_SIZE;
+    faceBumpCanvas.height = FACE_SIZE;
+    const fbctx = faceBumpCanvas.getContext("2d")!;
+    // Mid-gray base = neutral height (the inner field will sit here)
+    fbctx.fillStyle = "#3a3a3a";
+    fbctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+    // Raised outer rim band — bright = up
+    fbctx.fillStyle = "#ffffff";
+    fbctx.beginPath();
+    fbctx.arc(FACE_SIZE / 2, FACE_SIZE / 2, FACE_SIZE * 0.495, 0, Math.PI * 2);
+    fbctx.arc(
+      FACE_SIZE / 2,
+      FACE_SIZE / 2,
+      FACE_SIZE * 0.43,
+      0,
+      Math.PI * 2,
+      true,
+    );
+    fbctx.fill("evenodd");
 
-    const COIN_PURPLE = 0x3a1f5a; // deep saturated purple
+    const faceBumpTexture = new THREE.CanvasTexture(faceBumpCanvas);
+    faceBumpTexture.anisotropy = 8;
 
-    const faceMaterial = new THREE.MeshPhysicalMaterial({
-      color: COIN_PURPLE,
-      bumpMap: logoBump,
-      bumpScale: 0.5, // deep emboss
-      metalness: 0.92,
-      roughness: 0.22,
-      iridescence: 1.0,
-      iridescenceIOR: 1.6,
-      iridescenceThicknessRange: [200, 900],
-      envMapIntensity: 1.35,
+    // Composite the logo on top once the image loads. We threshold the
+    // logo image so bright pixels become white (raised) and the rest is
+    // transparent (leaves the gray field underneath).
+    const logoImg = new Image();
+    logoImg.crossOrigin = "anonymous";
+    logoImg.onload = () => {
+      const off = document.createElement("canvas");
+      off.width = logoImg.naturalWidth;
+      off.height = logoImg.naturalHeight;
+      const octx = off.getContext("2d")!;
+      octx.drawImage(logoImg, 0, 0);
+      const id = octx.getImageData(0, 0, off.width, off.height);
+      const d = id.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+        if (brightness > 70) {
+          d[i] = 255;
+          d[i + 1] = 255;
+          d[i + 2] = 255;
+          d[i + 3] = 255;
+        } else {
+          d[i + 3] = 0;
+        }
+      }
+      octx.putImageData(id, 0, 0);
+      // Composite logo at center, sized to sit inside the raised rim
+      const logoSize = FACE_SIZE * 0.72;
+      const logoXY = (FACE_SIZE - logoSize) / 2;
+      fbctx.drawImage(off, logoXY, logoXY, logoSize, logoSize);
+      faceBumpTexture.needsUpdate = true;
+    };
+    logoImg.src = "/images/brand/logo-mark.png";
+
+    // Two-tone color map: dark recessed field, lighter pink raised rim
+    // and logo. Same canvas geometry as the bump map, just colored.
+    const faceColorCanvas = document.createElement("canvas");
+    faceColorCanvas.width = FACE_SIZE;
+    faceColorCanvas.height = FACE_SIZE;
+    const fcctx = faceColorCanvas.getContext("2d")!;
+    const RECESSED = "#2c1843"; // deep purple field
+    const RAISED = "#a878ba"; // lighter mauve-pink raised
+    fcctx.fillStyle = RECESSED;
+    fcctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+    fcctx.fillStyle = RAISED;
+    fcctx.beginPath();
+    fcctx.arc(FACE_SIZE / 2, FACE_SIZE / 2, FACE_SIZE * 0.495, 0, Math.PI * 2);
+    fcctx.arc(
+      FACE_SIZE / 2,
+      FACE_SIZE / 2,
+      FACE_SIZE * 0.43,
+      0,
+      Math.PI * 2,
+      true,
+    );
+    fcctx.fill("evenodd");
+
+    const faceColorTexture = new THREE.CanvasTexture(faceColorCanvas);
+    faceColorTexture.colorSpace = THREE.SRGBColorSpace;
+    faceColorTexture.anisotropy = 8;
+
+    const logoColorImg = new Image();
+    logoColorImg.crossOrigin = "anonymous";
+    logoColorImg.onload = () => {
+      const off = document.createElement("canvas");
+      off.width = logoColorImg.naturalWidth;
+      off.height = logoColorImg.naturalHeight;
+      const octx = off.getContext("2d")!;
+      octx.drawImage(logoColorImg, 0, 0);
+      const id = octx.getImageData(0, 0, off.width, off.height);
+      const d = id.data;
+      // Pre-parse the raised color into RGB
+      const rr = parseInt(RAISED.slice(1, 3), 16);
+      const gg = parseInt(RAISED.slice(3, 5), 16);
+      const bb = parseInt(RAISED.slice(5, 7), 16);
+      for (let i = 0; i < d.length; i += 4) {
+        const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+        if (brightness > 70) {
+          d[i] = rr;
+          d[i + 1] = gg;
+          d[i + 2] = bb;
+          d[i + 3] = 255;
+        } else {
+          d[i + 3] = 0;
+        }
+      }
+      octx.putImageData(id, 0, 0);
+      const logoSize = FACE_SIZE * 0.72;
+      const logoXY = (FACE_SIZE - logoSize) / 2;
+      fcctx.drawImage(off, logoXY, logoXY, logoSize, logoSize);
+      faceColorTexture.needsUpdate = true;
+    };
+    logoColorImg.src = "/images/brand/logo-mark.png";
+
+    const faceMaterial = new THREE.MeshStandardMaterial({
+      map: faceColorTexture,
+      bumpMap: faceBumpTexture,
+      bumpScale: 1.0, // deep, bold relief
+      metalness: 0.35,
+      roughness: 0.55,
     });
 
     // Edge: procedurally drawn reeded grooves wrapped around the rim.
@@ -191,16 +287,12 @@ import Button from "./Button.astro";
     grooveBump.wrapS = THREE.RepeatWrapping;
     grooveBump.wrapT = THREE.ClampToEdgeWrapping;
 
-    const edgeMaterial = new THREE.MeshPhysicalMaterial({
+    const edgeMaterial = new THREE.MeshStandardMaterial({
       map: grooveTexture,
       bumpMap: grooveBump,
       bumpScale: 0.18,
-      metalness: 0.95,
-      roughness: 0.25,
-      iridescence: 0.85,
-      iridescenceIOR: 1.55,
-      iridescenceThicknessRange: [180, 720],
-      envMapIntensity: 1.2,
+      metalness: 0.35,
+      roughness: 0.5,
     });
 
     // CylinderGeometry materials order: [side, top, bottom]
@@ -219,18 +311,22 @@ import Button from "./Button.astro";
     group.rotation.x = -0.18;
     scene.add(group);
 
-    // Lighting — the rainbow envMap does most of the heavy lifting; these
-    // directional lights just sharpen the highlights and rim.
-    const ambient = new THREE.AmbientLight(0xffffff, 0.25);
+    // Lighting — directional lights now do most of the work, so the deep
+    // bumps cast strong shadows in the recessed areas.
+    const ambient = new THREE.AmbientLight(0xffffff, 0.35);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    const keyLight = new THREE.DirectionalLight(0xfff1e0, 1.4);
     keyLight.position.set(3, 4, 5);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xff66cc, 0.5);
-    rimLight.position.set(-4, -1, -2);
+    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.6);
+    rimLight.position.set(-4, -1, -3);
     scene.add(rimLight);
+
+    const fillLight = new THREE.DirectionalLight(0x8855aa, 0.35);
+    fillLight.position.set(2, -3, 4);
+    scene.add(fillLight);
 
     // Animation
     const speed = 0.005;
