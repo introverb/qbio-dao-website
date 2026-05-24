@@ -139,21 +139,25 @@ import Button from "./Button.astro";
     // ~50k triangles — plenty of vertex density for displacement detail.
     const discGeometry = createDisc(RADIUS, 160, 192);
 
-    // ====== Face textures (gold coin) ======================================
-    // Two canvases:
-    //   1) color/roughness — radial gold gradient + raised logo + groove ring
-    //   2) bump            — neutral gray field, white logo, black groove
+    // ====== Face textures (brand-palette purple, real relief) ==============
+    // Color canvas: recessed dark-purple radial field + raised mid-purple
+    // rim ring + magenta-tinted logo painted at center.
+    // Bump canvas: deep black recessed field + bright white outer rim +
+    // medium-gray inner step + white logo (full-strength peak).
     const HALF = FACE_SIZE / 2;
-    const GROOVE_SHADOW_R = HALF * 0.9;
-    const GROOVE_HIGHLIGHT_R = HALF * 0.92;
+    const RIM_OUTER_R = HALF * 0.957; // 245 / 256
+    const RIM_INNER_R = HALF * 0.879; // 225 / 256
+    const BUMP_RIM_INNER_R = HALF * 0.891; // 228 / 256
+    const BUMP_STEP_INNER_R = HALF * 0.852; // 218 / 256
+    const LOGO_DRAW_SIZE = HALF * 1.25; // 320 / 256
 
     // --- COLOR CANVAS ---
     const colorCanvas = document.createElement("canvas");
     colorCanvas.width = FACE_SIZE;
     colorCanvas.height = FACE_SIZE;
     const cctx = colorCanvas.getContext("2d")!;
-    // Radial purple gradient: bright center, darker outer
-    const purpleGrad = cctx.createRadialGradient(
+    // Recessed background field — dark radial gradient (sunken look)
+    const bgGrad = cctx.createRadialGradient(
       HALF,
       HALF,
       0,
@@ -161,143 +165,97 @@ import Button from "./Button.astro";
       HALF,
       HALF,
     );
-    purpleGrad.addColorStop(0.0, "#b48bc4");
-    purpleGrad.addColorStop(1.0, "#3a1850");
-    cctx.fillStyle = purpleGrad;
+    bgGrad.addColorStop(0.0, "#5a2d52"); // slightly lighter center
+    bgGrad.addColorStop(0.7, "#3d1a38"); // dark mid
+    bgGrad.addColorStop(1.0, "#25101d"); // darkest at edge
+    cctx.fillStyle = bgGrad;
     cctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-
-    // Subtle radial hatching for engraving texture
-    cctx.strokeStyle = "rgba(40, 18, 56, 0.22)";
-    cctx.lineWidth = 1;
-    for (let i = 0; i < 180; i++) {
-      const angle = (i / 180) * Math.PI * 2;
-      cctx.beginPath();
-      cctx.moveTo(
-        HALF + Math.cos(angle) * HALF * 0.15,
-        HALF + Math.sin(angle) * HALF * 0.15,
-      );
-      cctx.lineTo(
-        HALF + Math.cos(angle) * HALF * 0.85,
-        HALF + Math.sin(angle) * HALF * 0.85,
-      );
-      cctx.stroke();
-    }
-
-    // Concentric groove ring near the rim — dark shadow + bright highlight
-    cctx.strokeStyle = "#1f0e2a";
-    cctx.lineWidth = 2;
+    // Raised rim ring — brighter purple
     cctx.beginPath();
-    cctx.arc(HALF, HALF, GROOVE_SHADOW_R, 0, Math.PI * 2);
-    cctx.stroke();
-    cctx.strokeStyle = "#c598d0";
-    cctx.beginPath();
-    cctx.arc(HALF, HALF, GROOVE_HIGHLIGHT_R, 0, Math.PI * 2);
-    cctx.stroke();
+    cctx.arc(HALF, HALF, RIM_OUTER_R, 0, Math.PI * 2);
+    cctx.arc(HALF, HALF, RIM_INNER_R, 0, Math.PI * 2, true);
+    cctx.fillStyle = "#854b6e";
+    cctx.fill("evenodd");
 
     const colorTexture = new THREE.CanvasTexture(colorCanvas);
     colorTexture.colorSpace = THREE.SRGBColorSpace;
     colorTexture.anisotropy = 8;
-
-    // Used as roughnessMap too — brighter logo = slightly less rough
-    const roughnessTexture = colorTexture;
 
     // --- BUMP CANVAS ---
     const bumpCanvas = document.createElement("canvas");
     bumpCanvas.width = FACE_SIZE;
     bumpCanvas.height = FACE_SIZE;
     const bctx = bumpCanvas.getContext("2d")!;
-    bctx.fillStyle = "#808080"; // neutral height
+    // Everything starts near-black = maximally recessed
+    bctx.fillStyle = "#111111";
     bctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-    // Groove ring (recessed)
-    bctx.strokeStyle = "#000000";
-    bctx.lineWidth = 4;
+    // Outer rim = bright = raised
     bctx.beginPath();
-    bctx.arc(HALF, HALF, GROOVE_SHADOW_R, 0, Math.PI * 2);
-    bctx.stroke();
+    bctx.arc(HALF, HALF, RIM_OUTER_R, 0, Math.PI * 2);
+    bctx.arc(HALF, HALF, BUMP_RIM_INNER_R, 0, Math.PI * 2, true);
+    bctx.fillStyle = "#dddddd";
+    bctx.fill("evenodd");
+    // Inner step / groove between rim and field = medium gray
+    bctx.beginPath();
+    bctx.arc(HALF, HALF, BUMP_RIM_INNER_R, 0, Math.PI * 2);
+    bctx.arc(HALF, HALF, BUMP_STEP_INNER_R, 0, Math.PI * 2, true);
+    bctx.fillStyle = "#555555";
+    bctx.fill("evenodd");
 
     const bumpTexture = new THREE.CanvasTexture(bumpCanvas);
     bumpTexture.colorSpace = THREE.NoColorSpace;
     bumpTexture.anisotropy = 8;
 
-    // Load logo and overlay onto both canvases.
+    // ====== Logo composite — magenta on color, white on bump ===============
     const logoImg = new Image();
     logoImg.onload = () => {
-      console.log("[coin v7] logo loaded — painting gold face");
+      console.log("[coin v9] logo loaded — painting magenta logo + bump");
+      const logoOffset = HALF - LOGO_DRAW_SIZE / 2;
 
-      // Sample logo pixels (mirrored on X so it isn't backwards on cap)
-      const temp = document.createElement("canvas");
-      temp.width = FACE_SIZE;
-      temp.height = FACE_SIZE;
-      const tctx = temp.getContext("2d")!;
-      tctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
-      const logoData = tctx.getImageData(0, 0, FACE_SIZE, FACE_SIZE).data;
-
-      // Build an alpha mask of the logo's bright pixels, mirrored.
-      const logoMask = document.createElement("canvas");
-      logoMask.width = FACE_SIZE;
-      logoMask.height = FACE_SIZE;
-      const mctx = logoMask.getContext("2d")!;
-      const maskImg = mctx.createImageData(FACE_SIZE, FACE_SIZE);
-      const mpx = maskImg.data;
-      for (let y = 0; y < FACE_SIZE; y++) {
-        for (let x = 0; x < FACE_SIZE; x++) {
-          const srcX = FACE_SIZE - 1 - x;
-          const si = (y * FACE_SIZE + srcX) * 4;
-          const lum =
-            0.299 * logoData[si] +
-            0.587 * logoData[si + 1] +
-            0.114 * logoData[si + 2];
-          const a = Math.max(0, Math.min(255, (lum - 40) * 2.4));
-          const di = (y * FACE_SIZE + x) * 4;
-          mpx[di] = mpx[di + 1] = mpx[di + 2] = 255;
-          mpx[di + 3] = a;
-        }
-      }
-      mctx.putImageData(maskImg, 0, 0);
-
-      // --- Paint logo on COLOR canvas in bright purple ---
-      const purpleLogo = document.createElement("canvas");
-      purpleLogo.width = FACE_SIZE;
-      purpleLogo.height = FACE_SIZE;
-      const plctx = purpleLogo.getContext("2d")!;
-      plctx.fillStyle = "#d3a0db";
-      plctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-      plctx.globalCompositeOperation = "destination-in";
-      plctx.drawImage(logoMask, 0, 0);
-      cctx.drawImage(purpleLogo, 0, 0);
+      // --- Magenta-tinted logo for the COLOR canvas ---
+      const magentaLogo = document.createElement("canvas");
+      magentaLogo.width = LOGO_DRAW_SIZE;
+      magentaLogo.height = LOGO_DRAW_SIZE;
+      const mlctx = magentaLogo.getContext("2d")!;
+      mlctx.drawImage(logoImg, 0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+      // source-atop tints only the logo's existing opaque pixels
+      mlctx.globalCompositeOperation = "source-atop";
+      mlctx.fillStyle = "#d57db2";
+      mlctx.fillRect(0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+      mlctx.globalCompositeOperation = "source-over";
+      cctx.drawImage(magentaLogo, logoOffset, logoOffset);
       colorTexture.needsUpdate = true;
 
-      // --- Paint logo on BUMP canvas in white (raised) ---
+      // --- Pure white logo for the BUMP canvas (max raise) ---
       const whiteLogo = document.createElement("canvas");
-      whiteLogo.width = FACE_SIZE;
-      whiteLogo.height = FACE_SIZE;
+      whiteLogo.width = LOGO_DRAW_SIZE;
+      whiteLogo.height = LOGO_DRAW_SIZE;
       const wctx = whiteLogo.getContext("2d")!;
+      wctx.drawImage(logoImg, 0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+      wctx.globalCompositeOperation = "source-atop";
       wctx.fillStyle = "#ffffff";
-      wctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
-      wctx.globalCompositeOperation = "destination-in";
-      wctx.drawImage(logoMask, 0, 0);
-      bctx.drawImage(whiteLogo, 0, 0);
+      wctx.fillRect(0, 0, LOGO_DRAW_SIZE, LOGO_DRAW_SIZE);
+      wctx.globalCompositeOperation = "source-over";
+      bctx.drawImage(whiteLogo, logoOffset, logoOffset);
       bumpTexture.needsUpdate = true;
-      console.log("[coin v7] gold logo + bump painted");
+      console.log("[coin v9] logo composited onto both canvases");
     };
     logoImg.onerror = (err) => {
-      console.error("[coin v7] FAILED to load logo-mark.png", err);
+      console.error("[coin v9] FAILED to load logo-mark.png", err);
     };
     logoImg.src = "/images/brand/logo-mark.png";
 
-    // ====== Materials (polished/satin metallic purple) =====================
+    // ====== Face material (high bumpScale + high metalness for real relief)
     const faceMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x6d3d8a, // warm metallic purple base
+      color: 0x854b6e, // mid purple base metal
       map: colorTexture,
-      roughnessMap: roughnessTexture,
       bumpMap: bumpTexture,
-      bumpScale: 0.8,
-      metalness: 0.95,
-      roughness: 0.25,
-      envMapIntensity: 2.5,
-      reflectivity: 1.0,
-      clearcoat: 0.3,
-      clearcoatRoughness: 0.15,
+      bumpScale: 3.5, // strong relief — black→white delta in bump is max
+      metalness: 0.9,
+      roughness: 0.3,
+      envMapIntensity: 2.0,
+      clearcoat: 0.2,
+      clearcoatRoughness: 0.2,
     });
 
     // ====== Edge (reeded purple grooves on a hollow cylinder) ==============
@@ -306,13 +264,13 @@ import Button from "./Button.astro";
     grooveCanvas.width = grooveCount * 4;
     grooveCanvas.height = 32;
     const gctx = grooveCanvas.getContext("2d")!;
-    gctx.fillStyle = "#7a4d80"; // mid purple
+    gctx.fillStyle = "#2c1a30"; // dark purple base
     gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
     for (let i = 0; i < grooveCount; i++) {
       const x = (i / grooveCount) * grooveCanvas.width;
-      gctx.fillStyle = "#c39ad1"; // bright purple ridge
+      gctx.fillStyle = "#d57db2"; // bright magenta highlight stripe
       gctx.fillRect(x, 0, 2, grooveCanvas.height);
-      gctx.fillStyle = "#1f0d28"; // dark purple groove
+      gctx.fillStyle = "#1a0a18"; // very dark shadow stripe
       gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
     }
     const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
@@ -339,16 +297,15 @@ import Button from "./Button.astro";
     grooveBump.wrapT = THREE.ClampToEdgeWrapping;
 
     const edgeMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x6d3d8a, // matches face base purple
+      color: 0x4b243c, // darker purple for the rim metal
       map: grooveTexture,
       bumpMap: grooveBump,
       bumpScale: 0.25,
-      metalness: 0.95,
+      metalness: 0.9,
       roughness: 0.35,
-      envMapIntensity: 2.5,
-      reflectivity: 1.0,
-      clearcoat: 0.3,
-      clearcoatRoughness: 0.15,
+      envMapIntensity: 2.0,
+      clearcoat: 0.2,
+      clearcoatRoughness: 0.2,
     });
 
     // ====== Coin construction ==============================================
@@ -381,37 +338,32 @@ import Button from "./Button.astro";
     coin.rotation.x = -0.22;
     scene.add(coin);
 
-    // ====== Lighting (gold-coin photo-style) ===============================
-    const ambient = new THREE.AmbientLight(0x222200, 0.3);
+    // ====== Lighting (brand-palette pink/magenta studio) ===================
+    const ambient = new THREE.AmbientLight(0x2a1626, 0.3);
     scene.add(ambient);
 
-    const keyLight = new THREE.PointLight(0xfff0cc, 2.5);
+    // Pale-pink key light — gives the coin a warm pink specular sweep
+    const keyLight = new THREE.PointLight(0xffceec, 1.8);
     keyLight.position.set(4, 6, 5);
     scene.add(keyLight);
 
-    const fillLight = new THREE.PointLight(0xffd090, 0.6);
+    // Magenta fill light
+    const fillLight = new THREE.PointLight(0xd57db2, 0.5);
     fillLight.position.set(-3, -1, 3);
     scene.add(fillLight);
 
-    // Studio-lightbox style HDR-ish environment: bright top, neutral
-    // mid, dark floor. Gives the coin a strong specular sweep from
-    // above and a dark bottom that sells the 3D form.
+    // Studio HDR-ish environment in the brand palette: bright pink-white
+    // top (light source), mid purple middle, near-black bottom.
     const envCanvas = document.createElement("canvas");
     envCanvas.width = 1024;
     envCanvas.height = 512;
     const envCtx = envCanvas.getContext("2d")!;
-    // Top zone (0–30%): bright warm studio light
-    const topGrad = envCtx.createLinearGradient(0, 0, 0, 512 * 0.3);
-    topGrad.addColorStop(0.0, "#ffffff");
-    topGrad.addColorStop(1.0, "#e8d090");
-    envCtx.fillStyle = topGrad;
-    envCtx.fillRect(0, 0, 1024, 512 * 0.3);
-    // Mid zone (30–80%): neutral gray
-    envCtx.fillStyle = "#aaaaaa";
-    envCtx.fillRect(0, 512 * 0.3, 1024, 512 * 0.5);
-    // Floor (80–100%): dark
-    envCtx.fillStyle = "#222222";
-    envCtx.fillRect(0, 512 * 0.8, 1024, 512 * 0.2);
+    const envGrad = envCtx.createLinearGradient(0, 0, 0, 512);
+    envGrad.addColorStop(0.0, "#ffceec"); // bright pink-white top
+    envGrad.addColorStop(0.4, "#854b6e"); // mid purple
+    envGrad.addColorStop(1.0, "#1d0e1f"); // near-black bottom
+    envCtx.fillStyle = envGrad;
+    envCtx.fillRect(0, 0, 1024, 512);
 
     const envSource = new THREE.CanvasTexture(envCanvas);
     envSource.mapping = THREE.EquirectangularReflectionMapping;
