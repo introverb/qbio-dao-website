@@ -59,21 +59,20 @@ import Button from "./Button.astro";
 <script>
   import * as THREE from "three";
 
+  console.log("[coin v6] script start — fresh build with displacement");
+
   const mount = document.getElementById("qbio-coin-3d");
   if (mount) {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
+    // ====== Scene + Camera + Renderer ======================================
     const scene = new THREE.Scene();
-
     const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
     camera.position.set(0, 0, 9);
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-    });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const resize = () => {
@@ -85,59 +84,186 @@ import Button from "./Button.astro";
     resize();
     mount.appendChild(renderer.domElement);
 
-    // Round coin geometry — 96 segments for a smooth curved rim.
-    const radius = 2;
-    const thickness = 0.42;
-    const radialSegments = 96;
-    const geometry = new THREE.CylinderGeometry(
-      radius,
-      radius,
-      thickness,
-      radialSegments,
-    );
+    // ====== Coin dimensions ================================================
+    const RADIUS = 2;
+    const THICKNESS = 0.4;
+    const BASE_COLOR = 0x7a4d7a; // purple coin body
+    const FACE_SIZE = 512;
 
-    // === v5 DIAGNOSTIC: minimal path. Load logo-mark.png with the
-    // standard THREE.TextureLoader and use it AS-IS for both the color
-    // map and the bump map. No canvas, no compositing, no normal map
-    // generation. If the QBD logo shows on the face after this, the
-    // texture pipeline works and any earlier issue was in my custom
-    // canvas code. If it still doesn't show, the geometry/material
-    // binding is the actual problem. ===
-    console.log("[coin v5] DIAGNOSTIC build — flat logo texture, no canvas");
+    // ====== Custom subdivided disc geometry ================================
+    // Triangulates a flat circle with concentric rings so displacement
+    // mapping has actual vertex density to push around.
+    function createDisc(radius: number, rings: number, segments: number) {
+      const geometry = new THREE.BufferGeometry();
+      const positions: number[] = [];
+      const uvs: number[] = [];
+      const indices: number[] = [];
+      // Center
+      positions.push(0, 0, 0);
+      uvs.push(0.5, 0.5);
+      // Ring vertices
+      for (let r = 1; r <= rings; r++) {
+        const ratio = r / rings;
+        const rad = radius * ratio;
+        for (let s = 0; s < segments; s++) {
+          const theta = (s / segments) * Math.PI * 2;
+          const x = Math.cos(theta) * rad;
+          const y = Math.sin(theta) * rad;
+          positions.push(x, y, 0);
+          uvs.push(0.5 + (x / radius) * 0.5, 0.5 + (y / radius) * 0.5);
+        }
+      }
+      // Inner fan: center → ring 1
+      for (let s = 0; s < segments; s++) {
+        const next = (s + 1) % segments;
+        indices.push(0, 1 + s, 1 + next);
+      }
+      // Outer rings
+      for (let r = 0; r < rings - 1; r++) {
+        const inner = 1 + r * segments;
+        const outer = 1 + (r + 1) * segments;
+        for (let s = 0; s < segments; s++) {
+          const next = (s + 1) % segments;
+          indices.push(inner + s, outer + s, inner + next);
+          indices.push(inner + next, outer + s, outer + next);
+        }
+      }
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3),
+      );
+      geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+      return geometry;
+    }
+    // ~50k triangles — plenty of vertex density for displacement detail.
+    const discGeometry = createDisc(RADIUS, 160, 192);
 
-    const loader = new THREE.TextureLoader();
-    const logoTexture = loader.load(
-      "/images/brand/logo-mark.png",
-      (t) => console.log("[coin v5] logo texture loaded", t.image?.width, "x", t.image?.height),
-      undefined,
-      (e) => console.error("[coin v5] logo texture FAILED", e),
-    );
-    logoTexture.colorSpace = THREE.SRGBColorSpace;
-    logoTexture.anisotropy = 8;
+    // ====== Logo → height map / displacement / color =======================
+    // All three maps share the same canvas pipeline. The logo's bright
+    // pixels become peaks (raised), dark pixels become recessed.
+    const heightCanvas = document.createElement("canvas");
+    heightCanvas.width = FACE_SIZE;
+    heightCanvas.height = FACE_SIZE;
+    const hctx = heightCanvas.getContext("2d")!;
+    hctx.fillStyle = "#000000";
+    hctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
 
+    const heightTexture = new THREE.CanvasTexture(heightCanvas);
+    heightTexture.colorSpace = THREE.NoColorSpace;
+    heightTexture.anisotropy = 8;
+
+    const normalCanvas = document.createElement("canvas");
+    normalCanvas.width = FACE_SIZE;
+    normalCanvas.height = FACE_SIZE;
+    const ncCtx = normalCanvas.getContext("2d")!;
+    ncCtx.fillStyle = "rgb(128, 128, 255)"; // flat normal default
+    ncCtx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
+
+    const normalTexture = new THREE.CanvasTexture(normalCanvas);
+    normalTexture.colorSpace = THREE.NoColorSpace;
+    normalTexture.anisotropy = 8;
+
+    const logoImg = new Image();
+    logoImg.onload = () => {
+      console.log("[coin v6] logo loaded, painting displacement + normal");
+
+      // Draw the logo onto a sampling canvas, then mirror-read for X.
+      const temp = document.createElement("canvas");
+      temp.width = FACE_SIZE;
+      temp.height = FACE_SIZE;
+      const tctx = temp.getContext("2d")!;
+      tctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
+      const logoData = tctx.getImageData(0, 0, FACE_SIZE, FACE_SIZE).data;
+
+      // Build height map: stretch luminance so bright outlines saturate
+      // to white (peaks) and dark plum drops to black (valley).
+      const heightArr = new Uint8ClampedArray(FACE_SIZE * FACE_SIZE);
+      const heightImage = hctx.createImageData(FACE_SIZE, FACE_SIZE);
+      const hpx = heightImage.data;
+      for (let y = 0; y < FACE_SIZE; y++) {
+        for (let x = 0; x < FACE_SIZE; x++) {
+          // mirror X so the logo isn't backwards on the front face
+          const srcX = FACE_SIZE - 1 - x;
+          const i = (y * FACE_SIZE + srcX) * 4;
+          const lum =
+            0.299 * logoData[i] +
+            0.587 * logoData[i + 1] +
+            0.114 * logoData[i + 2];
+          const h = Math.max(0, Math.min(255, (lum - 35) * 2.5));
+          heightArr[y * FACE_SIZE + x] = h;
+          const j = (y * FACE_SIZE + x) * 4;
+          hpx[j] = hpx[j + 1] = hpx[j + 2] = h;
+          hpx[j + 3] = 255;
+        }
+      }
+      hctx.putImageData(heightImage, 0, 0);
+      heightTexture.needsUpdate = true;
+      console.log("[coin v6] displacement map painted");
+
+      // Build normal map from height array via finite differences.
+      const normalImage = ncCtx.createImageData(FACE_SIZE, FACE_SIZE);
+      const nd = normalImage.data;
+      const strength = 6.0;
+      const w = FACE_SIZE;
+      for (let y = 0; y < FACE_SIZE; y++) {
+        for (let x = 0; x < FACE_SIZE; x++) {
+          const xL = x === 0 ? 0 : x - 1;
+          const xR = x === w - 1 ? w - 1 : x + 1;
+          const yU = y === 0 ? 0 : y - 1;
+          const yD = y === FACE_SIZE - 1 ? FACE_SIZE - 1 : y + 1;
+          const hL = heightArr[y * w + xL];
+          const hR = heightArr[y * w + xR];
+          const hU = heightArr[yU * w + x];
+          const hD = heightArr[yD * w + x];
+          const dx = ((hR - hL) / 255) * strength;
+          const dy = ((hD - hU) / 255) * strength;
+          const nx = -dx;
+          const ny = -dy;
+          const nz = 1.0;
+          const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+          const idx = (y * w + x) * 4;
+          nd[idx] = Math.round((nx / len) * 0.5 * 255 + 127.5);
+          nd[idx + 1] = Math.round((ny / len) * 0.5 * 255 + 127.5);
+          nd[idx + 2] = Math.round((nz / len) * 0.5 * 255 + 127.5);
+          nd[idx + 3] = 255;
+        }
+      }
+      ncCtx.putImageData(normalImage, 0, 0);
+      normalTexture.needsUpdate = true;
+      console.log("[coin v6] normal map painted");
+    };
+    logoImg.onerror = (err) => {
+      console.error("[coin v6] FAILED to load logo-mark.png", err);
+    };
+    logoImg.src = "/images/brand/logo-mark.png";
+
+    // ====== Materials ======================================================
     const faceMaterial = new THREE.MeshStandardMaterial({
-      map: logoTexture, // logo as direct color map — diagnostic
-      bumpMap: logoTexture, // and as bump source
-      bumpScale: 0.5,
-      metalness: 0.0,
-      roughness: 0.6,
-      envMapIntensity: 0.0,
+      color: BASE_COLOR,
+      displacementMap: heightTexture,
+      displacementScale: 0.18, // strong, visible relief
+      displacementBias: -0.02, // slight pre-recess so the field sits below the rim
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(1.5, 1.5),
+      metalness: 0.25,
+      roughness: 0.55,
     });
 
-    // Edge: reeded grooves with colors picked from QBIOTOKEN.png — mauve
-    // base, light pink highlights, deep plum shadows.
-    const grooveCount = 80;
+    // ====== Edge (reeded grooves on a hollow cylinder) =====================
+    const grooveCount = 100;
     const grooveCanvas = document.createElement("canvas");
     grooveCanvas.width = grooveCount * 4;
     grooveCanvas.height = 32;
     const gctx = grooveCanvas.getContext("2d")!;
-    gctx.fillStyle = "#6b4866"; // mid mauve body
+    gctx.fillStyle = "#5a3a5e";
     gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
     for (let i = 0; i < grooveCount; i++) {
       const x = (i / grooveCount) * grooveCanvas.width;
-      gctx.fillStyle = "#b48aa6"; // highlight ridge
+      gctx.fillStyle = "#a878b4";
       gctx.fillRect(x, 0, 2, grooveCanvas.height);
-      gctx.fillStyle = "#2c1a30"; // shadow groove
+      gctx.fillStyle = "#1f0e26";
       gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
     }
     const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
@@ -146,99 +272,101 @@ import Button from "./Button.astro";
     grooveTexture.wrapT = THREE.ClampToEdgeWrapping;
     grooveTexture.anisotropy = 8;
 
-    // Bump map for the edge — grayscale stripes give the grooves
-    // light-catching relief.
-    const bumpCanvas = document.createElement("canvas");
-    bumpCanvas.width = grooveCount * 4;
-    bumpCanvas.height = 32;
-    const bctx = bumpCanvas.getContext("2d")!;
-    bctx.fillStyle = "#808080";
-    bctx.fillRect(0, 0, bumpCanvas.width, bumpCanvas.height);
+    const grooveBumpCanvas = document.createElement("canvas");
+    grooveBumpCanvas.width = grooveCount * 4;
+    grooveBumpCanvas.height = 32;
+    const gbctx = grooveBumpCanvas.getContext("2d")!;
+    gbctx.fillStyle = "#808080";
+    gbctx.fillRect(0, 0, grooveBumpCanvas.width, grooveBumpCanvas.height);
     for (let i = 0; i < grooveCount; i++) {
-      const x = (i / grooveCount) * bumpCanvas.width;
-      bctx.fillStyle = "#ffffff";
-      bctx.fillRect(x, 0, 2, bumpCanvas.height);
-      bctx.fillStyle = "#000000";
-      bctx.fillRect(x + 2, 0, 2, bumpCanvas.height);
+      const x = (i / grooveCount) * grooveBumpCanvas.width;
+      gbctx.fillStyle = "#ffffff";
+      gbctx.fillRect(x, 0, 2, grooveBumpCanvas.height);
+      gbctx.fillStyle = "#000000";
+      gbctx.fillRect(x + 2, 0, 2, grooveBumpCanvas.height);
     }
-    const grooveBump = new THREE.CanvasTexture(bumpCanvas);
+    const grooveBump = new THREE.CanvasTexture(grooveBumpCanvas);
     grooveBump.wrapS = THREE.RepeatWrapping;
     grooveBump.wrapT = THREE.ClampToEdgeWrapping;
 
     const edgeMaterial = new THREE.MeshStandardMaterial({
       map: grooveTexture,
       bumpMap: grooveBump,
-      bumpScale: 0.2,
-      metalness: 0.35,
-      roughness: 0.55,
+      bumpScale: 0.18,
+      metalness: 0.3,
+      roughness: 0.5,
     });
 
-    // CylinderGeometry materials order: [side, top, bottom]
-    const coin = new THREE.Mesh(geometry, [
-      edgeMaterial,
-      faceMaterial,
-      faceMaterial,
-    ]);
+    // ====== Coin construction ==============================================
+    // Two disc meshes (front + back) plus an open-ended cylinder for the
+    // edge. Discs sit at ±THICKNESS/2 so the cylinder fills between them.
+    const coin = new THREE.Group();
 
-    // Group lets us spin around world Y regardless of coin's tilt
-    const group = new THREE.Group();
-    group.add(coin);
-    // Tip the cylinder so its faces look at the camera
-    coin.rotation.x = Math.PI / 2;
-    // Subtle forward tilt so it doesn't go fully edge-on at 90°
-    group.rotation.x = -0.18;
-    scene.add(group);
+    const frontFace = new THREE.Mesh(discGeometry, faceMaterial);
+    frontFace.position.z = THICKNESS / 2;
+    coin.add(frontFace);
 
-    // Directional key light from upper-right so the bump map's raised
-    // outlines catch light on one side and cast shadow on the other —
-    // the visual signal that sells the embossment as real relief.
-    const ambient = new THREE.AmbientLight(0xffffff, 0.25);
+    const backFace = new THREE.Mesh(discGeometry, faceMaterial);
+    backFace.position.z = -THICKNESS / 2;
+    backFace.scale.set(1, 1, -1); // flip normals → faces -Z
+    coin.add(backFace);
+
+    const sideGeo = new THREE.CylinderGeometry(
+      RADIUS,
+      RADIUS,
+      THICKNESS,
+      96,
+      1,
+      true, // openEnded
+    );
+    const edgeMesh = new THREE.Mesh(sideGeo, edgeMaterial);
+    edgeMesh.rotation.x = Math.PI / 2; // align with Z-aligned discs
+    coin.add(edgeMesh);
+
+    // Tilt the whole coin slightly so it doesn't go fully edge-on
+    coin.rotation.x = -0.18;
+    scene.add(coin);
+
+    // ====== Lighting =======================================================
+    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xfff1e0, 1.2);
+    const keyLight = new THREE.DirectionalLight(0xfff1e0, 1.5);
     keyLight.position.set(5, 8, 5);
     scene.add(keyLight);
 
-    // Soft warm rim so the recessed side doesn't go to pure black
-    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.35);
+    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.6);
     rimLight.position.set(-4, -2, -2);
     scene.add(rimLight);
 
-    // Subtle neutral environment so the metallic component has
-    // something to reflect (metal materials look dark without IBL).
+    // Subtle env so the metallic component has something to reflect.
     const envCanvas = document.createElement("canvas");
     envCanvas.width = 512;
     envCanvas.height = 256;
     const envCtx = envCanvas.getContext("2d")!;
     const envGrad = envCtx.createLinearGradient(0, 0, 0, 256);
-    envGrad.addColorStop(0.0, "#d9c9d9");
-    envGrad.addColorStop(0.5, "#7a5a7e");
+    envGrad.addColorStop(0.0, "#e6d4e6");
+    envGrad.addColorStop(0.5, "#8a6a8e");
     envGrad.addColorStop(1.0, "#1d0e1f");
     envCtx.fillStyle = envGrad;
     envCtx.fillRect(0, 0, 512, 256);
-
     const envSource = new THREE.CanvasTexture(envCanvas);
     envSource.mapping = THREE.EquirectangularReflectionMapping;
     envSource.colorSpace = THREE.SRGBColorSpace;
-
     const pmrem = new THREE.PMREMGenerator(renderer);
-    const envRT = pmrem.fromEquirectangular(envSource);
-    scene.environment = envRT.texture;
+    scene.environment = pmrem.fromEquirectangular(envSource).texture;
     envSource.dispose();
     pmrem.dispose();
 
-    // Animation
+    // ====== Animation ======================================================
     const speed = 0.005;
     const animate = () => {
-      if (!reducedMotion) {
-        group.rotation.y += speed;
-      }
+      if (!reducedMotion) coin.rotation.y += speed;
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
     animate();
 
-    // Respond to container resizing
     const ro = new ResizeObserver(resize);
     ro.observe(mount);
   }
