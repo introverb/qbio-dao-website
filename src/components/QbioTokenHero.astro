@@ -85,31 +85,84 @@ import Button from "./Button.astro";
     resize();
     mount.appendChild(renderer.domElement);
 
-    // Coin geometry: hexagonal prism, 6 sides
+    // Coin geometry: smooth round disc, 96 segments around for clean curvature
     const radius = 2;
-    const thickness = 0.25;
+    const thickness = 0.32;
+    const radialSegments = 96;
     const geometry = new THREE.CylinderGeometry(
       radius,
       radius,
       thickness,
-      6,
+      radialSegments,
     );
 
-    // Load the flat logo texture for the front and back faces
+    // Face texture — the QBD hexagonal logo. We use it both as the diffuse
+    // map AND as a bump map so the lines/glyphs read as embossed.
     const loader = new THREE.TextureLoader();
     const logoTexture = loader.load("/images/brand/logo-mark.png");
     logoTexture.colorSpace = THREE.SRGBColorSpace;
     logoTexture.anisotropy = 8;
 
+    const logoBump = loader.load("/images/brand/logo-mark.png");
+    logoBump.anisotropy = 8;
+
     const faceMaterial = new THREE.MeshStandardMaterial({
       map: logoTexture,
-      metalness: 0.45,
-      roughness: 0.4,
-    });
-    const edgeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x4b243c, // plum-dark — edge of the coin
+      bumpMap: logoBump,
+      bumpScale: 0.04,
       metalness: 0.55,
-      roughness: 0.45,
+      roughness: 0.38,
+    });
+
+    // Edge texture — procedural reeded grooves, like the milled edge of a
+    // real coin. Generated on a 2D canvas, wrapped around the cylinder.
+    const grooveCount = 180;
+    const grooveCanvas = document.createElement("canvas");
+    grooveCanvas.width = grooveCount * 4;
+    grooveCanvas.height = 32;
+    const gctx = grooveCanvas.getContext("2d")!;
+    // Base plum
+    gctx.fillStyle = "#4b243c";
+    gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
+    // Vertical groove lines (alternating bright and shadow for relief)
+    for (let i = 0; i < grooveCount; i++) {
+      const x = (i / grooveCount) * grooveCanvas.width;
+      gctx.fillStyle = "#854b6e";
+      gctx.fillRect(x, 0, 2, grooveCanvas.height);
+      gctx.fillStyle = "#25101d";
+      gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
+    }
+    const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
+    grooveTexture.colorSpace = THREE.SRGBColorSpace;
+    grooveTexture.wrapS = THREE.RepeatWrapping;
+    grooveTexture.wrapT = THREE.ClampToEdgeWrapping;
+    grooveTexture.anisotropy = 8;
+
+    // Bump map for the edge — same canvas geometry but grayscale-ish so the
+    // light catches the ridges.
+    const bumpCanvas = document.createElement("canvas");
+    bumpCanvas.width = grooveCount * 4;
+    bumpCanvas.height = 32;
+    const bctx = bumpCanvas.getContext("2d")!;
+    bctx.fillStyle = "#808080";
+    bctx.fillRect(0, 0, bumpCanvas.width, bumpCanvas.height);
+    for (let i = 0; i < grooveCount; i++) {
+      const x = (i / grooveCount) * bumpCanvas.width;
+      bctx.fillStyle = "#ffffff";
+      bctx.fillRect(x, 0, 2, bumpCanvas.height);
+      bctx.fillStyle = "#000000";
+      bctx.fillRect(x + 2, 0, 2, bumpCanvas.height);
+    }
+    const grooveBump = new THREE.CanvasTexture(bumpCanvas);
+    grooveBump.wrapS = THREE.RepeatWrapping;
+    grooveBump.wrapT = THREE.ClampToEdgeWrapping;
+
+    const edgeMaterial = new THREE.MeshStandardMaterial({
+      map: grooveTexture,
+      bumpMap: grooveBump,
+      bumpScale: 0.08,
+      metalness: 0.7,
+      roughness: 0.35,
     });
 
     // CylinderGeometry materials order: [side, top, bottom]
