@@ -96,22 +96,57 @@ import Button from "./Button.astro";
       radialSegments,
     );
 
-    // Face: directly use the QBIOTOKEN render as the texture so the
-    // embossment, colors, and rim band match the reference exactly.
-    const loader = new THREE.TextureLoader();
-    const faceTexture = loader.load("/images/graphics/QBIOTOKEN.png");
-    faceTexture.colorSpace = THREE.SRGBColorSpace;
-    faceTexture.anisotropy = 8;
-    // Mirror horizontally so the logo isn't backwards on the top cap.
-    // RepeatWrapping is required for negative-repeat sampling to wrap
-    // back into the texture instead of clamping to an edge pixel.
-    faceTexture.wrapS = THREE.RepeatWrapping;
-    faceTexture.repeat.x = -1;
-    faceTexture.offset.x = 1;
+    // Face: build a bump map from logo-mark.png and put it on a
+    // MeshStandardMaterial. The logo's bright outlines become RAISED
+    // peaks (bright = up in Three.js bump convention), and the dark
+    // plum background sits as the recessed base — so the QBD glyph
+    // reads as physically embossed metal rather than a pasted sticker.
+    const FACE_SIZE = 1024;
+    const faceBumpCanvas = document.createElement("canvas");
+    faceBumpCanvas.width = FACE_SIZE;
+    faceBumpCanvas.height = FACE_SIZE;
+    const fbctx = faceBumpCanvas.getContext("2d")!;
+    // Pre-mirror the canvas so the logo isn't backwards on the top
+    // cap. Doing this on the canvas avoids texture.repeat = -1, which
+    // confuses Three.js's bump-derivative calculation.
+    fbctx.translate(FACE_SIZE, 0);
+    fbctx.scale(-1, 1);
+    fbctx.fillStyle = "#000000";
+    fbctx.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
 
-    const faceMaterial = new THREE.MeshBasicMaterial({
-      map: faceTexture,
-      color: 0xffffff,
+    const faceBumpTexture = new THREE.CanvasTexture(faceBumpCanvas);
+    faceBumpTexture.colorSpace = THREE.NoColorSpace; // bump maps are linear
+    faceBumpTexture.anisotropy = 8;
+
+    const logoImg = new Image();
+    logoImg.crossOrigin = "anonymous";
+    logoImg.onload = () => {
+      fbctx.drawImage(logoImg, 0, 0, FACE_SIZE, FACE_SIZE);
+      // Stretch contrast so the cream/white outlines saturate to white
+      // (full peaks) and the dark plum background drops to black (base
+      // level). The pink swoosh sits in the middle as a mid-height
+      // ramp, which gives the embossing some softer relief between
+      // the hard peaks of the outline.
+      const data = fbctx.getImageData(0, 0, FACE_SIZE, FACE_SIZE);
+      const px = data.data;
+      for (let i = 0; i < px.length; i += 4) {
+        const lum =
+          0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+        const stretched = Math.max(0, Math.min(255, (lum - 40) * 2.2));
+        px[i] = px[i + 1] = px[i + 2] = stretched;
+        px[i + 3] = 255;
+      }
+      fbctx.putImageData(data, 0, 0);
+      faceBumpTexture.needsUpdate = true;
+    };
+    logoImg.src = "/images/brand/logo-mark.png";
+
+    const faceMaterial = new THREE.MeshStandardMaterial({
+      color: 0x6b4c6b, // dark purple-grey base
+      metalness: 0.7,
+      roughness: 0.35,
+      bumpMap: faceBumpTexture,
+      bumpScale: 0.12,
     });
 
     // Edge: reeded grooves with colors picked from QBIOTOKEN.png — mauve
@@ -179,19 +214,43 @@ import Button from "./Button.astro";
     group.rotation.x = -0.18;
     scene.add(group);
 
-    // Dim ambient + one strong key light so the bumps cast clearly
-    // visible shadows in the recessed field. A softer rim from the
-    // opposite side keeps it from going pitch-dark on the shadow side.
-    const ambient = new THREE.AmbientLight(0xffffff, 0.15);
+    // Directional key light from upper-right so the bump map's raised
+    // outlines catch light on one side and cast shadow on the other —
+    // the visual signal that sells the embossment as real relief.
+    const ambient = new THREE.AmbientLight(0xffffff, 0.25);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xfff1e0, 2.0);
-    keyLight.position.set(4, 5, 4);
+    const keyLight = new THREE.DirectionalLight(0xfff1e0, 1.2);
+    keyLight.position.set(5, 8, 5);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.5);
+    // Soft warm rim so the recessed side doesn't go to pure black
+    const rimLight = new THREE.DirectionalLight(0xd57db2, 0.35);
     rimLight.position.set(-4, -2, -2);
     scene.add(rimLight);
+
+    // Subtle neutral environment so the metallic component has
+    // something to reflect (metal materials look dark without IBL).
+    const envCanvas = document.createElement("canvas");
+    envCanvas.width = 512;
+    envCanvas.height = 256;
+    const envCtx = envCanvas.getContext("2d")!;
+    const envGrad = envCtx.createLinearGradient(0, 0, 0, 256);
+    envGrad.addColorStop(0.0, "#d9c9d9");
+    envGrad.addColorStop(0.5, "#7a5a7e");
+    envGrad.addColorStop(1.0, "#1d0e1f");
+    envCtx.fillStyle = envGrad;
+    envCtx.fillRect(0, 0, 512, 256);
+
+    const envSource = new THREE.CanvasTexture(envCanvas);
+    envSource.mapping = THREE.EquirectangularReflectionMapping;
+    envSource.colorSpace = THREE.SRGBColorSpace;
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envRT = pmrem.fromEquirectangular(envSource);
+    scene.environment = envRT.texture;
+    envSource.dispose();
+    pmrem.dispose();
 
     // Animation
     const speed = 0.005;
