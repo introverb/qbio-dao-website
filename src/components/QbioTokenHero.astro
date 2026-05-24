@@ -95,29 +95,41 @@ import Button from "./Button.astro";
       RADIAL_SEGMENTS,
     );
 
-    // ====== ENVIRONMENT MAP — brand-tinted studio =========================
-    // Toned down vs v12: pure white reflections were washing the coin
-    // out toward bone instead of purple. Top zone now pale pink → brand
-    // magenta, and the key spotlight is pink instead of white.
+    // ====== ENVIRONMENT MAP — bright brand-purple studio ===================
+    // Significantly brighter than v13 for the bright-coin aesthetic.
+    // Larger bright top zone, brighter mid, deeper-but-not-black bottom.
     const envCanvas = document.createElement("canvas");
     envCanvas.width = 1024;
     envCanvas.height = 512;
     const ec = envCanvas.getContext("2d")!;
-    const topGrad = ec.createLinearGradient(0, 0, 0, 154);
-    topGrad.addColorStop(0, "#ffe8f4");
+    // Top 40%: bright white → pale pink → magenta
+    const topGrad = ec.createLinearGradient(0, 0, 0, 205);
+    topGrad.addColorStop(0, "#ffffff");
+    topGrad.addColorStop(0.5, "#ffe0ef");
     topGrad.addColorStop(1, "#d57db2");
     ec.fillStyle = topGrad;
-    ec.fillRect(0, 0, 1024, 154);
+    ec.fillRect(0, 0, 1024, 205);
+    // Mid zone: brand mid-purple (was the dark plum)
+    ec.fillStyle = "#854b6e";
+    ec.fillRect(0, 205, 1024, 154);
+    // Lower mid: darker purple
     ec.fillStyle = "#4b243c";
-    ec.fillRect(0, 154, 1024, 204);
-    ec.fillStyle = "#0f060d";
-    ec.fillRect(0, 358, 1024, 154);
-    // Soft pink key-light reflection in the upper-left
-    const spot = ec.createRadialGradient(200, 80, 0, 200, 80, 180);
-    spot.addColorStop(0, "rgba(255,206,236,0.9)");
-    spot.addColorStop(1, "rgba(255,206,236,0)");
-    ec.fillStyle = spot;
-    ec.fillRect(0, 0, 512, 300);
+    ec.fillRect(0, 359, 1024, 102);
+    // Floor: deep but not black
+    ec.fillStyle = "#25101d";
+    ec.fillRect(0, 461, 1024, 51);
+    // Two bright spotlights (key + secondary) for visible specular sweep
+    const spot1 = ec.createRadialGradient(220, 90, 0, 220, 90, 220);
+    spot1.addColorStop(0, "rgba(255,255,255,1.0)");
+    spot1.addColorStop(0.4, "rgba(255,230,245,0.5)");
+    spot1.addColorStop(1, "rgba(255,230,245,0)");
+    ec.fillStyle = spot1;
+    ec.fillRect(0, 0, 600, 360);
+    const spot2 = ec.createRadialGradient(720, 60, 0, 720, 60, 160);
+    spot2.addColorStop(0, "rgba(255,206,236,0.85)");
+    spot2.addColorStop(1, "rgba(255,206,236,0)");
+    ec.fillStyle = spot2;
+    ec.fillRect(400, 0, 624, 260);
 
     const envSource = new THREE.CanvasTexture(envCanvas);
     envSource.mapping = THREE.EquirectangularReflectionMapping;
@@ -141,11 +153,13 @@ import Button from "./Button.astro";
     faceCanvas.width = FACE_SIZE;
     faceCanvas.height = FACE_SIZE;
     const fc = faceCanvas.getContext("2d")!;
-    // Slightly lighter center → very dark edge: concave field illusion
+    // Brighter field gradient — Bitcoin-style coin reads "bright metal"
+    // with only the deepest recesses darkening; reflection does the
+    // rest. (v13 was too plum-dark across the whole face.)
     const bgGrad = fc.createRadialGradient(HALF, HALF, 0, HALF, HALF, HALF);
-    bgGrad.addColorStop(0.0, "#5c2a4a");
-    bgGrad.addColorStop(0.6, "#3d1a38");
-    bgGrad.addColorStop(1.0, "#25101d");
+    bgGrad.addColorStop(0.0, "#a05a85"); // bright magenta center
+    bgGrad.addColorStop(0.55, "#6e3a5e"); // mid
+    bgGrad.addColorStop(1.0, "#3a1830"); // darker edge but not black
     fc.fillStyle = bgGrad;
     fc.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
 
@@ -184,18 +198,18 @@ import Button from "./Button.astro";
     fc.fillRect(0, 0, FACE_SIZE, FACE_SIZE);
     fc.restore();
 
-    // Raised rim ring (brighter purple)
+    // Raised rim ring (bright magenta — the brightest static element)
     fc.beginPath();
     fc.arc(HALF, HALF, RIM_OUTER_R, 0, Math.PI * 2);
     fc.arc(HALF, HALF, RIM_INNER_R, 0, Math.PI * 2, true);
-    fc.fillStyle = "#854b6e";
+    fc.fillStyle = "#d57db2";
     fc.fill("evenodd");
 
-    // Inner step / shadow line just inside the rim
+    // Inner step / shadow line just inside the rim — deep purple
     fc.beginPath();
     fc.arc(HALF, HALF, RIM_INNER_R, 0, Math.PI * 2);
     fc.arc(HALF, HALF, STEP_INNER_R, 0, Math.PI * 2, true);
-    fc.fillStyle = "#1a0818";
+    fc.fillStyle = "#25101d";
     fc.fill("evenodd");
 
     const faceTex = new THREE.CanvasTexture(faceCanvas);
@@ -291,8 +305,9 @@ import Button from "./Button.astro";
         return c;
       };
 
-      // COLOR — bright magenta paint where the logo is raised
-      fc.drawImage(tintLogo("#d57db2"), LOGO_PAD, LOGO_PAD);
+      // COLOR — pale pink paint where the logo is raised (the
+      // brightest raised element on the coin, like the Bitcoin B)
+      fc.drawImage(tintLogo("#ffceec"), LOGO_PAD, LOGO_PAD);
       faceTex.needsUpdate = true;
 
       // BUMP — pure white = maximum raise
@@ -313,14 +328,14 @@ import Button from "./Button.astro";
     const faceMat = new THREE.MeshPhysicalMaterial({
       map: faceTex,
       bumpMap: bumpTex,
-      bumpScale: 5.5, // deeper relief on rim/logo
+      bumpScale: 5.5, // deep relief on rim/logo
       roughnessMap: roughTex,
       metalness: 0.92,
-      roughness: 0.32,
-      envMapIntensity: 2.2, // toned down so brand purple isn't washed out
-      color: 0x6d3a5a, // slightly darker, more saturated purple
+      roughness: 0.22, // smoother → sharper, brighter specular sweep
+      envMapIntensity: 3.0, // strong reflections drive the highlight
+      color: 0xb86994, // bright magenta-purple base
       clearcoat: 0.5,
-      clearcoatRoughness: 0.12,
+      clearcoatRoughness: 0.1,
     });
 
     // ====== RIM (edge) — reeded grooves with REAL bump map ================
@@ -375,9 +390,9 @@ import Button from "./Button.astro";
       bumpMap: rimBumpTex,
       bumpScale: 0.35, // pronounced ridges that catch light during spin
       metalness: 0.95,
-      roughness: 0.35,
-      envMapIntensity: 2.2,
-      color: 0x4b243c,
+      roughness: 0.28,
+      envMapIntensity: 2.8,
+      color: 0x854b6e, // mid purple to match brighter face
     });
 
     // ====== ASSEMBLE =======================================================
@@ -390,17 +405,18 @@ import Button from "./Button.astro";
     scene.add(pivot);
 
     // ====== LIGHTS =========================================================
-    scene.add(new THREE.AmbientLight(0x1a0818, 0.4));
+    // Brighter ambient so shadowed faces of the coin don't go nearly black
+    scene.add(new THREE.AmbientLight(0x854b6e, 0.6));
 
-    const keyLight = new THREE.PointLight(0xfff0f8, 3.5);
+    const keyLight = new THREE.PointLight(0xffffff, 4.0);
     keyLight.position.set(4, 6, 6);
     scene.add(keyLight);
 
-    const fillLight = new THREE.PointLight(0xd57db2, 0.8);
+    const fillLight = new THREE.PointLight(0xffceec, 1.4);
     fillLight.position.set(-5, -2, 3);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0xffceec, 1.2);
+    const rimLight = new THREE.PointLight(0xd57db2, 1.6);
     rimLight.position.set(-3, 4, -4);
     scene.add(rimLight);
 
