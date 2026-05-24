@@ -85,12 +85,10 @@ import Button from "./Button.astro";
     resize();
     mount.appendChild(renderer.domElement);
 
-    // Modeled on QBIOTOKEN.png: a hexagonal coin with the QBD logo
-    // embossed (not painted) on its face, a mauve metallic body, and a
-    // reeded edge.
+    // Round coin geometry — 96 segments around for a clean curved rim.
     const radius = 2;
-    const thickness = 0.42;
-    const radialSegments = 6; // hexagon
+    const thickness = 0.4;
+    const radialSegments = 96;
     const geometry = new THREE.CylinderGeometry(
       radius,
       radius,
@@ -98,37 +96,75 @@ import Button from "./Button.astro";
       radialSegments,
     );
 
-    // Face: the logo-mark serves as bump only — the coin body is one solid
-    // mauve material, the logo glyph reads as raised metal because the
-    // bright pixels in the texture deform the surface normal.
+    // Rainbow environment map — drives the iridescent oil-slick sheen on
+    // the metal. Drawn on a canvas at runtime, then prefiltered through
+    // PMREMGenerator so it can be used as scene.environment for IBL.
+    const envCanvas = document.createElement("canvas");
+    envCanvas.width = 1024;
+    envCanvas.height = 512;
+    const ectx = envCanvas.getContext("2d")!;
+    const rainbow = ectx.createLinearGradient(0, 0, 1024, 0);
+    rainbow.addColorStop(0.0, "#ff4d8e");
+    rainbow.addColorStop(0.15, "#ff9344");
+    rainbow.addColorStop(0.32, "#ffe25c");
+    rainbow.addColorStop(0.5, "#5cffd2");
+    rainbow.addColorStop(0.68, "#5e9bff");
+    rainbow.addColorStop(0.85, "#b454ff");
+    rainbow.addColorStop(1.0, "#ff4d8e");
+    ectx.fillStyle = rainbow;
+    ectx.fillRect(0, 0, 1024, 512);
+    // A horizontal vignette so the top/bottom contribute neutral tones
+    // (prevents the rainbow from looking like a barcode on the coin).
+    const vignette = ectx.createLinearGradient(0, 0, 0, 512);
+    vignette.addColorStop(0.0, "rgba(20, 10, 30, 0.6)");
+    vignette.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+    vignette.addColorStop(1.0, "rgba(20, 10, 30, 0.6)");
+    ectx.fillStyle = vignette;
+    ectx.fillRect(0, 0, 1024, 512);
+
+    const envSource = new THREE.CanvasTexture(envCanvas);
+    envSource.mapping = THREE.EquirectangularReflectionMapping;
+    envSource.colorSpace = THREE.SRGBColorSpace;
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envRenderTarget = pmrem.fromEquirectangular(envSource);
+    scene.environment = envRenderTarget.texture;
+    envSource.dispose();
+    pmrem.dispose();
+
+    // Face: deep purple base, high metalness, deep embossed logo, plus
+    // iridescence for the oil-on-water rainbow sheen.
     const loader = new THREE.TextureLoader();
     const logoBump = loader.load("/images/brand/logo-mark.png");
     logoBump.anisotropy = 8;
 
-    const COIN_MAUVE = 0x9a5b7e; // mauve-pink body
-    const COIN_DARK = 0x4b243c; // shadow plum
+    const COIN_PURPLE = 0x3a1f5a; // deep saturated purple
 
-    const faceMaterial = new THREE.MeshStandardMaterial({
-      color: COIN_MAUVE,
+    const faceMaterial = new THREE.MeshPhysicalMaterial({
+      color: COIN_PURPLE,
       bumpMap: logoBump,
-      bumpScale: 0.18,
-      metalness: 0.65,
-      roughness: 0.32,
+      bumpScale: 0.5, // deep emboss
+      metalness: 0.92,
+      roughness: 0.22,
+      iridescence: 1.0,
+      iridescenceIOR: 1.6,
+      iridescenceThicknessRange: [200, 900],
+      envMapIntensity: 1.35,
     });
 
     // Edge: procedurally drawn reeded grooves wrapped around the rim.
-    const grooveCount = 120;
+    const grooveCount = 160;
     const grooveCanvas = document.createElement("canvas");
     grooveCanvas.width = grooveCount * 4;
     grooveCanvas.height = 32;
     const gctx = grooveCanvas.getContext("2d")!;
-    gctx.fillStyle = "#7a4263"; // mid mauve base
+    gctx.fillStyle = "#3a1f5a"; // matches the body
     gctx.fillRect(0, 0, grooveCanvas.width, grooveCanvas.height);
     for (let i = 0; i < grooveCount; i++) {
       const x = (i / grooveCount) * grooveCanvas.width;
-      gctx.fillStyle = "#c08aa6"; // highlight ridge
+      gctx.fillStyle = "#6b3eaa"; // highlight ridge
       gctx.fillRect(x, 0, 2, grooveCanvas.height);
-      gctx.fillStyle = "#3a1a2c"; // shadow groove
+      gctx.fillStyle = "#180828"; // shadow groove
       gctx.fillRect(x + 2, 0, 2, grooveCanvas.height);
     }
     const grooveTexture = new THREE.CanvasTexture(grooveCanvas);
@@ -155,12 +191,16 @@ import Button from "./Button.astro";
     grooveBump.wrapS = THREE.RepeatWrapping;
     grooveBump.wrapT = THREE.ClampToEdgeWrapping;
 
-    const edgeMaterial = new THREE.MeshStandardMaterial({
+    const edgeMaterial = new THREE.MeshPhysicalMaterial({
       map: grooveTexture,
       bumpMap: grooveBump,
-      bumpScale: 0.15,
-      metalness: 0.75,
-      roughness: 0.3,
+      bumpScale: 0.18,
+      metalness: 0.95,
+      roughness: 0.25,
+      iridescence: 0.85,
+      iridescenceIOR: 1.55,
+      iridescenceThicknessRange: [180, 720],
+      envMapIntensity: 1.2,
     });
 
     // CylinderGeometry materials order: [side, top, bottom]
@@ -179,22 +219,18 @@ import Button from "./Button.astro";
     group.rotation.x = -0.18;
     scene.add(group);
 
-    // Lighting tuned for the mauve coin body — warm key + pink rim so the
-    // embossing and the reeded edge catch the light.
-    const ambient = new THREE.AmbientLight(0xfff5ee, 0.5);
+    // Lighting — the rainbow envMap does most of the heavy lifting; these
+    // directional lights just sharpen the highlights and rim.
+    const ambient = new THREE.AmbientLight(0xffffff, 0.25);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffeede, 1.4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
     keyLight.position.set(3, 4, 5);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffceec, 0.9);
+    const rimLight = new THREE.DirectionalLight(0xff66cc, 0.5);
     rimLight.position.set(-4, -1, -2);
     scene.add(rimLight);
-
-    const fillLight = new THREE.DirectionalLight(0x854b6e, 0.35);
-    fillLight.position.set(2, -3, 4);
-    scene.add(fillLight);
 
     // Animation
     const speed = 0.005;
