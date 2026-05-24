@@ -95,27 +95,27 @@ import Button from "./Button.astro";
       RADIAL_SEGMENTS,
     );
 
-    // ====== ENVIRONMENT MAP — studio lightbox =============================
+    // ====== ENVIRONMENT MAP — brand-tinted studio =========================
+    // Toned down vs v12: pure white reflections were washing the coin
+    // out toward bone instead of purple. Top zone now pale pink → brand
+    // magenta, and the key spotlight is pink instead of white.
     const envCanvas = document.createElement("canvas");
     envCanvas.width = 1024;
     envCanvas.height = 512;
     const ec = envCanvas.getContext("2d")!;
-    // Top 30%: bright warm-white overhead light → pale pink
     const topGrad = ec.createLinearGradient(0, 0, 0, 154);
-    topGrad.addColorStop(0, "#ffffff");
-    topGrad.addColorStop(1, "#ffceec");
+    topGrad.addColorStop(0, "#ffe8f4");
+    topGrad.addColorStop(1, "#d57db2");
     ec.fillStyle = topGrad;
     ec.fillRect(0, 0, 1024, 154);
-    // Mid zone: brand mid-purple
     ec.fillStyle = "#4b243c";
     ec.fillRect(0, 154, 1024, 204);
-    // Bottom: near-black floor
     ec.fillStyle = "#0f060d";
     ec.fillRect(0, 358, 1024, 154);
-    // Bright soft spot in upper-left = key light reflection source
+    // Soft pink key-light reflection in the upper-left
     const spot = ec.createRadialGradient(200, 80, 0, 200, 80, 180);
-    spot.addColorStop(0, "rgba(255,255,255,0.95)");
-    spot.addColorStop(1, "rgba(255,255,255,0)");
+    spot.addColorStop(0, "rgba(255,206,236,0.9)");
+    spot.addColorStop(1, "rgba(255,206,236,0)");
     ec.fillStyle = spot;
     ec.fillRect(0, 0, 512, 300);
 
@@ -238,6 +238,20 @@ import Button from "./Button.astro";
     rc.arc(HALF, HALF, STEP_INNER_R, 0, Math.PI * 2, true);
     rc.fillStyle = "#555555";
     rc.fill("evenodd");
+
+    // Micro-noise across the roughness map: makes the surface read as
+    // actual metal (brushed/imperfect) instead of glassy plastic.
+    {
+      const noiseImg = rc.getImageData(0, 0, FACE_SIZE, FACE_SIZE);
+      const npx = noiseImg.data;
+      for (let i = 0; i < npx.length; i += 4) {
+        const jitter = (Math.random() - 0.5) * 36;
+        npx[i] = Math.max(0, Math.min(255, npx[i] + jitter));
+        npx[i + 1] = Math.max(0, Math.min(255, npx[i + 1] + jitter));
+        npx[i + 2] = Math.max(0, Math.min(255, npx[i + 2] + jitter));
+      }
+      rc.putImageData(noiseImg, 0, 0);
+    }
     const roughTex = new THREE.CanvasTexture(roughCanvas);
     roughTex.colorSpace = THREE.NoColorSpace;
     roughTex.anisotropy = 16;
@@ -299,30 +313,33 @@ import Button from "./Button.astro";
     const faceMat = new THREE.MeshPhysicalMaterial({
       map: faceTex,
       bumpMap: bumpTex,
-      bumpScale: 4.0,
+      bumpScale: 5.5, // deeper relief on rim/logo
       roughnessMap: roughTex,
       metalness: 0.92,
-      roughness: 0.28,
-      envMapIntensity: 3.5,
-      color: 0x9a5580,
-      clearcoat: 0.4,
-      clearcoatRoughness: 0.15,
+      roughness: 0.32,
+      envMapIntensity: 2.2, // toned down so brand purple isn't washed out
+      color: 0x6d3a5a, // slightly darker, more saturated purple
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.12,
     });
 
-    // ====== RIM (edge) =====================================================
+    // ====== RIM (edge) — reeded grooves with REAL bump map ================
+    const RIM_W = 512;
+    const RIM_H = 64;
+    const notchCount = 120;
+
     const rimCanvas = document.createElement("canvas");
-    rimCanvas.width = 512;
-    rimCanvas.height = 64;
+    rimCanvas.width = RIM_W;
+    rimCanvas.height = RIM_H;
     const rmc = rimCanvas.getContext("2d")!;
     rmc.fillStyle = "#2c1428";
-    rmc.fillRect(0, 0, 512, 64);
-    const notchCount = 120;
+    rmc.fillRect(0, 0, RIM_W, RIM_H);
     for (let i = 0; i < notchCount; i++) {
-      const x = (i / notchCount) * 512;
+      const x = (i / notchCount) * RIM_W;
       rmc.fillStyle = "#7a3a60";
-      rmc.fillRect(x, 0, 3, 64);
+      rmc.fillRect(x, 0, 3, RIM_H);
       rmc.fillStyle = "#100608";
-      rmc.fillRect(x + 3, 0, 1, 64);
+      rmc.fillRect(x + 3, 0, 1, RIM_H);
     }
     const rimColorTex = new THREE.CanvasTexture(rimCanvas);
     rimColorTex.wrapS = THREE.RepeatWrapping;
@@ -330,11 +347,36 @@ import Button from "./Button.astro";
     rimColorTex.colorSpace = THREE.SRGBColorSpace;
     rimColorTex.anisotropy = 8;
 
+    // Matching grayscale bumpMap: white where the ridge sits, black in
+    // the groove. Same notch geometry as the color texture so the
+    // visible stripe and the cast shadow line up. Without this the
+    // ridges are just paint and never shift with the lighting.
+    const rimBumpCanvas = document.createElement("canvas");
+    rimBumpCanvas.width = RIM_W;
+    rimBumpCanvas.height = RIM_H;
+    const rbc = rimBumpCanvas.getContext("2d")!;
+    rbc.fillStyle = "#808080";
+    rbc.fillRect(0, 0, RIM_W, RIM_H);
+    for (let i = 0; i < notchCount; i++) {
+      const x = (i / notchCount) * RIM_W;
+      rbc.fillStyle = "#ffffff";
+      rbc.fillRect(x, 0, 3, RIM_H);
+      rbc.fillStyle = "#000000";
+      rbc.fillRect(x + 3, 0, 1, RIM_H);
+    }
+    const rimBumpTex = new THREE.CanvasTexture(rimBumpCanvas);
+    rimBumpTex.wrapS = THREE.RepeatWrapping;
+    rimBumpTex.wrapT = THREE.RepeatWrapping;
+    rimBumpTex.colorSpace = THREE.NoColorSpace;
+    rimBumpTex.anisotropy = 8;
+
     const rimMat = new THREE.MeshPhysicalMaterial({
       map: rimColorTex,
+      bumpMap: rimBumpTex,
+      bumpScale: 0.35, // pronounced ridges that catch light during spin
       metalness: 0.95,
       roughness: 0.35,
-      envMapIntensity: 2.5,
+      envMapIntensity: 2.2,
       color: 0x4b243c,
     });
 
