@@ -18,8 +18,5 @@
     "astro": "^6.2.2",
     "tailwindcss": "^4.2.4",
     "three": "^0.184.0"
-  },
-  "devDependencies": {
-    "playwright": "^1.60.0"
   }
 }
