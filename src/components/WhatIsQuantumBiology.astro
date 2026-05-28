@@ -57,10 +57,13 @@ const examples = [
       </div>
     </div>
 
-    <h3 class="font-display text-xl md:text-2xl text-cream mb-8">
-      Popular quantum biology examples:
-    </h3>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+    <div
+      class="rounded-3xl border border-cream/10 bg-plum-dark/20 p-6 md:p-10"
+    >
+      <h3 class="font-display text-xl md:text-2xl text-cream mb-8">
+        Popular quantum biology examples:
+      </h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
       {
         examples.map((ex) => (
           <div class="flex flex-col">
@@ -162,6 +165,7 @@ const examples = [
           </div>
         ))
       }
+      </div>
     </div>
   </div>
 </section>

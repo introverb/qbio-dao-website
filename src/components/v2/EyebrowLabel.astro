@@ -1,0 +1,25 @@
+---
+interface Props {
+  accent?: "gold" | "pink" | "teal" | "cream";
+  class?: string;
+}
+
+const { accent = "gold", class: className = "" } = Astro.props;
+
+const colorClass = {
+  gold: "text-gold",
+  pink: "text-pink",
+  teal: "text-teal",
+  cream: "text-cream/40",
+}[accent];
+---
+
+<p
+  class:list={[
+    "font-sans text-[11px] tracking-[0.3em] uppercase mb-8",
+    colorClass,
+    className,
+  ]}
+>
+  <slot />
+</p>

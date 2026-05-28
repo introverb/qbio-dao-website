@@ -1,0 +1,37 @@
+---
+// Quantum Biology Institute logo mark.
+//
+// The QBI mark is the same hexagonal-molecular icon as the QBD mark —
+// just in a different color scheme — so we reuse the alpha-keyed QBD
+// PNG and CSS-mask it to any color the caller wants. This guarantees
+// pixel-perfect parity with the official brand mark.
+interface Props {
+  size?: number;
+  /** Fill color of the mark. Defaults to plum-darkest for use on the
+   *  teal Institute tile. */
+  color?: string;
+  class?: string;
+}
+
+const {
+  size = 64,
+  color = "#25101d",
+  class: className = "",
+} = Astro.props;
+
+const styles = [
+  `width: ${size}px`,
+  `height: ${size}px`,
+  `background-color: ${color}`,
+  `mask: url('/images/brand/logo-mark-alpha.png') center / contain no-repeat`,
+  `-webkit-mask: url('/images/brand/logo-mark-alpha.png') center / contain no-repeat`,
+].join("; ");
+---
+
+<div
+  class:list={["block shrink-0", className]}
+  style={styles}
+  role="img"
+  aria-label="Quantum Biology Institute logo mark"
+>
+</div>
