@@ -1,0 +1,60 @@
+---
+import V2Layout from "../components/v2/V2Layout.astro";
+import V2Cta from "../components/v2/V2Cta.astro";
+import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
+import { bentoCard, bentoHeading } from "../lib/v2-bg";
+---
+
+<V2Layout
+  title="Explainer — Quantum Biology DAO"
+  description="The Quantum Biology DAO, explained — vision, governance, committees, and history."
+>
+  <!-- ====================================================================== -->
+  <!-- HERO                                                                   -->
+  <!-- ====================================================================== -->
+  <section class="relative pt-28 lg:pt-40 pb-16 md:pb-24">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="max-w-3xl">
+        <EyebrowLabel accent="gold">Explainer</EyebrowLabel>
+        <h1
+          class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
+        >
+          The Quantum Biology DAO,
+          <em class="italic text-gold/90">explained</em>.
+        </h1>
+        <p
+          class="mt-8 font-sans text-[15px] text-cream/65 leading-relaxed max-w-xl"
+        >
+          A founder-led, community-centric organization advancing the field of
+          quantum biology, governed by the QBIO token. The full explainer —
+          vision, governance, committees, and history — is on its way.
+        </p>
+        <div class="mt-10 flex flex-col items-start gap-5">
+          <V2Cta
+            href="https://quantumbiology.community"
+            label="Join the community"
+            accent="gold"
+            external
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- PLACEHOLDER BODY — full explainer content TBD                          -->
+  <!-- ====================================================================== -->
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pb-16 md:pb-24">
+    <article class={`${bentoCard} lg:col-span-12`}>
+      <EyebrowLabel accent="pink">Coming soon</EyebrowLabel>
+      <h2 class={`${bentoHeading} mb-6 max-w-3xl`}>
+        The full <em class="italic text-pink/90">explainer</em> is being prepared.
+      </h2>
+      <p class="font-sans text-[14px] text-cream/70 leading-relaxed max-w-3xl">
+        We're turning the Quantum Biology DAO explainer into a full page. In the
+        meantime, the homepage TL;DR covers the essentials, and the community
+        Discord is the best place to dive in.
+      </p>
+    </article>
+  </div>
+</V2Layout>

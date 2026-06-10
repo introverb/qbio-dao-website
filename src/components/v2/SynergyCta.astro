@@ -1,0 +1,57 @@
+---
+// Same arrow-button shape as V2Cta, but the circle is filled with a tricolor
+// blend of the three ecosystem colors (gold + teal + pink — one per sibling
+// org) instead of a single accent. It reads as the "synergy" of the three,
+// lifted out of the old venn diagram.
+interface Props {
+  href: string;
+  label: string;
+  external?: boolean;
+  size?: "md" | "sm";
+}
+
+const { href, label, external = false, size = "md" } = Astro.props;
+
+const circleSize = size === "sm" ? "w-10 h-10" : "w-12 h-12";
+const iconSize = size === "sm" ? 12 : 14;
+
+// Three brand colors held for ~60° each with soft blends between them, so the
+// wedges stay legible but melt into one another at the seams.
+const tricolor =
+  "conic-gradient(from -90deg," +
+  " var(--color-gold) 0deg, var(--color-gold) 55deg," +
+  " var(--color-teal) 125deg, var(--color-teal) 175deg," +
+  " var(--color-pink) 245deg, var(--color-pink) 305deg," +
+  " var(--color-gold) 360deg)";
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class="inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] uppercase text-gold transition-colors group"
+>
+  <span
+    class:list={[
+      "relative inline-flex items-center justify-center rounded-full overflow-hidden ring-1 ring-cream/15 transition-transform duration-200 group-hover:scale-105",
+      circleSize,
+    ]}
+    style={`background: ${tricolor};`}
+  >
+    <svg
+      width={iconSize}
+      height={iconSize}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      class="relative z-10 text-plum-darkest"
+      ><path d="M5 12h14"></path><polyline points="12 5 19 12 12 19"
+      ></polyline></svg
+    >
+  </span>
+  <span>{label}</span>
+</a>

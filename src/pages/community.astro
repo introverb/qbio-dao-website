@@ -3,6 +3,13 @@ import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
+import { dotGraphic } from "../lib/dot-graphic";
+
+// Chain rendered as a field of dots (same protocol as the science neuron
+// and the qbio-token coin) so the hero graphics share one visual language.
+const chainDotsSvg = await dotGraphic("public/images/graphics/chain.png", {
+  color: "#eee8df",
+});
 
 const activities = [
   "Fund research",
@@ -121,16 +128,13 @@ const testimonials = [
   <!-- HERO  —  chain graphic anchored top-right, title on the left           -->
   <!-- ====================================================================== -->
   <section class="relative pb-16 md:pb-24">
-    <!-- Chain graphic — enters from upper-right corner -->
+    <!-- Chain rendered as a field of dots — same protocol as the science
+         neuron / token coin so the hero graphics share one visual language. -->
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] pointer-events-none community-hero-chain"
+      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] pointer-events-none opacity-[0.18] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
+      set:html={chainDotsSvg}
+      aria-label="Chain rendered as a field of dots"
     >
-      <img
-        src="/images/graphics/chain.png"
-        alt=""
-        class="block w-full max-w-none"
-        loading="eager"
-      />
     </div>
 
     <!-- Title block -->
@@ -514,13 +518,6 @@ const testimonials = [
     ))
   }
 </V2Layout>
-
-<style>
-  /* Chain graphic opacity — kept subtle so the headline reads first */
-  .community-hero-chain {
-    opacity: 0.18;
-  }
-</style>
 
 <style is:global>
   /* Dialog backdrop matches the v2 dark aesthetic */

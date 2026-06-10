@@ -1,8 +1,8 @@
 ---
-import sharp from "sharp";
 import V2Layout from "../components/v2/V2Layout.astro";
-import QbiLogoMark from "../components/v2/QbiLogoMark.astro";
+import V2Cta from "../components/v2/V2Cta.astro";
 import { bentoCard, bentoHeading, labelBase } from "../lib/v2-bg";
+import { dotGraphic } from "../lib/dot-graphic";
 
 const examples = [
   { label: "Photosynthesis" },
@@ -46,61 +46,11 @@ const testimonials = [
   },
 ];
 
-// "Cube-style" neuron — densely packed clusters of mixed mechanical
-// shapes (small circles, squares, short horizontal and vertical traces)
-// sampled from the neuron PNG at build time. Each shape's size is mapped
-// from pixel alpha so the silhouette holds together while reading as a
-// circuit/machine-tissue weave rather than a uniform halftone.
-const NEURON_SAMPLE_STEP = 5; // tighter sampling → much denser
-const NEURON_ALPHA_THRESHOLD = 20;
-const _neuronImg = await sharp("public/images/graphics/neuron.png")
-  .ensureAlpha()
-  .raw()
-  .toBuffer({ resolveWithObject: true });
-const _NW = _neuronImg.info.width;
-const _NH = _neuronImg.info.height;
-const _NCH = _neuronImg.info.channels;
-const _neuronShapes: string[] = [];
-for (let y = 0; y < _NH; y += NEURON_SAMPLE_STEP) {
-  for (let x = 0; x < _NW; x += NEURON_SAMPLE_STEP) {
-    const idx = (y * _NW + x) * _NCH;
-    const a = _neuronImg.data[idx + 3];
-    if (a < NEURON_ALPHA_THRESHOLD) continue;
-
-    // Intensity 0..1 from alpha
-    const t = (a - NEURON_ALPHA_THRESHOLD) /
-      (255 - NEURON_ALPHA_THRESHOLD);
-
-    // Deterministic shape roll based on position so it stays stable
-    // across rebuilds and the pattern feels organic rather than
-    // perfectly grid-aligned.
-    const roll = ((x * 7919 + y * 1009 + 31) % 100) / 100;
-
-    let shape: string;
-    if (roll < 0.55) {
-      // Dominant: small circles, size scales with intensity
-      const r = (0.4 + t * 2.6).toFixed(2);
-      shape = `<circle cx="${x}" cy="${y}" r="${r}"/>`;
-    } else if (roll < 0.74) {
-      // Tiny solid squares
-      const s = 1.0 + t * 2.3;
-      const half = (s / 2).toFixed(2);
-      shape = `<rect x="${(x - s / 2).toFixed(2)}" y="${(y - s / 2).toFixed(2)}" width="${s.toFixed(2)}" height="${s.toFixed(2)}"/>`;
-    } else if (roll < 0.88) {
-      // Short horizontal traces (circuit feel)
-      const w = 3 + t * 4.5;
-      const h = 0.9;
-      shape = `<rect x="${(x - w / 2).toFixed(2)}" y="${(y - h / 2).toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}"/>`;
-    } else {
-      // Short vertical traces
-      const w = 0.9;
-      const h = 3 + t * 4.5;
-      shape = `<rect x="${(x - w / 2).toFixed(2)}" y="${(y - h / 2).toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}"/>`;
-    }
-    _neuronShapes.push(shape);
-  }
-}
-const neuronDotsSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${_NW} ${_NH}" preserveAspectRatio="xMidYMid meet" width="100%" height="auto" fill="#7dd3d3" aria-hidden="true">${_neuronShapes.join("")}</svg>`;
+// Neuron rendered as a field of dots — same protocol as the token coin and
+// the community chain, so the hero graphics share one visual language.
+const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
+  color: "#7dd3d3",
+});
 ---
 
 <V2Layout
@@ -353,17 +303,12 @@ const neuronDotsSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${_N
                  >
           <p class={`${labelBase} text-teal`}>Flagship grant</p>
           <div class="grid sm:grid-cols-[1fr_1.1fr] gap-6 items-center">
-            <div
-              class="aspect-square bg-teal/80 rounded-lg flex items-center justify-center p-6"
-            >
-              <div class="flex flex-col items-center text-center gap-3">
-                <QbiLogoMark size={56} />
-                <p
-                  class="font-display text-base md:text-lg text-plum-darkest leading-tight tracking-wider"
-                >
-                  QUANTUM<br />BIOLOGY<br />INSTITUTE
-                </p>
-              </div>
+            <div class="aspect-square rounded-lg overflow-hidden">
+              <img
+                src="/images/brand/qbi-institute-lockup.png"
+                alt="Quantum Biology Institute"
+                class="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h2
@@ -383,6 +328,26 @@ const neuronDotsSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${_N
                 <p>
                   The Institute is building a quantum microscope to detect
                   electron spin states inside live cells.
+                </p>
+              </div>
+              <div class="mt-6 flex flex-col items-start gap-5">
+                <V2Cta
+                  href="https://quantumbiology.org"
+                  label="Visit the Institute"
+                  accent="teal"
+                  external
+                />
+                <p class="font-sans text-[12px] text-cream/60 leading-relaxed">
+                  The Quantum Biology Institute is committed to an open science
+                  model of research. To view all their previous and ongoing
+                  work, check out
+                  <a
+                    href="https://data.quantumbiology.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-teal hover:text-teal/80 underline underline-offset-2"
+                    >this link</a
+                  >.
                 </p>
               </div>
             </div>

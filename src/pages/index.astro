@@ -1,36 +1,39 @@
 ---
 import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
+import SynergyCta from "../components/v2/SynergyCta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
-import QbiLogoMark from "../components/v2/QbiLogoMark.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
+import { getQubieCards, QUBIE_SITE_URL } from "../lib/qubie";
 
-const substackPosts = [
+// Pulled at build time — top 3 research items + a 5-wide bottom strip
+// mixing 4 chatter items and 1 video, sorted newest-first.
+const { research: qubieResearch, chatter: qubieChatter } = await getQubieCards(
+  3,
+  4,
+  1,
+);
+const qubieTotal = qubieResearch.length + qubieChatter.length;
+
+// Deterministic per-article hash — used to give each Qubie card a unique
+// doc-ID and a different scanline offset so the cards shimmer asynchronously.
+function qubieHash(s: string): number {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+// Headline stats for the TL;DR panel (sourced from the DAO explainer).
+const tldrStats = [
+  { value: "$6.8M", label: "Raised in the token auction", accent: "gold" },
+  { value: "500 ETH", label: "First major grant", accent: "teal" },
+  { value: "50+", label: "Active contributors", accent: "pink" },
   {
-    title: "This Week in Quantum Biology (Jun 28–Jul 11)",
-    date: "Jul 14, 2025",
-    body: "Weekly digest covering developments in quantum biology, including the Quantum Biology Institute's protein research using MagLOV proteins and the DAO's work on field priorities and working group progress.",
-    image:
-      "https://substackcdn.com/image/fetch/$s_!VNvZ!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff4d26c2e-6d32-46ba-83cc-e884598f5248_1016x628.png",
-    href: "https://quantumbiology.substack.com/p/this-week-in-quantum-biology-jun-49a",
+    value: "30+",
+    label: "Governance proposals passed by the community",
+    accent: "gold",
   },
-  {
-    title: "This Week in Quantum Biology (Jun 21–27)",
-    date: "Jun 30, 2025",
-    body: "Weekly digest featuring the Quantum Biology Institute's new executive leadership and microscope construction progress, alongside the DAO's updated meeting schedule and new granting process development.",
-    image:
-      "https://substackcdn.com/image/fetch/$s_!ZE5i!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6a56e1a3-6f07-4066-a18d-f136c2ed7be8_1179x664.png",
-    href: "https://quantumbiology.substack.com/p/this-week-in-quantum-biology-jun-41d",
-  },
-  {
-    title: "This Week in Quantum Biology (Jun 14–20)",
-    date: "Jun 23, 2025",
-    body: "Weekly update on the Institute's protein work with magnetosensitive proteins and the DAO's allocation of 500 ETH to support foundational quantum biology research.",
-    image:
-      "https://substackcdn.com/image/fetch/$s_!HFSv!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff6acfa3f-2323-4072-90d7-3beb53b89ee0_867x664.png",
-    href: "https://quantumbiology.substack.com/p/this-week-in-quantum-biology-jun-56d",
-  },
-];
+] as const;
 
 type Org = {
   name: string;
@@ -41,24 +44,26 @@ type Org = {
   cta?: string;
   href?: string;
   external?: boolean;
-  comingSoon?: boolean;
-  vennDiagram?: boolean;
+  tricolor?: boolean;
 };
 
 const orgs: Org[] = [
   {
     name: "Quantum Biology Ecosystem",
     eyebrow: "Synergy",
-    body: "The Quantum Biology Ecosystem is a collective of 3 organizations synergistically building the quantum biology industry by design.",
+    body: "The Quantum Biology Ecosystem is a cooperative initiative between 3 organizations synergistically building the quantum biology industry by design.",
+    cta: "Visit Site",
+    href: "https://quantumbiology.eco/",
+    external: true,
     accent: "gold",
     youAreHere: false,
-    vennDiagram: true,
+    tricolor: true,
   },
   {
     name: "Quantum Biology DAO",
     eyebrow: "Governance",
     body: "The Quantum Biology DAO accelerates the quantum biology field through community building, open governance, scientific experimentation, research grants, and IP development.",
-    cta: "Join our Discord",
+    cta: "Join the Community",
     href: "https://quantumbiology.community",
     external: true,
     accent: "pink",
@@ -67,7 +72,7 @@ const orgs: Org[] = [
   {
     name: "Quantum Biology Institute",
     eyebrow: "Research",
-    body: "The Quantum Biology Institute is a 501(c)(3) California non-profit that performs the basic research underpinning the field in an open-science fashion.",
+    body: "The Quantum Biology Institute is a 501(c)(3) California non-profit that performs the basic research underpinning the field.",
     cta: "Visit Site",
     href: "https://quantumbiology.org",
     external: true,
@@ -78,9 +83,11 @@ const orgs: Org[] = [
     name: "Quantum Biology Incubator",
     eyebrow: "Commercialization",
     body: "The QuantumBiology Incubator is a for-profit Delaware C-Corp that develops the technical workforce the industry needs while incubating the first batch of quantum biology startups.",
+    cta: "Visit Site",
+    href: "https://quantumbiology.inc/",
+    external: true,
     accent: "gold",
     youAreHere: false,
-    comingSoon: true,
   },
 ];
 
@@ -209,8 +216,65 @@ const members = [
   <!-- ====================================================================== -->
   <!-- BENTO REGION                                                            -->
   <!-- ====================================================================== -->
-  <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pb-16 md:pb-24">
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-12">
     <div class="grid lg:grid-cols-12 gap-6 lg:gap-7 auto-rows-auto">
+
+      <!-- ============================================================= -->
+      <!-- AT A GLANCE — quick summary + headline stats            GOLD   -->
+      <!-- ============================================================= -->
+      <article class={`${bentoCard} lg:col-span-12`}>
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div class="lg:col-span-5">
+            <EyebrowLabel accent="gold">At a glance</EyebrowLabel>
+            <h2 class={bentoHeading}>
+              A community advancing
+              <em class="italic text-gold/90">quantum biology</em>, governed by
+              QBIO.
+            </h2>
+            <p
+              class="mt-6 font-sans text-[14px] text-cream/70 leading-relaxed max-w-md"
+            >
+              A community-run organization advancing the field of quantum
+              biology, governed by the QBIO token. The DAO funds research,
+              builds open tools, and welcomes anyone who wants to help.
+            </p>
+            <div class="mt-8 flex flex-col items-start gap-5">
+              <V2Cta
+                href="/explainer"
+                label="Read the full explainer"
+                accent="gold"
+              />
+              <V2Cta
+                href="https://quantumbiology.community"
+                label="Join the community"
+                accent="pink"
+                external
+              />
+            </div>
+          </div>
+          <div class="lg:col-span-7">
+            <div class="grid grid-cols-2 gap-5 md:gap-6 auto-rows-fr">
+              {
+                tldrStats.map((s) => (
+                  <div class="rounded-lg border border-cream/10 bg-plum-deepest/40 p-6 md:p-8">
+                    <p
+                      class:list={[
+                        "font-display text-3xl md:text-4xl lg:text-5xl leading-none",
+                        accentTextClass[s.accent],
+                      ]}
+                    >
+                      {s.value}
+                    </p>
+                    <p class="font-sans text-[11px] md:text-[12px] tracking-[0.12em] uppercase text-cream/55 mt-3 leading-snug">
+                      {s.label}
+                    </p>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </article>
 
       <!-- ============================================================= -->
       <!-- THE ECOSYSTEM (Org Map) — moved above Featured Grantee  TEAL   -->
@@ -249,54 +313,22 @@ const members = [
                   {org.body}
                 </p>
                 {org.cta && org.href && (
-                  <V2Cta
-                    href={org.href}
-                    label={org.cta}
-                    accent={org.accent}
-                    external={org.external}
-                    size="sm"
-                  />
-                )}
-                {!org.cta && org.vennDiagram && (
-                  <div aria-hidden="true" class="flex justify-center w-full">
-                    <svg
-                      viewBox="-2 -2 66 63"
-                      width="66"
-                      height="63"
-                      fill="none"
-                      stroke-width="1"
-                    >
-                      <circle cx="20" cy="20" r="20" stroke="#e5c46b" />
-                      <circle cx="42" cy="20" r="20" stroke="#7dd3d3" />
-                      <circle cx="31" cy="39" r="20" stroke="#d57db2" />
-                    </svg>
-                  </div>
-                )}
-                {!org.cta && org.comingSoon && (
-                  <div
-                    class="inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] uppercase text-gold/70 select-none"
-                    aria-label="Coming soon"
-                  >
-                    <span
-                      class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-gold/70"
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                      >
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                      </svg>
-                    </span>
-                    <span>Coming soon</span>
-                  </div>
+                  org.tricolor ? (
+                    <SynergyCta
+                      href={org.href}
+                      label={org.cta}
+                      external={org.external}
+                      size="sm"
+                    />
+                  ) : (
+                    <V2Cta
+                      href={org.href}
+                      label={org.cta}
+                      accent={org.accent}
+                      external={org.external}
+                      size="sm"
+                    />
+                  )
                 )}
               </article>
             ))
@@ -305,105 +337,186 @@ const members = [
       </article>
 
       <!-- ============================================================= -->
-      <!-- FEATURED GRANTEE                                       GOLD    -->
+      <!-- QUBIE NEWS (build-time feed from the Qubie Report)      PINK   -->
       <!-- ============================================================= -->
-      <article class={`${bentoCard} lg:col-span-12`}>
-        <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          <div class="lg:col-span-7">
-            <EyebrowLabel accent="teal">Featured grantee</EyebrowLabel>
-            <h2 class={`${bentoHeading} mb-6`}>
-              The <em class="italic text-teal/90">Quantum Biology Institute</em>.
-            </h2>
-            <p
-              class="font-sans text-[14px] text-cream/70 leading-relaxed max-w-2xl mb-10"
+      <article
+        class="lg:col-span-12 overflow-hidden rounded-lg border border-cream/15 bg-plum-deepest/40"
+      >
+        {/* Console title bar */}
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 border-b border-cream/10 bg-plum-darkest/70 px-5 py-2.5"
+        >
+          <div class="flex items-center gap-2.5">
+            <span class="relative flex h-2 w-2" aria-hidden="true">
+              <span
+                class="absolute inline-flex h-full w-full rounded-full bg-teal opacity-50 animate-ping"
+              ></span>
+              <span
+                class="relative inline-flex h-2 w-2 rounded-full bg-teal"
+              ></span>
+            </span>
+            <span
+              class="font-mono text-[10px] tracking-[0.25em] uppercase text-cream/70"
             >
-              We engage researchers, crypto enthusiasts, industry experts, and
-              the general public to accelerate the quantum biology revolution.
-              Our flagship grant funds the Institute's experimental work
-              probing quantum effects in living systems.
-            </p>
-            <div class="flex flex-col items-start gap-5">
-              <V2Cta
-                href="https://quantumbiology.org"
-                label="The Institute"
-                accent="teal"
-                external
-              />
-              <V2Cta
-                href="/science#granting"
-                label="Granting process"
-                accent="pink"
-              />
-            </div>
+              QUBIE://REPORT
+            </span>
           </div>
-          <div class="lg:col-span-5">
-            <div
-              class="aspect-square rounded-lg bg-teal/80 flex items-center justify-center p-10"
-            >
-              <div class="flex flex-col items-center text-center gap-4">
-                <QbiLogoMark size={64} />
-                <p
-                  class="font-display text-lg md:text-xl text-plum-darkest leading-tight tracking-wider"
-                >
-                  QUANTUM<br />BIOLOGY<br />INSTITUTE
-                </p>
-              </div>
-            </div>
+          <div
+            class="flex items-center gap-2 font-mono text-[10px] tracking-[0.15em] uppercase text-cream/45"
+          >
+            <span>{qubieTotal} items</span>
+            <span class="text-cream/25">·</span>
+            <span>refreshes 2&times;/day</span>
           </div>
         </div>
-      </article>
 
-      <!-- ============================================================= -->
-      <!-- ECOSYSTEM UPDATES (Substack)                            PINK   -->
-      <!-- ============================================================= -->
-      <article class={`${bentoCard} lg:col-span-12`}>
-        <div class="flex items-end justify-between flex-wrap gap-6 mb-10">
-          <div>
-            <EyebrowLabel accent="pink" class="mb-4">
-              From the ecosystem
-            </EyebrowLabel>
-            <h2 class={bentoHeading}>
-              Latest <em class="italic text-pink/90">updates</em>.
-            </h2>
-          </div>
+        {/* Inner header — display heading + see-more CTA */}
+        <div
+          class="flex flex-wrap items-end justify-between gap-6 border-b border-cream/10 px-6 py-6 md:px-8 md:py-8"
+        >
+          <h2 class={bentoHeading}>
+            Latest from the <em class="italic text-pink/90">field</em>.
+          </h2>
           <V2Cta
-            href="https://quantumbiology.substack.com/"
-            label="Read the digest"
+            href={QUBIE_SITE_URL}
+            label="See the full feed"
             accent="pink"
             external
           />
         </div>
-        <div class="grid md:grid-cols-3 gap-5 md:gap-6">
+
+        <div class="p-5 md:p-6">
+          {/* Research wire — top 3, rich cards */}
           {
-            substackPosts.map((p) => (
-              <a
-                href={p.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group flex flex-col rounded-lg border border-cream/10 overflow-hidden hover:border-pink/40 transition-colors bg-plum-deepest/40"
-              >
-                <div class="aspect-[16/10] overflow-hidden bg-plum-deepest">
-                  <img
-                    src={p.image}
-                    alt=""
-                    class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                    loading="lazy"
-                  />
-                </div>
-                <div class="p-5 md:p-6 flex flex-col grow">
-                  <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-pink/70 mb-3">
-                    {p.date}
-                  </p>
-                  <h3 class="font-display text-base md:text-lg text-cream mb-3 leading-snug group-hover:text-pink-light transition-colors">
-                    {p.title}
-                  </h3>
-                  <p class="font-sans text-[12px] text-cream/60 leading-relaxed grow">
-                    {p.body}
-                  </p>
-                </div>
-              </a>
-            ))
+            qubieResearch.length > 0 && (
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+                {qubieResearch.map((a) => {
+                  const h = qubieHash(a.link);
+                  const docId =
+                    "QR-" +
+                    h.toString(16).toUpperCase().padStart(8, "0").slice(0, 4);
+                  const meter = Math.min(100, Math.max(20, a.score * 7));
+                  return (
+                    <a
+                      href={a.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="qubie-card relative flex flex-col rounded border border-cream/10 bg-plum-deepest/50 p-5"
+                    >
+                      <div class="mb-4 flex items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.25em]">
+                        <span class="text-cream/45">{docId}</span>
+                        <span class="text-teal">{a.category.toUpperCase()}</span>
+                      </div>
+                      <h3 class="font-sans font-semibold text-[15px] leading-snug text-cream line-clamp-3">
+                        {a.title}
+                      </h3>
+                      <p class="mt-2 flex flex-wrap items-center gap-x-2 font-mono text-[10px] tracking-wide text-cream/45">
+                        <span>{a.source.split("·")[0].trim()}</span>
+                        <span class="text-teal/50">·</span>
+                        <span>{a.date}</span>
+                      </p>
+                      <div class="mt-3 flex items-center gap-3">
+                        <div class="relative h-px flex-1 overflow-hidden bg-cream/10">
+                          <div
+                            class="absolute inset-y-[-1px] left-0 bg-teal"
+                            style={`width: ${meter}%`}
+                          />
+                        </div>
+                        <span class="font-mono text-[9px] tracking-[0.2em] text-teal whitespace-nowrap">
+                          SCORE {a.score}
+                        </span>
+                      </div>
+                      {a.matchedKeywords.length > 0 && (
+                        <div class="mt-3 flex flex-wrap gap-1.5">
+                          {a.matchedKeywords.slice(0, 3).map((k) => (
+                            <span class="rounded border border-cream/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-cream/45">
+                              {k}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {a.blurb && (
+                        <p class="mt-3 grow font-sans text-[12px] leading-relaxed text-cream/55 line-clamp-3">
+                          {a.blurb}
+                        </p>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            )
           }
+
+          {/* Chatter strip divider */}
+          {
+            qubieResearch.length > 0 && qubieChatter.length > 0 && (
+              <div class="my-6 md:my-7 flex items-center gap-3">
+                <span class="font-mono text-[9px] tracking-[0.3em] uppercase text-cream/50">
+                  Chatter
+                </span>
+                <div class="h-px flex-1 bg-cream/10" />
+              </div>
+            )
+          }
+
+          {/* Chatter — bottom 5, compact vertical panels */}
+          {
+            qubieChatter.length > 0 && (
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+                {qubieChatter.map((a) => {
+                  const h = qubieHash(a.link);
+                  const docId =
+                    "QR-" +
+                    h.toString(16).toUpperCase().padStart(8, "0").slice(0, 4);
+                  const meter = Math.min(100, Math.max(20, a.score * 7));
+                  return (
+                    <a
+                      href={a.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="qubie-mini relative flex flex-col rounded border border-cream/10 bg-plum-deepest/50 p-4"
+                    >
+                      <div class="mb-3 flex items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.2em]">
+                        <span class="text-cream/40">{docId}</span>
+                        <span class="text-teal">{a.category.toUpperCase()}</span>
+                      </div>
+                      <h3 class="font-sans font-medium text-[13px] leading-snug text-cream line-clamp-3">
+                        {a.title}
+                      </h3>
+                      <p class="mt-2 flex flex-wrap items-center gap-x-2 font-mono text-[10px] tracking-wide text-cream/45">
+                        <span>{a.source.split("·")[0].trim()}</span>
+                        <span class="text-teal/50">·</span>
+                        <span>{a.date}</span>
+                      </p>
+                      <div class="mt-3 flex items-center gap-3">
+                        <div class="relative h-px flex-1 overflow-hidden bg-cream/10">
+                          <div
+                            class="absolute inset-y-[-1px] left-0 bg-teal"
+                            style={`width: ${meter}%`}
+                          />
+                        </div>
+                        <span class="font-mono text-[9px] tracking-[0.2em] text-teal whitespace-nowrap">
+                          SCORE {a.score}
+                        </span>
+                      </div>
+                      {a.blurb && (
+                        <p class="mt-3 grow font-sans text-[12px] leading-relaxed text-cream/55 line-clamp-6">
+                          {a.blurb}
+                        </p>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            )
+          }
+
+          {qubieTotal === 0 && (
+            <p class="font-sans text-[14px] text-cream/60 leading-relaxed max-w-2xl">
+              Fresh quantum-biology research and chatter — surfaced by Qubie.
+              Head over to the Qubie Report for the latest.
+            </p>
+          )}
         </div>
       </article>
 
@@ -537,6 +650,7 @@ const members = [
     background-color: rgba(18, 8, 16, 0.75);
     backdrop-filter: blur(4px);
   }
+
 </style>
 
 <script>

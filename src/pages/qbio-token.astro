@@ -3,6 +3,17 @@ import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
+import { dotGraphicLayered } from "../lib/dot-graphic";
+
+// Coin rendered from the original QBIOTOKEN.png — same artwork the v1
+// page used, just transformed into the dots style. The coin is an opaque
+// disc whose meaningful structure (rim + the QBio hex stamp + accents)
+// shows up as edges, so we layer a sparse alpha-derived body fill under a
+// dense edge-derived detail pass.
+const coinDotsSvg = await dotGraphicLayered(
+  "public/images/graphics/QBIOTOKEN.png",
+  { color: "#eee8df" },
+);
 
 // --- Governance phases ----------------------------------------------------
 const phases = [
@@ -138,29 +149,14 @@ const computedSlices = slices.map((s) => {
   <!-- HERO  —  coin video bleeds from upper-right, title on the left          -->
   <!-- ====================================================================== -->
   <section class="relative pb-16 md:pb-24">
-    <!-- Coin video — anchored top-right. NOTE: no transform on this wrapper
-         (transforms create an isolated stacking context that breaks
-         mix-blend-screen on the video, leaving the video's black bg visible).
-         Positioning via scoped style block below because Tailwind 4's JIT
-         was unreliable about generating arbitrary width / right utilities. -->
+    <!-- Coin rendered as a field of dots — same protocol as the science
+         neuron, so the hero graphics across the site share one visual
+         language. Slowly spins; honors prefers-reduced-motion. -->
     <div
-      class="coin-hero-wrap relative pt-20 lg:pt-0 lg:absolute lg:top-0 pointer-events-none"
+      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] lg:translate-x-[8%] pointer-events-none opacity-[0.22] coin-spin [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
+      set:html={coinDotsSvg}
+      aria-label="QBIO governance token, slowly spinning, rendered as a field of dots"
     >
-      <video
-        class="block w-full max-w-none aspect-square object-contain mix-blend-screen saturate-[1.5] contrast-[1.2] scale-y-[0.95]"
-        autoplay
-        loop
-        muted
-        playsinline
-        aria-label="QBIO governance token, slowly spinning"
-      >
-        <source src="/images/graphics/qbiotokengif.mp4" type="video/mp4" />
-        <img
-          src="/images/graphics/QBIOTOKEN.png"
-          alt="QBIO governance token"
-          class="w-full h-auto"
-        />
-      </video>
     </div>
 
     <!-- Title block -->
@@ -500,13 +496,19 @@ const computedSlices = slices.map((s) => {
           >
             <title id="tokenomics-title-v2">QBIO token allocation</title>
             {computedSlices.map((s) => <path d={s.path} fill={s.color} />)}
+            <defs>
+              <clipPath id="tokenomics-logo-clip">
+                <circle cx={_cx} cy={_cy} r="52" />
+              </clipPath>
+            </defs>
             <image
               href="/images/brand/logo-mark.png"
-              x={_cx - 38}
-              y={_cy - 38}
-              width="76"
-              height="76"
-              preserveAspectRatio="xMidYMid meet"
+              x={_cx - 52}
+              y={_cy - 52}
+              width="104"
+              height="104"
+              clip-path="url(#tokenomics-logo-clip)"
+              preserveAspectRatio="xMidYMid slice"
             />
             {
               computedSlices.map((s) => (
@@ -597,11 +599,11 @@ const computedSlices = slices.map((s) => {
             <ul class="space-y-2 font-sans text-[13px] text-cream/75">
               <li class="flex gap-3">
                 <span class="text-pink/70 shrink-0">—</span>
-                <span><span class="font-semibold text-cream/90">Ethereum:</span> MetaMask</span>
+                <span><span class="font-semibold text-cream/90">Ethereum:</span> <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-pink-light underline underline-offset-2">MetaMask</a></span>
               </li>
               <li class="flex gap-3">
                 <span class="text-pink/70 shrink-0">—</span>
-                <span><span class="font-semibold text-cream/90">Solana:</span> Phantom</span>
+                <span><span class="font-semibold text-cream/90">Solana:</span> <a href="https://phantom.app/" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-pink-light underline underline-offset-2">Phantom</a></span>
               </li>
             </ul>
           </div>
@@ -613,7 +615,7 @@ const computedSlices = slices.map((s) => {
             <ul class="space-y-2 font-sans text-[13px] text-cream/75">
               <li class="flex gap-3">
                 <span class="text-pink/70 shrink-0">—</span>
-                <span>Buy ETH or SOL from an exchange such as Binance, Coinbase, or Kraken</span>
+                <span>Buy ETH or SOL from an exchange such as <a href="https://www.binance.com/" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-pink-light underline underline-offset-2">Binance</a>, <a href="https://www.coinbase.com/" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-pink-light underline underline-offset-2">Coinbase</a>, or <a href="https://www.kraken.com/" target="_blank" rel="noopener noreferrer" class="text-pink hover:text-pink-light underline underline-offset-2">Kraken</a></span>
               </li>
               <li class="flex gap-3">
                 <span class="text-pink/70 shrink-0">—</span>
@@ -629,7 +631,13 @@ const computedSlices = slices.map((s) => {
             <div class="space-y-5">
               <div>
                 <p class="font-sans text-[13px] font-semibold text-cream/90 mb-2">
-                  Uniswap V3 on Ethereum
+                  <a
+                    href={`https://app.uniswap.org/swap?outputCurrency=${ethAddress}&chain=mainnet`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-pink hover:text-pink-light underline underline-offset-2"
+                    >Uniswap V3</a
+                  > on Ethereum
                 </p>
                 <ul class="space-y-2 font-sans text-[13px] text-cream/75">
                   <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Connect MetaMask wallet to Uniswap</span></li>
@@ -639,7 +647,13 @@ const computedSlices = slices.map((s) => {
               </div>
               <div>
                 <p class="font-sans text-[13px] font-semibold text-cream/90 mb-2">
-                  Raydium on Solana
+                  <a
+                    href={`https://raydium.io/swap/?inputMint=sol&outputMint=${solAddress}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-pink hover:text-pink-light underline underline-offset-2"
+                    >Raydium</a
+                  > on Solana
                 </p>
                 <ul class="space-y-2 font-sans text-[13px] text-cream/75">
                   <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Use Phantom wallet</span></li>
@@ -760,28 +774,20 @@ const computedSlices = slices.map((s) => {
 </V2Layout>
 
 <style>
-  /* Coin video positioning on lg+ viewports. Defined here (rather than
-     via Tailwind utilities) because lg:w-1/4 / lg:right-N didn't reliably
-     generate in the v2 page context. */
-  /* Note: keeping top as a fixed rem (rather than top: 50% + translateY)
-     because translate-based vertical centering creates a CSS transform
-     and an isolated stacking context, which would break the video's
-     mix-blend-screen and re-introduce the black bg. */
-  /* Right offset chosen so the coin's center sits ~79% across the viewport
-     — i.e. visually centered between the text column (which ends around
-     58%) and the right edge of the page. */
-  @media (min-width: 1024px) {
-    .coin-hero-wrap {
-      width: 27.5%;
-      right: 7%;
-      top: 16rem;
+  /* Slow rotation for the QBIO coin in the hero — paired with the dot-
+     graphic SVG. Quietly evokes "spinning token" without the 3D feel. */
+  .coin-spin {
+    animation: coin-spin 24s linear infinite;
+    transform-origin: 50% 50%;
+  }
+  @keyframes coin-spin {
+    to {
+      transform: rotate(360deg);
     }
   }
-  @media (min-width: 1280px) {
-    .coin-hero-wrap {
-      width: 22%;
-      right: 10%;
-      top: 18rem;
+  @media (prefers-reduced-motion: reduce) {
+    .coin-spin {
+      animation: none;
     }
   }
 </style>
