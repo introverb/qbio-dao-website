@@ -8,7 +8,7 @@ import { dotGraphic } from "../lib/dot-graphic";
 // Chain rendered as a field of dots (same protocol as the science neuron
 // and the qbio-token coin) so the hero graphics share one visual language.
 const chainDotsSvg = await dotGraphic("public/images/graphics/chain.png", {
-  color: "#eee8df",
+  color: "#e5c46b",
 });
 
 const activities = [
@@ -131,7 +131,7 @@ const testimonials = [
     <!-- Chain rendered as a field of dots — same protocol as the science
          neuron / token coin so the hero graphics share one visual language. -->
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] pointer-events-none opacity-[0.18] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
+      class="relative pt-20 lg:pt-0 lg:absolute lg:-top-[30px] lg:right-0 lg:w-[66%] xl:w-[58%] lg:translate-x-[15%] lg:-translate-y-[10%] lg:-scale-x-100 lg:-scale-y-100 pointer-events-none opacity-[0.18] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
       set:html={chainDotsSvg}
       aria-label="Chain rendered as a field of dots"
     >

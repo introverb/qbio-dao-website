@@ -35,6 +35,39 @@ const tldrStats = [
   },
 ] as const;
 
+// Merch — small curated feature pulled from the DAO's Printful storefront.
+const MERCH_STORE_URL = "https://quantum-bio-dao.printful.me/";
+const merchProducts = [
+  {
+    name: "Black Glossy Mug",
+    slug: "black-glossy-mug",
+    minPrice: 8.5,
+    imageUrl:
+      "https://cdn.printful.me/t/quick-stores/products/18108555-300-6a1f2934f3d4a",
+  },
+  {
+    name: "Bucket Hat",
+    slug: "bucket-hat",
+    minPrice: 16.5,
+    imageUrl:
+      "https://cdn.printful.me/t/quick-stores/products/18108555-379-6a1f2685933f4",
+  },
+  {
+    name: "Clear Phone Case",
+    slug: "clear-case-for-iphone",
+    minPrice: 12,
+    imageUrl:
+      "https://cdn.printful.me/t/quick-stores/products/18108555-181-6a1f22c98b5bc",
+  },
+  {
+    name: "Unisex Hoodie",
+    slug: "unisex-hoodie",
+    minPrice: 28,
+    imageUrl:
+      "https://cdn.printful.me/t/quick-stores/products/18108555-380-6a0564247c7e4",
+  },
+];
+
 type Org = {
   name: string;
   eyebrow: string;
@@ -563,6 +596,58 @@ const members = [
                   Read bio →
                 </span>
               </button>
+            ))
+          }
+        </div>
+      </article>
+
+      <!-- ============================================================= -->
+      <!-- MERCH STORE — curated 4 from Printful                   PINK   -->
+      <!-- ============================================================= -->
+      <article class={`${bentoCard} lg:col-span-12`}>
+        <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <EyebrowLabel accent="pink" class="mb-2">Merch</EyebrowLabel>
+            <h2
+              class="font-display text-2xl md:text-3xl leading-[1.05] tracking-tight text-cream"
+            >
+              Wear the <em class="italic text-pink/90">field</em>.
+            </h2>
+          </div>
+          <V2Cta
+            href={MERCH_STORE_URL}
+            label="Visit the shop"
+            accent="pink"
+            external
+            size="sm"
+          />
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+          {
+            merchProducts.map((p) => (
+              <a
+                href={`${MERCH_STORE_URL}product/${p.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group block overflow-hidden rounded-lg border border-cream/10 bg-plum-deepest/30 transition hover:border-pink/40"
+              >
+                <div class="aspect-[4/3] overflow-hidden bg-plum-deepest/60">
+                  <img
+                    src={p.imageUrl}
+                    alt={p.name}
+                    loading="lazy"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div class="px-3 py-2.5">
+                  <h3 class="font-sans font-medium text-[11px] text-cream leading-tight group-hover:text-pink-light transition-colors">
+                    {p.name}
+                  </h3>
+                  <p class="mt-0.5 font-mono text-[9px] tracking-wide text-cream/50">
+                    From ${p.minPrice.toFixed(2)}
+                  </p>
+                </div>
+              </a>
             ))
           }
         </div>

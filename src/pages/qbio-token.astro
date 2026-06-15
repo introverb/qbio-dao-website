@@ -3,17 +3,6 @@ import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
-import { dotGraphicLayered } from "../lib/dot-graphic";
-
-// Coin rendered from the original QBIOTOKEN.png — same artwork the v1
-// page used, just transformed into the dots style. The coin is an opaque
-// disc whose meaningful structure (rim + the QBio hex stamp + accents)
-// shows up as edges, so we layer a sparse alpha-derived body fill under a
-// dense edge-derived detail pass.
-const coinDotsSvg = await dotGraphicLayered(
-  "public/images/graphics/QBIOTOKEN.png",
-  { color: "#eee8df" },
-);
 
 // --- Governance phases ----------------------------------------------------
 const phases = [
@@ -142,21 +131,35 @@ const computedSlices = slices.map((s) => {
 ---
 
 <V2Layout
-  title="QBIO Token — Quantum Biology DAO"
+  title="QBIO Token & Governance — Quantum Biology DAO"
   description="QBIO is the governance token of the Quantum Biology DAO. Learn how decisions are made and how to buy QBIO."
 >
   <!-- ====================================================================== -->
   <!-- HERO  —  coin video bleeds from upper-right, title on the left          -->
   <!-- ====================================================================== -->
   <section class="relative pb-16 md:pb-24">
-    <!-- Coin rendered as a field of dots — same protocol as the science
-         neuron, so the hero graphics across the site share one visual
-         language. Slowly spins; honors prefers-reduced-motion. -->
+    <!-- Original spinning coin video, dot-masked. The video provides the
+         real 3D rotation; a tileable radial-gradient mask reveals it only
+         through a grid of tiny dots, so the whole thing reads as a dotted
+         spinning coin instead of a 3D render or a static dotted shape. -->
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] lg:translate-x-[8%] pointer-events-none opacity-[0.22] coin-spin [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
-      set:html={coinDotsSvg}
-      aria-label="QBIO governance token, slowly spinning, rendered as a field of dots"
+      class="relative pt-20 lg:pt-0 lg:absolute lg:top-32 lg:right-[15px] lg:w-[50%] xl:w-[43%] pointer-events-none opacity-25"
     >
+      <video
+        class="coin-video block w-full max-w-none aspect-square object-contain mix-blend-screen saturate-[1.5] contrast-[1.2] scale-y-[0.92]"
+        autoplay
+        loop
+        muted
+        playsinline
+        aria-label="QBIO governance token, slowly spinning"
+      >
+        <source src="/images/graphics/qbiotokengif.mp4" type="video/mp4" />
+        <img
+          src="/images/graphics/QBIOTOKEN.png"
+          alt="QBIO governance token"
+          class="w-full h-auto"
+        />
+      </video>
     </div>
 
     <!-- Title block -->
@@ -164,7 +167,7 @@ const computedSlices = slices.map((s) => {
       class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10"
     >
       <div class="lg:max-w-[58%]">
-        <EyebrowLabel accent="gold">Governance</EyebrowLabel>
+        <EyebrowLabel accent="gold">Token &amp; Governance</EyebrowLabel>
         <h1
           class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
         >
@@ -774,20 +777,24 @@ const computedSlices = slices.map((s) => {
 </V2Layout>
 
 <style>
-  /* Slow rotation for the QBIO coin in the hero — paired with the dot-
-     graphic SVG. Quietly evokes "spinning token" without the 3D feel. */
-  .coin-spin {
-    animation: coin-spin 24s linear infinite;
-    transform-origin: 50% 50%;
-  }
-  @keyframes coin-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .coin-spin {
-      animation: none;
-    }
+  /* Dot mask on the coin video — a tileable radial-gradient where each
+     5px tile contains a small opaque dot. The video shows through the
+     dots; everything else is hidden. Result: the real spinning 3D coin
+     visible as a halftone-style dot field. */
+  .coin-video {
+    -webkit-mask-image: radial-gradient(
+      circle at center,
+      #000 1.1px,
+      transparent 1.3px
+    );
+    mask-image: radial-gradient(
+      circle at center,
+      #000 1.1px,
+      transparent 1.3px
+    );
+    -webkit-mask-size: 5px 5px;
+    mask-size: 5px 5px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
   }
 </style>
