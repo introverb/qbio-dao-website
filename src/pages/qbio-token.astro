@@ -91,19 +91,22 @@ const testimonials = [
   },
 ];
 
-// --- Tokenomics donut math (kept from v1) ---------------------------------
+// --- Tokenomics donut math ------------------------------------------------
+// Slice colors are a deep-wine → light-pink gradient so the whole donut
+// reads on the dark plum bento panel without a light card behind it. Big
+// donut (rO=200 in an 800x500 viewBox) so the chart fills the panel width.
 const slices = [
-  { label: "Core team", value: 20, color: "#4b243c" },
-  { label: "Service providers", value: 7, color: "#5c2d49" },
-  { label: "Community auction", value: 15, color: "#854b6e" },
+  { label: "Core team", value: 20, color: "#5a1f37" },
+  { label: "Service providers", value: 7, color: "#803050" },
+  { label: "Community auction", value: 15, color: "#b04875" },
   { label: "Community incentives", value: 3, color: "#d57db2" },
   { label: "Treasury", value: 55, color: "#ffceec" },
 ];
-const _cx = 240;
-const _cy = 200;
-const _rO = 110;
-const _rI = 65;
-const _labelGap = 35;
+const _cx = 270;
+const _cy = 250;
+const _rO = 200;
+const _rI = 120;
+const _labelGap = 70;
 let _acc = -Math.PI / 2;
 const computedSlices = slices.map((s) => {
   const a1 = _acc;
@@ -499,13 +502,12 @@ const computedSlices = slices.map((s) => {
         <h2 class={`${bentoHeading} mb-10`}>
           QBIO <em class="italic text-pink/90">allocation</em>.
         </h2>
-        <div class="bg-paper/75 backdrop-blur-sm rounded-lg p-6 md:p-10 max-w-3xl mx-auto">
+        <div class="max-w-5xl mx-auto">
           <svg
-            viewBox="0 0 540 400"
+            viewBox="0 0 800 500"
             preserveAspectRatio="xMidYMid meet"
-            width="540"
-            height="400"
-            class="max-w-full h-auto block"
+            width="100%"
+            class="block h-auto"
             role="img"
             aria-labelledby="tokenomics-title-v2"
           >
@@ -513,27 +515,27 @@ const computedSlices = slices.map((s) => {
             {computedSlices.map((s) => <path d={s.path} fill={s.color} />)}
             <defs>
               <clipPath id="tokenomics-logo-clip">
-                <circle cx={_cx} cy={_cy} r="52" />
+                <circle cx={_cx} cy={_cy} r="95" />
               </clipPath>
             </defs>
             <image
               href="/images/brand/logo-mark.png"
-              x={_cx - 52}
-              y={_cy - 52}
-              width="104"
-              height="104"
+              x={_cx - 95}
+              y={_cy - 95}
+              width="190"
+              height="190"
               clip-path="url(#tokenomics-logo-clip)"
               preserveAspectRatio="xMidYMid slice"
             />
             {
               computedSlices.map((s) => (
                 <g>
-                  <line x1={s.lineStartX} y1={s.lineStartY} x2={s.labelX} y2={s.labelY} stroke="#25101d" stroke-width="1" />
-                  <circle cx={s.lineStartX} cy={s.lineStartY} r="2" fill="#25101d" />
-                  <text x={s.textX} y={s.labelY - 3} text-anchor={s.anchor} font-family="Apercu, system-ui, sans-serif" font-size="13" fill="#25101d">
+                  <line x1={s.lineStartX} y1={s.lineStartY} x2={s.labelX} y2={s.labelY} stroke="#fffcf6" stroke-width="1" stroke-opacity="0.7" />
+                  <circle cx={s.lineStartX} cy={s.lineStartY} r="2.5" fill="#fffcf6" />
+                  <text x={s.textX} y={s.labelY - 4} text-anchor={s.anchor} font-family="Apercu, system-ui, sans-serif" font-size="16" fill="#fffcf6">
                     {s.label}
                   </text>
-                  <text x={s.textX} y={s.labelY + 12} text-anchor={s.anchor} font-family="Apercu, system-ui, sans-serif" font-size="13" fill="#25101d">
+                  <text x={s.textX} y={s.labelY + 16} text-anchor={s.anchor} font-family="Apercu, system-ui, sans-serif" font-size="16" fill="#fffcf6" fill-opacity="0.7">
                     {s.value}%
                   </text>
                 </g>
