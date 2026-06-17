@@ -102,11 +102,11 @@ const slices = [
   { label: "Community incentives", value: 3, color: "#d57db2" },
   { label: "Treasury", value: 55, color: "#ffceec" },
 ];
-const _cx = 270;
+const _cx = 400;
 const _cy = 250;
-const _rO = 200;
-const _rI = 120;
-const _labelGap = 70;
+const _rO = 175;
+const _rI = 105;
+const _labelGap = 60;
 let _acc = -Math.PI / 2;
 const computedSlices = slices.map((s) => {
   const a1 = _acc;
@@ -502,7 +502,7 @@ const computedSlices = slices.map((s) => {
         <h2 class={`${bentoHeading} mb-10`}>
           QBIO <em class="italic text-pink/90">allocation</em>.
         </h2>
-        <div class="max-w-5xl mx-auto">
+        <div class="max-w-2xl mx-auto">
           <svg
             viewBox="0 0 800 500"
             preserveAspectRatio="xMidYMid meet"
