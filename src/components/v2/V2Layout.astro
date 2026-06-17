@@ -15,18 +15,18 @@ const { title, description } = Astro.props;
 
 <Layout title={title} description={description}>
   <V2Header />
-  <main class="bg-black text-cream relative overflow-hidden">
+  <main class="bg-plum-darkest text-cream relative overflow-hidden">
     <!-- Bg layer 1: tileable sine waves (wave-interference reference) -->
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.06]"
+      class="pointer-events-none absolute inset-0 opacity-[0.10]"
       style={`background-image: ${waveBg}; background-size: ${WAVE_TILE_W}px ${WAVE_TILE_H}px;`}
       aria-hidden="true"
     >
     </div>
     <!-- Bg layer 2: subtle dot grid on top -->
     <div
-      class="pointer-events-none absolute inset-0 opacity-[0.04]"
-      style="background-image: radial-gradient(circle, #eee8df 1px, transparent 1px); background-size: 22px 22px;"
+      class="pointer-events-none absolute inset-0 opacity-[0.07]"
+      style="background-image: radial-gradient(circle, #fffcf6 1px, transparent 1px); background-size: 22px 22px;"
       aria-hidden="true"
     >
     </div>
@@ -38,8 +38,10 @@ const { title, description } = Astro.props;
       style="top: 5.5rem;"
       aria-label="Social links"
     >
-      <div class="max-w-7xl mx-auto px-6 lg:px-12">
-        <div class="flex items-center justify-end gap-5 pointer-events-auto">
+      <div class="max-w-7xl mx-auto px-6 lg:px-12 flex justify-end">
+        <div
+          class="flex items-center gap-5 bg-plum-deepest/50 backdrop-blur-sm rounded-lg px-4 py-2 pointer-events-auto"
+        >
           {
             socials.map((s) => {
               const isMail = s.href.startsWith("mailto:");

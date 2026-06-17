@@ -129,32 +129,20 @@ const faqs: FAQ[] = [
   description="Frequently asked questions about the Quantum Biology DAO — what we do, how governance works, and how you can get involved."
 >
   <!-- ====================================================================== -->
-  <!-- HERO  —  molecules graphic anchored top-right, title on the left       -->
+  <!-- HERO  —  title on the left (graphic intentionally removed for now)     -->
   <!-- ====================================================================== -->
   <section class="relative pb-16 md:pb-24">
-    <!-- Molecules graphic — branching network feels appropriate for FAQs -->
-    <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] pointer-events-none faqs-hero-molecules"
-    >
-      <img
-        src="/images/graphics/molecules.png"
-        alt=""
-        class="block w-full max-w-none"
-        loading="eager"
-      />
-    </div>
-
     <!-- Title block -->
     <div
       class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10"
     >
       <div class="lg:max-w-[58%]">
-        <EyebrowLabel accent="gold">FAQs</EyebrowLabel>
+        <EyebrowLabel accent="pink">FAQs</EyebrowLabel>
         <h1
           class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
         >
           Frequently
-          <em class="italic text-gold/90">asked</em>
+          <em class="italic text-pink/90">asked</em>
           <span class="block">questions.</span>
         </h1>
         <p
@@ -170,7 +158,7 @@ const faqs: FAQ[] = [
           <V2Cta
             href={explainerUrl}
             label="Read the full explainer"
-            accent="gold"
+            accent="pink"
             external
           />
         </div>
@@ -222,14 +210,14 @@ const faqs: FAQ[] = [
       <!-- THE FAQ ACCORDION                                       TEAL   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="teal">Questions</EyebrowLabel>
+        <EyebrowLabel accent="pink">Questions</EyebrowLabel>
         <h2 class={`${bentoHeading} mb-10`}>
-          The most <em class="italic text-teal/90">asked</em>.
+          The most <em class="italic text-pink/90">asked</em>.
         </h2>
         <div class="space-y-3 max-w-4xl">
           {
             faqs.map((f) => (
-              <details class="faq-item-v2 group rounded-lg bg-plum-deepest/40 border border-cream/10 overflow-hidden transition-colors hover:border-teal/40">
+              <details class="faq-item-v2 group rounded-lg bg-plum-deepest/40 border border-cream/10 overflow-hidden transition-colors hover:border-pink/40">
                 <summary class="cursor-pointer list-none px-6 py-5 flex items-center justify-between gap-4 font-display text-base md:text-lg text-cream">
                   <span>{f.question}</span>
                   <svg
@@ -241,7 +229,7 @@ const faqs: FAQ[] = [
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="shrink-0 text-teal transition-transform duration-200 group-open:rotate-180"
+                    class="shrink-0 text-pink transition-transform duration-200 group-open:rotate-180"
                     aria-hidden="true"
                   >
                     <polyline points="6 9 12 15 18 9" />
@@ -252,7 +240,7 @@ const faqs: FAQ[] = [
                     block.kind === "p" ? (
                       <p>{block.text}</p>
                     ) : (
-                      <ul class="list-disc pl-6 space-y-1.5 marker:text-teal/60">
+                      <ul class="list-disc pl-6 space-y-1.5 marker:text-pink/60">
                         {block.items.map((item) => (
                           <li>{item}</li>
                         ))}
@@ -290,14 +278,6 @@ const faqs: FAQ[] = [
     </div>
   </section>
 </V2Layout>
-
-<style>
-  /* Subtle molecules graphic in the hero — branching network as a metaphor
-     for "questions branch out from one another". */
-  .faqs-hero-molecules {
-    opacity: 0.15;
-  }
-</style>
 
 <!-- ::marker / ::-webkit-details-marker pseudo-elements need is:global on
      Astro because the scoped class hash doesn't apply correctly to

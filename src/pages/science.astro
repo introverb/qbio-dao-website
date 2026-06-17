@@ -1,15 +1,161 @@
 ---
 import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
-import { bentoCard, bentoHeading, labelBase } from "../lib/v2-bg";
+import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
+import { labelBase, bentoCard } from "../lib/v2-bg";
 import { dotGraphic } from "../lib/dot-graphic";
 
-const examples = [
-  { label: "Photosynthesis" },
-  { label: "Bird navigation" },
-  { label: "DNA repair" },
-  { label: "Magnetic sensitivity" },
-  { label: "Sense of smell" },
+// Five "popular examples" illustrations — clean pink linework at the same
+// stroke weight as the small pull-quote motifs (spin pair, wave, dipole).
+// Sleeker than the dot-graphic treatment used for the hero heros, which
+// turned mushy at this display size (~220px per cell).
+const examples: { label: string; svg: string }[] = [
+  {
+    label: "Photosynthesis",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 27 L23 16 L37 27 L47 15 L60 25" stroke-opacity="0.88" stroke-dasharray="2.2 0.35 1.6 0.2"/>
+      <path d="M54 20 L65 28 L56 33" stroke-opacity="0.82"/>
+      <path d="M82 31 C60 40, 49 63, 56 89 C62 104, 81 110, 96 100 C112 92, 118 71, 112 55 C107 40, 95 29, 82 31 Z" stroke-opacity="0.9" stroke-width="1.2" stroke-dasharray="2.4 0.4"/>
+      <path d="M84 34 C63 43, 51 64, 58 89 C63 103, 79 108, 94 98 C110 90, 115 71, 110 57 C105 43, 95 33, 84 34" stroke-opacity="0.32" stroke-width="0.7"/>
+      <path d="M82 41 Q88 56, 92 72 Q96 88, 95 100" stroke-opacity="0.85"/>
+      <path d="M80 58 Q73 60, 67 62" stroke-opacity="0.78"/>
+      <path d="M88 78 Q79 81, 71 84" stroke-opacity="0.78"/>
+      <path d="M98 58 L110 54" stroke-opacity="0.78"/>
+      <path d="M102 78 L112 75" stroke-opacity="0.78"/>
+      <g stroke-opacity="0.42" stroke-width="0.6">
+        <line x1="100" y1="63" x2="105" y2="68"/>
+        <line x1="103" y1="67" x2="108" y2="71"/>
+        <line x1="105" y1="83" x2="109" y2="87"/>
+        <line x1="65" y1="55" x2="69" y2="59"/>
+      </g>
+    </svg>`,
+  },
+  {
+    label: "Bird navigation",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 25 Q60 13, 106 25" stroke-opacity="0.85" stroke-dasharray="2.2 0.35 1.6 0.25"/>
+      <path d="M10 39 Q60 23, 110 39" stroke-opacity="0.78" stroke-dasharray="2 0.3 1.4 0.25"/>
+      <path d="M6 53 Q60 34, 114 53" stroke-opacity="0.7" stroke-dasharray="1.8 0.3 1.2 0.25"/>
+      <path d="M32 84 Q35 79, 52 75 Q65 73, 71 78 Q74 84, 71 89 Q63 93, 50 93 Q35 91, 32 84 Z" stroke-opacity="0.92" stroke-width="1.2"/>
+      <path d="M33 86 Q36 81, 52 77 Q65 75, 71 80" stroke-opacity="0.3" stroke-width="0.7"/>
+      <circle cx="70" cy="80" r="7" stroke-opacity="0.9"/>
+      <path d="M76 78 L88 76 L76 84" stroke-opacity="0.85"/>
+      <path d="M33 85 L25 78 L26 92 Z" stroke-opacity="0.88"/>
+      <path d="M52 77 Q48 58, 38 49 Q56 55, 68 61" stroke-opacity="0.88"/>
+      <path d="M51 91 Q48 109, 38 119 Q56 113, 68 106" stroke-opacity="0.88"/>
+      <circle cx="72" cy="79" r="1" fill="#d57db2" stroke="none"/>
+      <g stroke-opacity="0.4" stroke-width="0.55">
+        <line x1="42" y1="83" x2="46" y2="86"/>
+        <line x1="48" y1="82" x2="52" y2="86"/>
+        <line x1="54" y1="83" x2="58" y2="86"/>
+      </g>
+    </svg>`,
+  },
+  {
+    label: "DNA repair",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M60 10 C 80 12, 88 18, 88 22 C 88 28, 80 33, 60 35 C 40 37, 32 43, 32 47 C 32 53, 40 58, 60 60 C 80 62, 88 68, 88 72 C 88 78, 80 83, 60 85 C 40 87, 32 93, 32 97 C 32 103, 40 108, 60 110" stroke-opacity="0.92" stroke-dasharray="2.6 0.35 1.6 0.2"/>
+      <path d="M61 13 C 81 15, 89 20, 88 24 C 87 30, 79 35, 60 37 C 41 39, 33 45, 32 49" stroke-opacity="0.3" stroke-width="0.65"/>
+      <path d="M60 10 C 40 12, 32 18, 32 22 C 32 28, 40 33, 60 35 C 80 37, 88 43, 88 47 C 88 53, 80 58, 60 60 C 40 62, 32 68, 32 72 C 32 78, 40 83, 60 85 C 80 87, 88 93, 88 97 C 88 103, 80 108, 60 110" stroke-opacity="0.92" stroke-dasharray="2.6 0.35 1.6 0.2"/>
+      <g stroke-opacity="0.72" stroke-width="0.9">
+        <line x1="33" y1="22" x2="87" y2="23"/>
+        <line x1="87" y1="47" x2="33" y2="48"/>
+        <line x1="33" y1="72" x2="87" y2="73"/>
+        <line x1="87" y1="97" x2="33" y2="98"/>
+      </g>
+      <g stroke-opacity="0.88" stroke-width="1.1">
+        <path d="M60 10 Q63 6, 68 3"/>
+        <path d="M60 10 Q57 6, 52 3"/>
+        <path d="M60 110 Q63 114, 68 117"/>
+        <path d="M60 110 Q57 114, 52 117"/>
+      </g>
+      <g fill="#d57db2" stroke="none">
+        <circle cx="32" cy="22" r="1.1"/>
+        <circle cx="88" cy="22" r="1.1"/>
+        <circle cx="32" cy="47" r="1.1"/>
+        <circle cx="88" cy="47" r="1.1"/>
+        <circle cx="32" cy="72" r="1.1"/>
+        <circle cx="88" cy="72" r="1.1"/>
+        <circle cx="32" cy="97" r="1.1"/>
+        <circle cx="88" cy="97" r="1.1"/>
+      </g>
+      <g stroke-opacity="0.35" stroke-width="0.5">
+        <line x1="48" y1="45" x2="52" y2="48"/>
+        <line x1="50" y1="44" x2="54" y2="47"/>
+        <line x1="68" y1="95" x2="72" y2="98"/>
+      </g>
+    </svg>`,
+  },
+  {
+    label: "Magnetic sensitivity",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M48 60 C 48 44, 72 44, 72 60 C 72 76, 48 76, 48 60 Z" stroke-opacity="0.85" stroke-dasharray="1.8 0.3"/>
+      <path d="M48 60 C 48 30, 72 30, 72 60 C 72 90, 48 90, 48 60 Z" stroke-opacity="0.8" stroke-dasharray="2 0.35"/>
+      <path d="M48 60 C 48 14, 72 14, 72 60 C 72 106, 48 106, 48 60 Z" stroke-opacity="0.75" stroke-dasharray="2.2 0.4"/>
+      <path d="M47 52 L73 52 L73 68 L47 68 Z" stroke-opacity="0.95" stroke-width="1.3"/>
+      <path d="M48 53 L72 53" stroke-opacity="0.35" stroke-width="0.7"/>
+      <path d="M60 52 L60 68" stroke-opacity="0.85"/>
+      <circle cx="48" cy="60" r="1.4" fill="#d57db2" stroke="none"/>
+      <circle cx="72" cy="60" r="1.4" fill="#d57db2" stroke="none"/>
+      <g stroke-opacity="0.4" stroke-width="0.6">
+        <line x1="50" y1="56" x2="54" y2="60"/>
+        <line x1="52" y1="56" x2="56" y2="60"/>
+        <line x1="64" y1="56" x2="68" y2="60"/>
+        <line x1="66" y1="56" x2="70" y2="60"/>
+      </g>
+    </svg>`,
+  },
+  {
+    label: "Sense of smell",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M25 66 Q34 58, 45 50" stroke-opacity="0.88"/>
+      <path d="M45 50 Q55 58, 65 66" stroke-opacity="0.88"/>
+      <path d="M25 66 Q34 74, 45 82" stroke-opacity="0.88"/>
+      <path d="M65 66 Q55 74, 45 82" stroke-opacity="0.88"/>
+      <path d="M45 50 Q44 41, 45 32" stroke-opacity="0.88"/>
+      <ellipse cx="25" cy="66" rx="5" ry="4.5" stroke-opacity="0.92" transform="rotate(-8 25 66)"/>
+      <ellipse cx="45" cy="50" rx="4.5" ry="4.2" stroke-opacity="0.92" transform="rotate(12 45 50)"/>
+      <ellipse cx="65" cy="66" rx="5" ry="4.5" stroke-opacity="0.92" transform="rotate(6 65 66)"/>
+      <ellipse cx="45" cy="82" rx="4.5" ry="4.2" stroke-opacity="0.92" transform="rotate(-5 45 82)"/>
+      <ellipse cx="45" cy="32" rx="4" ry="3.8" stroke-opacity="0.92" transform="rotate(15 45 32)"/>
+      <path d="M80 52 Q86 58, 92 52 Q98 46, 104 52" stroke-opacity="0.78" stroke-dasharray="1.8 0.3"/>
+      <path d="M78 66 Q86 72, 92 66 Q99 60, 106 66" stroke-opacity="0.72" stroke-dasharray="1.6 0.3"/>
+      <path d="M80 80 Q86 86, 92 80 Q98 74, 104 80" stroke-opacity="0.65" stroke-dasharray="1.4 0.3"/>
+      <g stroke-opacity="0.35" stroke-width="0.55">
+        <line x1="24" y1="71" x2="26" y2="73"/>
+        <line x1="26" y1="70" x2="28" y2="72"/>
+        <line x1="64" y1="71" x2="66" y2="73"/>
+      </g>
+    </svg>`,
+  },
+];
+
+// Horizontal timeline beats for the brief-history section.
+const timelineEvents = [
+  {
+    year: "1944",
+    title: "What is Life?",
+    caption:
+      "Schrödinger postulates quantum mechanics in biology — before DNA was discovered.",
+  },
+  {
+    year: "1960s–70s",
+    title: "First evidence",
+    caption:
+      "Researchers link quantum effects to enzymes and bird magnetic navigation.",
+  },
+  {
+    year: "2007",
+    title: "Photosynthesis",
+    caption:
+      "Long-lived quantum coherence found in light-harvesting complexes.",
+  },
+  {
+    year: "Now",
+    title: "Probing live cells",
+    caption:
+      "DAO + QBI build a quantum microscope to detect electron spin in living tissue.",
+  },
 ];
 
 const foundations = [
@@ -46,8 +192,7 @@ const testimonials = [
   },
 ];
 
-// Neuron rendered as a field of dots — same protocol as the token coin and
-// the community chain, so the hero graphics share one visual language.
+// Hero neuron — kept from the previous design.
 const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
   color: "#7dd3d3",
 });
@@ -57,429 +202,534 @@ const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
   title="Science — Quantum Biology DAO"
   description="Learn what quantum biology is and how we're building a new, decentralized process to fund its most important experiments."
 >
-    <!-- ==================================================================== -->
-    <!-- 01 — HERO  (neuron anchored top-right of page, text on the left)     -->
-    <!-- ==================================================================== -->
-    <section class="relative pb-16 md:pb-24">
-      <!-- Neuron — anchored to very top-right of the page, bleeding right.
-           On mobile it stacks above the text; on lg+ it goes absolute. -->
-      <div
-        class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[77%] xl:w-[70%] lg:translate-x-[10%] pointer-events-none opacity-[0.17] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
-        set:html={neuronDotsSvg}
-        aria-label="Branching neuron rendered as a field of dots"
-      >
-      </div>
-
-      <!-- Text on the left side -->
-      <div
-        class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10"
-      >
-        <div class="lg:max-w-[52%]">
-          <p class={`${labelBase} text-gold`}>Science</p>
-          <h1
-            class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
-          >
-            The science
-            <span class="block">
-              <em class="font-display italic text-gold/90">&amp;</em> the system.
-            </span>
-          </h1>
-          <p
-            class="mt-8 font-sans text-[14px] text-cream/65 leading-relaxed max-w-md"
-          >
-            Learn what quantum biology is and how we're building a new,
-            decentralized process to fund its most important experiments.
-          </p>
-          <a
-            href="https://quantumbiology.community"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mt-10 inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] uppercase text-gold hover:text-pink-light transition-colors group"
-          >
-            <span
-              class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gold text-plum-darkest group-hover:bg-pink-light transition-colors"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><path d="M5 12h14"></path><polyline points="12 5 19 12 12 19"
-                ></polyline></svg
-              >
-            </span>
-            <span>Join the working group</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================================================================== -->
-    <!-- BENTO REGION — interlocking panels after the hero                    -->
-    <!-- ==================================================================== -->
-    <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pb-16 md:pb-24">
-      <div class="grid lg:grid-cols-12 gap-6 lg:gap-7 auto-rows-auto">
-
-        <!-- ============================================================ -->
-        <!-- FOUNDATIONS                                            PINK   -->
-        <!-- ============================================================ -->
-        <article class={`${bentoCard} lg:col-span-7`}>
-          <p class={`${labelBase} text-pink`}>Foundations</p>
-          <h2 class={`${bentoHeading} mb-6`}>
-            What is <em class="italic text-pink/90">quantum</em> biology.
-          </h2>
-          <div
-            class="font-sans text-[14px] text-cream/70 leading-relaxed space-y-4"
-          >
-            <p>
-              Quantum biology is an emerging scientific field that explores
-              how life depends on quantum phenomena.
-            </p>
-            <p>
-              At its core, it studies how superposition, electron spin,
-              entanglement, and quantum tunneling can influence the molecules,
-              cells, and systems of living organisms.
-            </p>
-            <p>
-              While quantum effects are well-documented in physics and
-              chemistry, biology has long been treated as "too messy" or "too
-              warm" for these delicate phenomena. But this assumption is
-              breaking down.
-            </p>
-          </div>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- HISTORY                                                GOLD   -->
-        <!-- ============================================================ -->
-        <article class={`${bentoCard} lg:col-span-5`}>
-          <p class={`${labelBase} text-gold`}>History</p>
-          <h2 class={`${bentoHeading} mb-6`}>
-            A brief <em class="italic text-gold/90">history</em>.
-          </h2>
-          <div
-            class="font-sans text-[14px] text-cream/70 leading-relaxed space-y-4"
-          >
-            <p>
-              Erwin Schrödinger, one of the fathers of quantum theory, wrote
-              "What is Life?" in 1944 — postulating the need for quantum
-              mechanics to explain heredity, prior to the discovery of DNA.
-            </p>
-            <p>
-              In the 1960s and 70s, researchers began finding examples of
-              natural phenomena (tunneling in enzymes, bird navigation) that
-              depended on quantum effects.
-            </p>
-            <p>
-              Now, researchers are aiming to construct new instruments to
-              directly probe quantum states and help unlock the quantum
-              secrets of life.
-            </p>
-          </div>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- IN THE WILD — popular examples strip                   PINK   -->
-        <!-- ============================================================ -->
-        <article class={`${bentoCard} lg:col-span-12 lg:p-10`}>
-          <div class="flex items-end justify-between flex-wrap gap-4 mb-8">
-            <div>
-              <p class={`${labelBase} text-pink mb-2`}>In the wild</p>
-              <h3
-                class="font-display text-2xl md:text-3xl text-cream tracking-tight"
-              >
-                Popular <em class="italic text-pink/90">examples</em>.
-              </h3>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {
-              examples.map((ex, i) => (
-                <div class="border border-cream/10 rounded-lg aspect-[4/3] flex flex-col items-center justify-end p-4">
-                  <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-pink/60 mb-1">
-                    {String(i + 1).padStart(2, "0")}
-                  </p>
-                  <p class="font-display text-base text-cream text-center leading-tight">
-                    {ex.label}
-                  </p>
-                </div>
-              ))
-            }
-          </div>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- 04 — RESOURCES                                         GOLD   -->
-        <!-- ============================================================ -->
-        <article class={`${bentoCard} lg:col-span-5`}>
-          <p class={`${labelBase} text-gold`}>Further reading</p>
-          <h2 class={`${bentoHeading} mb-8`}>
-            Explore the <em class="italic text-gold/90">foundations</em>.
-          </h2>
-          <div class="grid grid-cols-2 gap-2">
-            {
-              foundations.map((f) => (
-                <a
-                  href={f.href}
-                  target={f.external ? "_blank" : undefined}
-                  rel={f.external ? "noopener noreferrer" : undefined}
-                  class="group flex items-start justify-between gap-2 rounded-md border border-cream/10 hover:border-gold/40 hover:bg-mauve/15 transition-colors px-3 py-3"
-                >
-                  <span class="font-sans text-[12px] text-cream/85 leading-snug">
-                    {f.label}
-                  </span>
-                  <svg
-                    width="11"
-                    height="11"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="text-gold opacity-60 group-hover:opacity-100 shrink-0 mt-0.5"
-                    aria-hidden="true"
-                  >
-                    {f.external ? (
-                      <>
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                      </>
-                    ) : (
-                      <>
-                        <path d="M5 12h14" />
-                        <polyline points="12 5 19 12 12 19" />
-                      </>
-                    )}
-                  </svg>
-                </a>
-              ))
-            }
-          </div>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- 05 — OUR FOCUS                                         TEAL   -->
-        <!-- ============================================================ -->
-        <article class={`${bentoCard} lg:col-span-7`}>
-          <p class={`${labelBase} text-teal`}>Our focus</p>
-          <h2 class={`${bentoHeading} mb-6`}>
-            What kind of <em class="italic text-teal/90">quantum biology</em>
-            are we interested in?
-          </h2>
-          <div
-            class="font-sans text-[14px] text-cream/70 leading-relaxed space-y-4"
-          >
-            <p>
-              There are many "flavors" of quantum biology — from birds
-              navigating magnetic fields, to quantum coherence in
-              photosynthesis, to theories of consciousness in microtubules.
-            </p>
-            <p>
-              At the Quantum Biology DAO, we're especially focused on
-              experimentally testable quantum effects with real-world
-              relevance and clear theoretical grounding.
-            </p>
-            <p>
-              So far, we've been particularly interested in two areas:
-              <span class="text-teal">low-field magnetic effects</span>
-              and <span class="text-teal">the radical pair mechanism</span>.
-              These make specific predictions and could explain phenomena
-              from tadpole development to human fertility.
-            </p>
-          </div>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- 06 — INSTITUTE                                         TEAL   -->
-        <!-- ============================================================ -->
-        <article
-          class={`${bentoCard} lg:col-span-7 lg:p-10`}
-                 >
-          <p class={`${labelBase} text-teal`}>Flagship grant</p>
-          <div class="grid sm:grid-cols-[1fr_1.1fr] gap-6 items-center">
-            <div class="aspect-square rounded-lg overflow-hidden">
-              <img
-                src="/images/brand/qbi-institute-lockup.png"
-                alt="Quantum Biology Institute"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <h2
-                class="font-display text-2xl md:text-3xl leading-[1.1] tracking-tight text-cream mb-4"
-              >
-                The Quantum Biology
-                <em class="italic text-teal/90">Institute</em>.
-              </h2>
-              <div
-                class="font-sans text-[13px] text-cream/70 leading-relaxed space-y-3"
-              >
-                <p>
-                  We made the largest grant ever awarded in quantum biology
-                  to the Quantum Biology Institute — a nonprofit lab in Los
-                  Angeles funding real scientists doing real experiments.
-                </p>
-                <p>
-                  The Institute is building a quantum microscope to detect
-                  electron spin states inside live cells.
-                </p>
-              </div>
-              <div class="mt-6 flex flex-col items-start gap-5">
-                <V2Cta
-                  href="https://quantumbiology.org"
-                  label="Visit the Institute"
-                  accent="teal"
-                  external
-                />
-                <p class="font-sans text-[12px] text-cream/60 leading-relaxed">
-                  The Quantum Biology Institute is committed to an open science
-                  model of research. To view all their previous and ongoing
-                  work, check out
-                  <a
-                    href="https://data.quantumbiology.org/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-teal hover:text-teal/80 underline underline-offset-2"
-                    >this link</a
-                  >.
-                </p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- 07 — FUNDING                                           PINK   -->
-        <!-- ============================================================ -->
-        <article
-          id="granting"
-          class={`${bentoCard} lg:col-span-5 flex flex-col`}
-                 >
-          <p class={`${labelBase} text-pink`}>Funding</p>
-          <h2 class={`${bentoHeading} mb-6`}>
-            The granting <em class="italic text-pink/90">process</em>.
-          </h2>
-          <div
-            class="font-sans text-[14px] text-cream/70 leading-relaxed space-y-4 mb-8 flex-grow"
-          >
-            <p>
-              We're building a new way to fund quantum biology — one that's
-              community-driven, transparent, and designed to support
-              experiments that matter.
-            </p>
-            <p>
-              The full granting process is still in development. If you have
-              ideas:
-            </p>
-          </div>
-          <a
-            href="https://quantumbiology.community"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] uppercase text-pink hover:text-pink-light transition-colors group self-start"
-          >
-            <span
-              class="inline-flex items-center justify-center w-11 h-11 rounded-full bg-pink text-plum-darkest group-hover:bg-pink-light transition-colors"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><path d="M5 12h14"></path><polyline points="12 5 19 12 12 19"
-                ></polyline></svg
-              >
-            </span>
-            <span>Visit our Discord</span>
-          </a>
-        </article>
-
-        <!-- ============================================================ -->
-        <!-- 08 — VOICES                                            PINK   -->
-        <!-- ============================================================ -->
-        <article class={`${bentoCard} lg:col-span-12`}>
-          <p class={`${labelBase} text-pink`}>Voices</p>
-          <h2 class={`${bentoHeading} mb-8`}>
-            From the <em class="italic text-pink/90">working group</em>.
-          </h2>
-          <div class="grid md:grid-cols-2 gap-6">
-            {
-              testimonials.map((t) => (
-                <div class="border border-cream/10 rounded-lg p-6 md:p-8 flex flex-col">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    class="text-pink/60 mb-5"
-                    aria-hidden="true"
-                  >
-                    <path d="M6 17h3l2-4V7H5v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z" />
-                  </svg>
-                  <p class="font-display text-lg md:text-xl text-cream/90 leading-snug mb-6 flex-grow">
-                    {t.quote}
-                  </p>
-                  <div class="border-t border-cream/10 pt-4">
-                    <p class="font-sans text-cream font-semibold text-sm">
-                      {t.author}
-                    </p>
-                    <p class="font-sans text-cream/50 text-xs mt-1 tracking-wide uppercase">
-                      {t.role}
-                    </p>
-                  </div>
-                </div>
-              ))
-            }
-          </div>
-        </article>
-      </div>
+  <!-- ====================================================================== -->
+  <!-- 01 — HERO  (neuron anchored top-right, headline on the left)            -->
+  <!-- ====================================================================== -->
+  <section class="relative pb-16 md:pb-24">
+    <div
+      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[77%] xl:w-[70%] lg:translate-x-[10%] pointer-events-none opacity-[0.37] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
+      set:html={neuronDotsSvg}
+      aria-label="Branching neuron rendered as a field of dots"
+    >
     </div>
 
-    <!-- ==================================================================== -->
-    <!-- 09 — QUESTIONS                                             GOLD       -->
-    <!-- ==================================================================== -->
-    <section class="relative py-20 md:py-28">
-      <div class="max-w-3xl mx-auto px-6 lg:px-12 text-center">
-        <p class={`${labelBase} text-gold`}>Questions</p>
-        <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream mb-10"
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10">
+      <div class="lg:max-w-[52%]">
+        <p class={`${labelBase} text-pink`}>Science</p>
+        <h1
+          class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
         >
-          Still have <em class="italic text-gold/90">questions</em>?
-        </h2>
-        <a
-          href="/faqs"
-          class="inline-flex items-center gap-3 font-sans text-[11px] tracking-[0.3em] uppercase text-gold hover:text-pink-light transition-colors group"
-        >
-          <span
-            class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gold text-plum-darkest group-hover:bg-pink-light transition-colors"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              ><path d="M5 12h14"></path><polyline points="12 5 19 12 12 19"
-              ></polyline></svg
-            >
+          The science
+          <span class="block">
+            <em class="font-display italic text-pink/90">&amp;</em> the system.
           </span>
-          <span>See all FAQs</span>
-        </a>
+        </h1>
+        <p
+          class="mt-8 font-sans text-[14px] text-cream/65 leading-relaxed max-w-md"
+        >
+          Learn what quantum biology is and how we're building a new,
+          decentralized process to fund its most important experiments.
+        </p>
+        <div class="mt-10">
+          <V2Cta
+            href="https://quantumbiology.community"
+            label="Join the working group"
+            accent="pink"
+            external
+          />
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 02 — WHAT IS QUANTUM BIOLOGY  (prose + spin-pair pull quote)            -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <div class="max-w-3xl mx-auto">
+      <EyebrowLabel accent="pink">Foundations</EyebrowLabel>
+      <h2
+        class="font-display text-4xl md:text-5xl leading-[1.05] tracking-tight text-cream mb-8"
+      >
+        What is <em class="italic text-pink/90">quantum</em> biology.
+      </h2>
+      <div
+        class="font-sans text-[15px] text-cream/75 leading-relaxed space-y-5"
+      >
+        <p>
+          Quantum biology is an emerging scientific field that explores how life
+          depends on quantum phenomena.
+        </p>
+        <p>
+          At its core, it studies how superposition, electron spin, entanglement,
+          and quantum tunneling can influence the molecules, cells, and systems
+          of living organisms.
+        </p>
+      </div>
+
+      <!-- Pull quote: spin-pair motif -->
+      <aside class="my-14 md:my-16 flex items-center gap-6 justify-center">
+        <svg
+          width="56"
+          height="56"
+          viewBox="0 0 60 60"
+          fill="none"
+          stroke="#d57db2"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="shrink-0"
+          aria-hidden="true"
+        >
+          <line x1="20" y1="10" x2="20" y2="50"></line>
+          <polyline points="13,17 20,10 27,17"></polyline>
+          <line x1="40" y1="10" x2="40" y2="50"></line>
+          <polyline points="33,43 40,50 47,43"></polyline>
+        </svg>
+        <blockquote
+          class="font-display italic text-2xl md:text-3xl text-cream/90 leading-[1.2]"
+        >
+          Biology was treated as <span class="text-pink">too messy</span> for
+          these delicate phenomena. That assumption is breaking down.
+        </blockquote>
+      </aside>
+
+      <div
+        class="font-sans text-[15px] text-cream/75 leading-relaxed space-y-5"
+      >
+        <p>
+          Researchers are now finding quantum effects at work in photosynthesis,
+          bird navigation, enzyme catalysis, and possibly the sense of smell —
+          phenomena that classical biology has struggled to fully explain.
+        </p>
+      </div>
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 03 — A BRIEF HISTORY  (prose + wavy timeline + wave pull quote)         -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <div class="max-w-3xl mx-auto">
+        <EyebrowLabel accent="pink">History</EyebrowLabel>
+        <h2
+          class="font-display text-4xl md:text-5xl leading-[1.05] tracking-tight text-cream mb-8"
+        >
+          A brief <em class="italic text-pink/90">history</em>.
+        </h2>
+        <div
+          class="font-sans text-[15px] text-cream/75 leading-relaxed space-y-5"
+        >
+          <p>
+            Quantum biology has been hiding in plain sight for almost a century.
+            Schrödinger pointed at it in 1944. Researchers in the 1960s and 70s
+            kept finding examples no one could explain. The modern wave began
+            with the discovery of long-lived quantum coherence in photosynthesis
+            in 2007.
+          </p>
+        </div>
+      </div>
+
+      <!-- Wavy horizontal timeline -->
+      <div class="mt-14 md:mt-20 relative">
+        <!-- Decorative wave behind the beats -->
+        <svg
+          class="absolute inset-x-0 top-12 w-full h-32 pointer-events-none"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 60 Q150 15, 300 60 T 600 60 T 900 60 T 1200 60"
+            stroke="#d57db2"
+            stroke-width="1.5"
+            fill="none"
+            opacity="0.45"
+            stroke-dasharray="2 6"
+          ></path>
+        </svg>
+
+        <div
+          class="relative grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6"
+        >
+          {
+            timelineEvents.map((event) => (
+              <div class="text-center px-2">
+                <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-pink mb-3">
+                  {event.year}
+                </p>
+                <div class="flex justify-center mb-4">
+                  <span class="relative inline-flex">
+                    <span class="absolute inset-0 rounded-full bg-pink/25 blur-sm" />
+                    <span class="relative w-3.5 h-3.5 rounded-full bg-pink ring-4 ring-plum-darkest" />
+                  </span>
+                </div>
+                <p class="font-display text-base md:text-lg text-cream mb-2 leading-tight">
+                  {event.title}
+                </p>
+                <p class="font-sans text-[12.5px] text-cream/60 leading-snug max-w-[18ch] mx-auto">
+                  {event.caption}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Pull quote: wave motif -->
+      <aside
+        class="mt-16 md:mt-20 max-w-3xl mx-auto flex items-center gap-6 justify-center"
+      >
+        <svg
+          width="56"
+          height="56"
+          viewBox="0 0 60 60"
+          fill="none"
+          stroke="#d57db2"
+          stroke-width="3"
+          stroke-linecap="round"
+          class="shrink-0"
+          aria-hidden="true"
+        >
+          <path d="M5 30 Q15 12, 25 30 T 45 30 Q50 22, 55 30"></path>
+        </svg>
+        <blockquote
+          class="font-display italic text-2xl md:text-3xl text-cream/90 leading-[1.2]"
+        >
+          Schrödinger postulated quantum mechanics in life —
+          <span class="text-pink">before DNA was discovered</span>.
+        </blockquote>
+      </aside>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 04 — OUR FOCUS                                                           -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <div class="max-w-3xl mx-auto">
+      <EyebrowLabel accent="pink">Our focus</EyebrowLabel>
+      <h2
+        class="font-display text-4xl md:text-5xl leading-[1.05] tracking-tight text-cream mb-8"
+      >
+        What kind of <em class="italic text-pink/90">quantum biology</em>
+        are we interested in?
+      </h2>
+      <div
+        class="font-sans text-[15px] text-cream/75 leading-relaxed space-y-5"
+      >
+        <p>
+          There are many "flavors" of quantum biology — from birds navigating
+          magnetic fields, to quantum coherence in photosynthesis, to theories
+          of consciousness in microtubules.
+        </p>
+        <p>
+          At the Quantum Biology DAO, we're especially focused on
+          experimentally testable quantum effects with real-world relevance and
+          clear theoretical grounding.
+        </p>
+        <p>
+          So far, we've been particularly interested in two areas:
+          <span class="text-pink">low-field magnetic effects</span>
+          and <span class="text-pink">the radical pair mechanism</span>. These
+          make specific predictions and could explain phenomena from tadpole
+          development to human fertility.
+        </p>
+      </div>
+
+      <!-- Pull quote: dipole motif -->
+      <aside class="mt-14 md:mt-16 flex items-center gap-6 justify-center">
+        <svg
+          width="56"
+          height="56"
+          viewBox="0 0 60 60"
+          fill="none"
+          stroke="#d57db2"
+          stroke-width="2.6"
+          stroke-linecap="round"
+          class="shrink-0"
+          aria-hidden="true"
+        >
+          <ellipse cx="30" cy="30" rx="12" ry="22"></ellipse>
+          <ellipse cx="30" cy="30" rx="20" ry="22"></ellipse>
+          <circle cx="30" cy="8" r="3" fill="#d57db2"></circle>
+          <circle cx="30" cy="52" r="3" fill="#d57db2"></circle>
+        </svg>
+        <blockquote
+          class="font-display italic text-2xl md:text-3xl text-cream/90 leading-[1.2]"
+        >
+          From <span class="text-pink">tadpole development</span> to human
+          fertility.
+        </blockquote>
+      </aside>
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 05 — POPULAR EXAMPLES  (5-up illustration row)                          -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <div class="max-w-3xl mb-12 md:mb-16">
+        <EyebrowLabel accent="pink">In the wild</EyebrowLabel>
+        <h2
+          class="font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream"
+        >
+          Popular <em class="italic text-pink/90">examples</em>.
+        </h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+        {
+          examples.map((ex) => (
+            <div class="flex flex-col items-center text-center">
+              <div
+                class="w-full aspect-square mb-4 [&_svg]:block [&_svg]:w-full [&_svg]:h-full"
+                set:html={ex.svg}
+              />
+              <p class="font-display text-base md:text-lg text-cream leading-tight">
+                {ex.label}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 06 — EXPLORE THE FOUNDATIONS  (4-up pill row)                           -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <div class="max-w-3xl mb-10 md:mb-12">
+        <EyebrowLabel accent="pink">Further reading</EyebrowLabel>
+        <h2
+          class="font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream"
+        >
+          Explore the <em class="italic text-pink/90">foundations</em>.
+        </h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {
+          foundations.map((f) => (
+            <a
+              href={f.href}
+              target={f.external ? "_blank" : undefined}
+              rel={f.external ? "noopener noreferrer" : undefined}
+              class="group flex items-center justify-between gap-3 rounded-md border border-cream/10 hover:border-pink/40 hover:bg-pink/5 transition-colors px-4 py-4"
+            >
+              <span class="font-sans text-[13px] text-cream/85 leading-snug">
+                {f.label}
+              </span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-pink opacity-60 group-hover:opacity-100 shrink-0"
+                aria-hidden="true"
+              >
+                {f.external ? (
+                  <>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </>
+                ) : (
+                  <>
+                    <path d="M5 12h14" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </>
+                )}
+              </svg>
+            </a>
+          ))
+        }
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 07 — INSTITUTE  (left lockup + right copy + CTA)                        -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <EyebrowLabel accent="teal">Flagship grant</EyebrowLabel>
+      <div
+        class="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-center mt-2"
+      >
+        <div class="aspect-square rounded-lg overflow-hidden">
+          <img
+            src="/images/brand/qbi-institute-lockup.png"
+            alt="Quantum Biology Institute"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div>
+          <h2
+            class="font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream mb-6"
+          >
+            The Quantum Biology
+            <em class="italic text-teal/90">Institute</em>.
+          </h2>
+          <div
+            class="font-sans text-[14px] text-cream/75 leading-relaxed space-y-4"
+          >
+            <p>
+              We made the largest grant ever awarded in quantum biology to the
+              Quantum Biology Institute — a nonprofit lab in Los Angeles funding
+              real scientists doing real experiments.
+            </p>
+            <p>
+              The Institute is building a quantum microscope to detect electron
+              spin states inside live cells.
+            </p>
+          </div>
+          <div class="mt-8 flex flex-col items-start gap-5">
+            <V2Cta
+              href="https://quantumbiology.org"
+              label="Visit the Institute"
+              accent="teal"
+              external
+            />
+            <p class="font-sans text-[12px] text-cream/60 leading-relaxed">
+              The Quantum Biology Institute is committed to an open science
+              model of research. To view all their previous and ongoing work,
+              check out
+              <a
+                href="https://data.quantumbiology.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-teal hover:text-teal/80 underline underline-offset-2"
+                >this link</a
+              >.
+            </p>
+          </div>
+        </div>
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 08 — VOICES  (two testimonials)                                         -->
+  <!-- ====================================================================== -->
+  <section class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={bentoCard}>
+      <EyebrowLabel accent="pink">Voices</EyebrowLabel>
+      <h2
+        class="font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream mb-10"
+      >
+        From the <em class="italic text-pink/90">working group</em>.
+      </h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        {
+          testimonials.map((t) => (
+            <div class="border border-cream/10 rounded-lg p-6 md:p-8 flex flex-col">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                class="text-pink/60 mb-5"
+                aria-hidden="true"
+              >
+                <path d="M6 17h3l2-4V7H5v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z" />
+              </svg>
+              <p class="font-display text-lg md:text-xl text-cream/90 leading-snug mb-6 flex-grow">
+                {t.quote}
+              </p>
+              <div class="border-t border-cream/10 pt-4">
+                <p class="font-sans text-cream font-semibold text-sm">
+                  {t.author}
+                </p>
+                <p class="font-sans text-cream/50 text-xs mt-1 tracking-wide uppercase">
+                  {t.role}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 09 — GRANTING PROCESS  (panel CTA)                                      -->
+  <!-- ====================================================================== -->
+  <section id="granting" class="relative py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <article class={`${bentoCard} text-center`}>
+      <div class="max-w-3xl mx-auto">
+      <EyebrowLabel accent="pink" class="mb-6">Funding</EyebrowLabel>
+      <h2
+        class="font-display text-3xl md:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream mb-6"
+      >
+        The granting <em class="italic text-pink/90">process</em>.
+      </h2>
+      <p
+        class="font-sans text-[15px] text-cream/75 leading-relaxed max-w-2xl mx-auto mb-3"
+      >
+        We're building a new way to fund quantum biology — one that's
+        community-driven, transparent, and designed to support experiments that
+        matter.
+      </p>
+      <p
+        class="font-sans text-[15px] text-cream/75 leading-relaxed max-w-2xl mx-auto mb-10"
+      >
+        The full granting process is still in development. If you have ideas:
+      </p>
+      <div class="inline-flex">
+        <V2Cta
+          href="https://quantumbiology.community"
+          label="Visit our Discord"
+          accent="pink"
+          external
+        />
+      </div>
+      </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- 10 — STILL HAVE QUESTIONS                                               -->
+  <!-- ====================================================================== -->
+  <section class="relative py-20 md:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-12 text-center">
+      <EyebrowLabel accent="pink" class="mb-6">Questions</EyebrowLabel>
+      <h2
+        class="font-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream mb-10"
+      >
+        Still have <em class="italic text-pink/90">questions</em>?
+      </h2>
+      <div class="inline-flex">
+        <V2Cta href="/faqs" label="See all FAQs" accent="pink" />
+      </div>
+    </div>
+  </section>
 </V2Layout>

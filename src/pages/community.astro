@@ -131,7 +131,7 @@ const testimonials = [
     <!-- Chain rendered as a field of dots — same protocol as the science
          neuron / token coin so the hero graphics share one visual language. -->
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:-top-[30px] lg:right-0 lg:w-[66%] xl:w-[58%] lg:translate-x-[15%] lg:-translate-y-[10%] lg:-scale-x-100 lg:-scale-y-100 pointer-events-none opacity-[0.18] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
+      class="relative pt-20 lg:pt-0 lg:absolute lg:-top-[30px] lg:right-0 lg:w-[66%] xl:w-[58%] lg:translate-x-[15%] lg:-translate-y-[10%] lg:-scale-x-100 lg:-scale-y-100 pointer-events-none opacity-[0.38] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
       set:html={chainDotsSvg}
       aria-label="Chain rendered as a field of dots"
     >
@@ -142,12 +142,12 @@ const testimonials = [
       class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10"
     >
       <div class="lg:max-w-[58%]">
-        <EyebrowLabel accent="gold">Community</EyebrowLabel>
+        <EyebrowLabel accent="pink">Community</EyebrowLabel>
         <h1
           class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
         >
           How to
-          <em class="italic text-gold/90">contribute</em>
+          <em class="italic text-pink/90">contribute</em>
           <span class="block">
             to the Quantum Biology DAO.
           </span>
@@ -165,7 +165,7 @@ const testimonials = [
           <V2Cta
             href="https://quantumbiology.community"
             label="Join our Discord"
-            accent="gold"
+            accent="pink"
             external
           />
         </div>
@@ -236,9 +236,9 @@ const testimonials = [
       <!-- JOIN THE CONVERSATION                                   GOLD   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="gold">First step</EyebrowLabel>
+        <EyebrowLabel accent="pink">First step</EyebrowLabel>
         <h2 class={`${bentoHeading} mb-10`}>
-          Join the <em class="italic text-gold/90">conversation</em>.
+          Join the <em class="italic text-pink/90">conversation</em>.
         </h2>
 
         <div class="grid lg:grid-cols-12 gap-10 lg:gap-12">
@@ -246,7 +246,7 @@ const testimonials = [
             <V2Cta
               href="https://quantumbiology.community"
               label="Join our Discord"
-              accent="gold"
+              accent="pink"
               external
             />
           </div>
@@ -255,7 +255,7 @@ const testimonials = [
               {
                 joinBullets.map((b) => (
                   <li class="flex gap-4 items-start">
-                    <span class="text-gold/70 mt-1 shrink-0">—</span>
+                    <span class="text-pink/70 mt-1 shrink-0">—</span>
                     <span>{b}</span>
                   </li>
                 ))
@@ -269,12 +269,12 @@ const testimonials = [
       <!-- PARTICIPATE IN GOVERNANCE                               TEAL   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="teal">Have a voice</EyebrowLabel>
+        <EyebrowLabel accent="pink">Have a voice</EyebrowLabel>
         <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           <div class="lg:col-span-7">
             <h2 class={`${bentoHeading} mb-6`}>
               Participate in
-              <em class="italic text-teal/90">governance</em>.
+              <em class="italic text-pink/90">governance</em>.
             </h2>
             <p
               class="font-sans text-[14px] text-cream/70 leading-relaxed max-w-md"
@@ -287,7 +287,7 @@ const testimonials = [
             <V2Cta
               href="/qbio-token"
               label="Token & Governance"
-              accent="teal"
+              accent="pink"
             />
           </div>
         </div>
@@ -316,32 +316,32 @@ const testimonials = [
               <div class="flex flex-col rounded-lg border border-cream/10 bg-plum-deepest/40 p-5 md:p-6">
                 <div class="text-pink/80 mb-5">
                   {g.icon === "atom" && (
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <circle cx="12" cy="12" r="1.2" fill="currentColor" />
                       <path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z" />
                       <path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z" />
                     </svg>
                   )}
                   {g.icon === "chat" && (
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                     </svg>
                   )}
                   {g.icon === "vote" && (
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="m9 12 2 2 4-4" />
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
+                      <path d="m9 12 2 2 4-4" stroke-dasharray="none"/>
                       <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v9H5V7Z" />
                       <path d="M22 19H2" />
                     </svg>
                   )}
                   {g.icon === "shield" && (
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-                      <path d="m9 12 2 2 4-4" />
+                      <path d="m9 12 2 2 4-4" stroke-dasharray="none"/>
                     </svg>
                   )}
                   {g.icon === "product" && (
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                       <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                       <line x1="12" y1="22.08" x2="12" y2="12" />
@@ -367,9 +367,9 @@ const testimonials = [
       <!-- CORE CONTRIBUTORS                                       GOLD   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="gold">Core contributors</EyebrowLabel>
+        <EyebrowLabel accent="pink">Core contributors</EyebrowLabel>
         <h2 class={`${bentoHeading} mb-10`}>
-          The people <em class="italic text-gold/90">behind</em> the DAO.
+          The people <em class="italic text-pink/90">behind</em> the DAO.
         </h2>
         <div
           class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10"
@@ -379,11 +379,11 @@ const testimonials = [
               <button
                 type="button"
                 data-bio-trigger={`community-${i}`}
-                class="group flex flex-col items-center text-center p-4 -m-4 rounded-2xl bg-transparent hover:bg-pink/10 transition-colors cursor-pointer outline-none appearance-none border-0 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-plum-darkest"
+                class="group flex flex-col items-center text-center p-4 -m-4 rounded-2xl bg-transparent hover:bg-pink/10 transition-colors cursor-pointer outline-none appearance-none border-0 focus-visible:ring-2 focus-visible:ring-pink focus-visible:ring-offset-2 focus-visible:ring-offset-plum-darkest"
                 aria-haspopup="dialog"
                 aria-controls={`bio-community-${i}`}
               >
-                <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-deepest mb-4 ring-1 ring-cream/10 group-hover:ring-gold transition">
+                <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-deepest mb-4 ring-1 ring-cream/10 group-hover:ring-pink transition">
                   <img
                     src={c.img}
                     alt={c.name}
@@ -394,10 +394,10 @@ const testimonials = [
                 <h3 class="font-sans font-semibold text-sm text-cream mb-1">
                   {c.name}
                 </h3>
-                <p class="font-sans text-[10px] uppercase tracking-[0.18em] text-gold mb-3">
+                <p class="font-sans text-[10px] uppercase tracking-[0.18em] text-pink mb-3">
                   {c.role}
                 </p>
-                <span class="font-sans text-[10px] tracking-[0.18em] uppercase text-gold/70 group-hover:text-pink-light transition-colors">
+                <span class="font-sans text-[10px] tracking-[0.18em] uppercase text-pink/70 group-hover:text-pink-light transition-colors">
                   Read bio →
                 </span>
               </button>
@@ -445,14 +445,14 @@ const testimonials = [
   <!-- ====================================================================== -->
   <section class="relative py-20 md:py-28">
     <div class="max-w-3xl mx-auto px-6 lg:px-12 text-center">
-      <EyebrowLabel accent="gold" class="mb-8">Questions</EyebrowLabel>
+      <EyebrowLabel accent="pink" class="mb-8">Questions</EyebrowLabel>
       <h2
         class="font-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream mb-10"
       >
-        Still have <em class="italic text-gold/90">questions</em>?
+        Still have <em class="italic text-pink/90">questions</em>?
       </h2>
       <div class="inline-flex">
-        <V2Cta href="/faqs" label="See all FAQs" accent="gold" />
+        <V2Cta href="/faqs" label="See all FAQs" accent="pink" />
       </div>
     </div>
   </section>
@@ -500,7 +500,7 @@ const testimonials = [
               <h3 class="font-display text-2xl text-cream mb-1">
                 {c.name}
               </h3>
-              <p class="font-sans text-[10px] tracking-[0.18em] uppercase text-gold">
+              <p class="font-sans text-[10px] tracking-[0.18em] uppercase text-pink">
                 {c.role}
               </p>
             </div>

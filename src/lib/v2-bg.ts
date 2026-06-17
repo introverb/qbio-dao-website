@@ -18,7 +18,7 @@ const wavePaths = waves
       const wy = y + Math.sin((x / period) * Math.PI * 2 + phase) * amp;
       d += ` L${x},${wy.toFixed(1)}`;
     }
-    return `<path d="${d}" stroke="#eee8df" stroke-width="0.6" fill="none"/>`;
+    return `<path d="${d}" stroke="#fffcf6" stroke-width="0.6" fill="none"/>`;
   })
   .join("");
 
@@ -30,7 +30,7 @@ export const waveBg = `url("data:image/svg+xml;utf8,${encodeURIComponent(waveSvg
 // Hairline border (`border border-cream/10`) gives every panel a subtle
 // stroke that defines its edge on the black page canvas.
 export const bentoCard =
-  "relative bg-plum-darkest rounded-lg border border-cream/10 p-8 md:p-10 lg:p-12 h-full";
+  "relative bg-plum-deepest rounded-lg border border-cream/10 p-8 md:p-10 lg:p-12 h-full";
 export const bentoHeading =
   "font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream";
 export const labelBase =

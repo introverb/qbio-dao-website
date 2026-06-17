@@ -143,10 +143,10 @@ const computedSlices = slices.map((s) => {
          through a grid of tiny dots, so the whole thing reads as a dotted
          spinning coin instead of a 3D render or a static dotted shape. -->
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-32 lg:right-[15px] lg:w-[50%] xl:w-[43%] pointer-events-none opacity-25"
+      class="relative pt-20 lg:pt-0 lg:absolute lg:top-32 lg:right-[15px] lg:w-[50%] xl:w-[43%] pointer-events-none"
     >
       <video
-        class="coin-video block w-full max-w-none aspect-square object-contain mix-blend-screen saturate-[1.5] contrast-[1.2] scale-y-[0.92]"
+        class="coin-video block w-full max-w-none aspect-square object-contain mix-blend-screen saturate-[1.5] contrast-[1.2] brightness-50 scale-y-[0.92]"
         autoplay
         loop
         muted
@@ -167,14 +167,14 @@ const computedSlices = slices.map((s) => {
       class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10"
     >
       <div class="lg:max-w-[58%]">
-        <EyebrowLabel accent="gold">Token &amp; Governance</EyebrowLabel>
+        <EyebrowLabel accent="pink">Token &amp; Governance</EyebrowLabel>
         <h1
           class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
         >
           How we make
           <span class="block">
             decisions
-            <em class="italic text-gold/90">together</em>
+            <em class="italic text-pink/90">together</em>
           </span>
           <span class="block">to advance quantum biology.</span>
         </h1>
@@ -188,7 +188,7 @@ const computedSlices = slices.map((s) => {
           governance token that powers the DAO.
         </p>
         <div class="mt-10 flex flex-col items-start gap-5">
-          <V2Cta href="#what-is-qbio" label="Learn about QBIO" accent="gold" />
+          <V2Cta href="#what-is-qbio" label="Learn about QBIO" accent="pink" />
           <V2Cta href="#how-to-buy" label="How to buy QBIO" accent="pink" />
         </div>
       </div>
@@ -262,12 +262,15 @@ const computedSlices = slices.map((s) => {
                       viewBox="0 0 64 64"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2.2"
+                      stroke-width="1.5"
                       stroke-linecap="round"
                       stroke-linejoin="round"
+                      stroke-dasharray="1.8 0.3 1.2 0.2"
+                      stroke-opacity="0.9"
                       aria-hidden="true"
                     >
                       <path d="M14 12 L50 12 Q54 12 54 16 L54 40 Q54 44 50 44 L36 44 L28 52 L28 44 L14 44 Q10 44 10 40 L10 16 Q10 12 14 12 Z" />
+                      <path d="M16 14 L48 14 Q52 14 52 17" stroke-opacity="0.3" stroke-width="0.8" stroke-dasharray="none"/>
                       <circle cx="24" cy="28" r="1.6" fill="currentColor" stroke="none" />
                       <circle cx="32" cy="28" r="1.6" fill="currentColor" stroke="none" />
                       <circle cx="40" cy="28" r="1.6" fill="currentColor" stroke="none" />
@@ -280,9 +283,11 @@ const computedSlices = slices.map((s) => {
                       viewBox="0 0 64 64"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2.2"
+                      stroke-width="1.5"
                       stroke-linecap="round"
                       stroke-linejoin="round"
+                      stroke-dasharray="1.8 0.3 1.2 0.2"
+                      stroke-opacity="0.9"
                       aria-hidden="true"
                     >
                       <polygon points="32,6 42,12 42,24 32,30 22,24 22,12" />
@@ -290,6 +295,7 @@ const computedSlices = slices.map((s) => {
                       <polygon points="48,30 58,36 58,48 48,54 38,48 38,36" />
                       <line x1="27" y1="27" x2="21" y2="33" />
                       <line x1="37" y1="27" x2="43" y2="33" />
+                      <polyline points="33,7 41,13 41,23" stroke-opacity="0.3" stroke-width="0.8" stroke-dasharray="none"/>
                     </svg>
                   )}
                   {p.icon === "token" && (
@@ -299,14 +305,17 @@ const computedSlices = slices.map((s) => {
                       viewBox="0 0 64 64"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2.2"
+                      stroke-width="1.5"
                       stroke-linecap="round"
                       stroke-linejoin="round"
+                      stroke-dasharray="1.8 0.3 1.2 0.2"
+                      stroke-opacity="0.9"
                       aria-hidden="true"
                     >
                       <polygon points="32,6 54,18 54,46 32,58 10,46 10,18" />
-                      <polygon points="32,15 46,23 46,41 32,49 18,41 18,23" stroke-opacity="0.35" />
-                      <polyline points="24,32 30,38 41,26" />
+                      <polygon points="32,15 46,23 46,41 32,49 18,41 18,23" stroke-opacity="0.32" />
+                      <polyline points="24,32 30,38 41,26" stroke-dasharray="none"/>
+                      <path d="M33 7 L53 19" stroke-opacity="0.3" stroke-width="0.8" stroke-dasharray="none"/>
                     </svg>
                   )}
                 </div>
@@ -337,12 +346,12 @@ const computedSlices = slices.map((s) => {
       <!-- PROGRESSIVE DECENTRALIZATION                            GOLD   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="gold">Long-term direction</EyebrowLabel>
+        <EyebrowLabel accent="pink">Long-term direction</EyebrowLabel>
         <div class="grid lg:grid-cols-12 gap-10 lg:gap-12">
           <div class="lg:col-span-5">
             <h2 class={bentoHeading}>
               Progressive
-              <em class="italic text-gold/90">decentralization</em>.
+              <em class="italic text-pink/90">decentralization</em>.
             </h2>
           </div>
           <div class="lg:col-span-7">
@@ -363,7 +372,7 @@ const computedSlices = slices.map((s) => {
               {
                 principles.map((p) => (
                   <li class="flex gap-4 items-start font-sans text-[14px] text-cream/80">
-                    <span class="text-gold/70 mt-1 shrink-0">—</span>
+                    <span class="text-pink/70 mt-1 shrink-0">—</span>
                     <span>
                       <span class="font-semibold text-cream">{p.label}:</span>{" "}
                       {p.body}
@@ -381,7 +390,7 @@ const computedSlices = slices.map((s) => {
             <V2Cta
               href="https://saurikz.com/what-is-progressive-decentralization-web3"
               label="Read more"
-              accent="gold"
+              accent="pink"
               external
             />
           </div>
@@ -392,13 +401,13 @@ const computedSlices = slices.map((s) => {
       <!-- WHAT IS QBIO + WHY BUY                                  TEAL   -->
       <!-- ============================================================= -->
       <article id="what-is-qbio" class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="teal">The token</EyebrowLabel>
+        <EyebrowLabel accent="pink">The token</EyebrowLabel>
         <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 mb-16">
           <div class="lg:col-span-6">
             <h2 class={bentoHeading}>
               What are tokens?
               <span class="block">
-                What is the <em class="italic text-teal/90">QBIO token</em>?
+                What is the <em class="italic text-pink/90">QBIO token</em>?
               </span>
             </h2>
           </div>
@@ -425,26 +434,26 @@ const computedSlices = slices.map((s) => {
 
         <div class="border-t border-cream/10 pt-10">
           <p
-            class="font-sans text-[11px] tracking-[0.3em] uppercase text-teal mb-6"
+            class="font-sans text-[11px] tracking-[0.3em] uppercase text-pink mb-6"
           >
             Why buy QBIO
           </p>
           <h3 class="font-display text-2xl md:text-3xl text-cream tracking-tight mb-10">
-            Three reasons to <em class="italic text-teal/90">hold</em>.
+            Three reasons to <em class="italic text-pink/90">hold</em>.
           </h3>
           <div class="grid md:grid-cols-3 gap-5 md:gap-6">
             {
               reasons.map((r, i) => (
                 <div class="flex flex-col rounded-lg border border-cream/10 bg-plum-deepest/40 p-6 md:p-7">
-                  <div class="text-teal/80 mb-5">
+                  <div class="text-pink/80 mb-5">
                     {r.icon === "vote" && (
-                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M9 12l2 2 4-4" />
+                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
+                        <path d="M9 12l2 2 4-4" stroke-dasharray="none"/>
                         <path d="M21 12c0 5-3.5 7.5-9 7.5S3 17 3 12s3.5-7.5 9-7.5 9 2.5 9 7.5z" />
                       </svg>
                     )}
                     {r.icon === "network" && (
-                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                         <circle cx="12" cy="5" r="2" />
                         <circle cx="5" cy="19" r="2" />
                         <circle cx="19" cy="19" r="2" />
@@ -455,7 +464,7 @@ const computedSlices = slices.map((s) => {
                       </svg>
                     )}
                     {r.icon === "blocks" && (
-                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                         <rect x="3" y="3" width="8" height="8" rx="1" />
                         <rect x="13" y="3" width="8" height="8" rx="1" />
                         <rect x="3" y="13" width="8" height="8" rx="1" />
@@ -463,7 +472,7 @@ const computedSlices = slices.map((s) => {
                       </svg>
                     )}
                   </div>
-                  <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-teal/60 mb-2">
+                  <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-pink/60 mb-2">
                     {String(i + 1).padStart(2, "0")}
                   </p>
                   <h4 class="font-display text-lg md:text-xl text-cream leading-tight mb-3">
@@ -483,9 +492,9 @@ const computedSlices = slices.map((s) => {
       <!-- TOKENOMICS                                              TEAL   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12`}>
-        <EyebrowLabel accent="teal">Tokenomics</EyebrowLabel>
+        <EyebrowLabel accent="pink">Tokenomics</EyebrowLabel>
         <h2 class={`${bentoHeading} mb-10`}>
-          QBIO <em class="italic text-teal/90">allocation</em>.
+          QBIO <em class="italic text-pink/90">allocation</em>.
         </h2>
         <div class="bg-paper rounded-lg p-6 md:p-10 max-w-3xl mx-auto">
           <svg
@@ -547,20 +556,20 @@ const computedSlices = slices.map((s) => {
               <div class="aspect-[4/3] rounded-lg border border-cream/10 bg-plum-deepest/40 flex flex-col items-center justify-center gap-4 p-4">
                 <div class="text-pink/80">
                   {s.icon === "wallet" && (
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
                       <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
                       <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
                     </svg>
                   )}
                   {s.icon === "coins" && (
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <circle cx="9" cy="9" r="6" />
                       <path d="M16.5 9a6 6 0 1 1-6 9" />
                     </svg>
                   )}
                   {s.icon === "swap" && (
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <path d="M16 3l4 4-4 4" />
                       <path d="M20 7H4" />
                       <path d="M8 21l-4-4 4-4" />
@@ -568,7 +577,7 @@ const computedSlices = slices.map((s) => {
                     </svg>
                   )}
                   {s.icon === "vault" && (
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.0 0.2" stroke-opacity="0.9" aria-hidden="true">
                       <rect x="3" y="5" width="18" height="14" rx="2" />
                       <circle cx="12" cy="12" r="3" />
                       <path d="M12 9v-1" />
@@ -733,11 +742,11 @@ const computedSlices = slices.map((s) => {
       <!-- READY TO SHAPE — centered action panel                  GOLD   -->
       <!-- ============================================================= -->
       <article class={`${bentoCard} lg:col-span-12 text-center`}>
-        <EyebrowLabel accent="gold" class="!mb-4 justify-self-center inline-block">
+        <EyebrowLabel accent="pink" class="!mb-4 justify-self-center inline-block">
           Ready
         </EyebrowLabel>
         <h2 class={`${bentoHeading} mb-6 mx-auto max-w-3xl`}>
-          Ready to shape the <em class="italic text-gold/90">future</em> of
+          Ready to shape the <em class="italic text-pink/90">future</em> of
           quantum biology?
         </h2>
         <p
@@ -752,7 +761,7 @@ const computedSlices = slices.map((s) => {
             accent="pink"
             external
           />
-          <V2Cta href="#how-to-buy" label="Buy QBIO" accent="gold" />
+          <V2Cta href="#how-to-buy" label="Buy QBIO" accent="pink" />
         </div>
       </article>
     </div>
@@ -763,14 +772,14 @@ const computedSlices = slices.map((s) => {
   <!-- ====================================================================== -->
   <section class="relative py-20 md:py-28">
     <div class="max-w-3xl mx-auto px-6 lg:px-12 text-center">
-      <EyebrowLabel accent="gold" class="mb-8">Questions</EyebrowLabel>
+      <EyebrowLabel accent="pink" class="mb-8">Questions</EyebrowLabel>
       <h2
         class="font-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream mb-10"
       >
-        Still have <em class="italic text-gold/90">questions</em>?
+        Still have <em class="italic text-pink/90">questions</em>?
       </h2>
       <div class="inline-flex">
-        <V2Cta href="/faqs" label="See all FAQs" accent="gold" />
+        <V2Cta href="/faqs" label="See all FAQs" accent="pink" />
       </div>
     </div>
   </section>
