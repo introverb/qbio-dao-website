@@ -1,6 +1,7 @@
 ---
 import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
+import SynergyCta from "../components/v2/SynergyCta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
 import { getQubieCards, QUBIE_SITE_URL } from "../lib/qubie";
@@ -40,6 +41,7 @@ const merchProducts = [
   {
     name: "Black Glossy Mug",
     slug: "black-glossy-mug",
+    category: "Drinkware",
     minPrice: 8.5,
     imageUrl:
       "https://cdn.printful.me/t/quick-stores/products/18108555-300-6a1f2934f3d4a",
@@ -47,6 +49,7 @@ const merchProducts = [
   {
     name: "Bucket Hat",
     slug: "bucket-hat",
+    category: "Headwear",
     minPrice: 16.5,
     imageUrl:
       "https://cdn.printful.me/t/quick-stores/products/18108555-379-6a1f2685933f4",
@@ -54,6 +57,7 @@ const merchProducts = [
   {
     name: "Clear Phone Case",
     slug: "clear-case-for-iphone",
+    category: "Accessory",
     minPrice: 12,
     imageUrl:
       "https://cdn.printful.me/t/quick-stores/products/18108555-181-6a1f22c98b5bc",
@@ -61,21 +65,35 @@ const merchProducts = [
   {
     name: "Unisex Hoodie",
     slug: "unisex-hoodie",
+    category: "Apparel",
     minPrice: 28,
     imageUrl:
       "https://cdn.printful.me/t/quick-stores/products/18108555-380-6a0564247c7e4",
   },
 ];
 
+// Stable 4-hex-char SKU derived from the product slug — same flavor as the
+// QR-XXXX doc IDs on the Qubie News console.
+function merchSku(slug: string): string {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) {
+    h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+  }
+  return "SKU-" + h.toString(16).toUpperCase().padStart(8, "0").slice(0, 4);
+}
+
 type Org = {
   name: string;
   eyebrow: string;
   body: string;
-  accent: "pink" | "teal";
+  accent: "pink" | "teal" | "gold";
   youAreHere: boolean;
   cta?: string;
   href?: string;
   external?: boolean;
+  // When true, the CTA renders as the rainbow tricolor SynergyCta
+  // (eyebrow stays its `accent` color).
+  synergy?: boolean;
 };
 
 const orgs: Org[] = [
@@ -86,7 +104,8 @@ const orgs: Org[] = [
     cta: "Visit Site",
     href: "https://quantumbiology.eco/",
     external: true,
-    accent: "pink",
+    accent: "gold",
+    synergy: true,
     youAreHere: false,
   },
   {
@@ -116,7 +135,7 @@ const orgs: Org[] = [
     cta: "Visit Site",
     href: "https://quantumbiology.inc/",
     external: true,
-    accent: "pink",
+    accent: "gold",
     youAreHere: false,
   },
 ];
@@ -124,11 +143,13 @@ const orgs: Org[] = [
 const accentTextClass = {
   pink: "text-pink",
   teal: "text-teal",
+  gold: "text-gold",
 } as const;
 
 const accentItalicClass = {
   pink: "text-pink/90",
   teal: "text-teal/90",
+  gold: "text-gold/90",
 } as const;
 
 const members = [
@@ -212,7 +233,7 @@ const members = [
           </span>
         </h1>
         <p
-          class="mt-8 font-sans text-[14px] text-cream/65 leading-relaxed max-w-md"
+          class="mt-8 font-sans text-[14px] text-cream leading-relaxed max-w-md"
         >
           The Quantum Biology DAO accelerates the quantum biology field through
           community building, open governance, scientific experimentation,
@@ -260,7 +281,7 @@ const members = [
               QBIO.
             </h2>
             <p
-              class="mt-6 font-sans text-[14px] text-cream/70 leading-relaxed max-w-md"
+              class="mt-6 font-sans text-[14px] text-cream leading-relaxed max-w-md"
             >
               A community-run organization advancing the field of quantum
               biology, governed by the QBIO token. The DAO funds research,
@@ -337,10 +358,18 @@ const members = [
                 <h3 class="font-display text-xl md:text-2xl text-cream mb-4 leading-tight">
                   {org.name}
                 </h3>
-                <p class="font-sans text-[13px] text-cream/65 leading-relaxed mb-6 grow">
+                <p class="font-sans text-[13px] text-cream leading-relaxed mb-6 grow">
                   {org.body}
                 </p>
-                {org.cta && org.href && (
+                {org.cta && org.href && org.synergy && (
+                  <SynergyCta
+                    href={org.href}
+                    label={org.cta}
+                    external={org.external}
+                    size="sm"
+                  />
+                )}
+                {org.cta && org.href && !org.synergy && (
                   <V2Cta
                     href={org.href}
                     label={org.cta}
@@ -374,7 +403,7 @@ const members = [
               <em class="italic text-teal/90">Institute</em>.
             </h2>
             <div
-              class="font-sans text-[14px] text-cream/75 leading-relaxed space-y-4"
+              class="font-sans text-[14px] text-cream leading-relaxed space-y-4"
             >
               <p>
                 We made the largest grant ever awarded in quantum biology to
@@ -430,7 +459,7 @@ const members = [
               ></span>
             </span>
             <span
-              class="font-mono text-[10px] tracking-[0.25em] uppercase text-cream/70"
+              class="font-mono text-[10px] tracking-[0.25em] uppercase text-cream"
             >
               QUBIE://REPORT
             </span>
@@ -643,54 +672,90 @@ const members = [
       </article>
 
       <!-- ============================================================= -->
-      <!-- MERCH STORE — curated 4 from Printful                   PINK   -->
+      <!-- MERCH STORE — console-style panel matching Qubie News   PINK   -->
       <!-- ============================================================= -->
-      <article class={`${bentoCard} lg:col-span-12`}>
-        <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <EyebrowLabel accent="pink" class="mb-2">Merch</EyebrowLabel>
-            <h2
-              class="font-display text-2xl md:text-3xl leading-[1.05] tracking-tight text-cream"
+      <article
+        class="lg:col-span-12 overflow-hidden rounded-lg border border-cream/15 bg-plum-deepest/40"
+      >
+        {/* Console title bar */}
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 border-b border-cream/10 bg-plum-darkest/70 px-5 py-2.5"
+        >
+          <div class="flex items-center gap-2.5">
+            <span class="relative flex h-2 w-2" aria-hidden="true">
+              <span
+                class="absolute inline-flex h-full w-full rounded-full bg-pink opacity-50 animate-ping"
+              ></span>
+              <span
+                class="relative inline-flex h-2 w-2 rounded-full bg-pink"
+              ></span>
+            </span>
+            <span
+              class="font-mono text-[10px] tracking-[0.25em] uppercase text-cream"
             >
-              Wear the <em class="italic text-pink/90">field</em>.
-            </h2>
+              QBIO://SHOP
+            </span>
           </div>
+          <div
+            class="flex items-center gap-2 font-mono text-[10px] tracking-[0.15em] uppercase text-cream/45"
+          >
+            <span>{merchProducts.length} items</span>
+            <span class="text-cream/25">·</span>
+            <span>via Printful</span>
+            <span class="text-cream/25">·</span>
+            <span>ships worldwide</span>
+          </div>
+        </div>
+
+        {/* Inner header — display heading + visit-shop CTA */}
+        <div
+          class="flex flex-wrap items-end justify-between gap-6 border-b border-cream/10 px-6 py-6 md:px-8 md:py-8"
+        >
+          <h2 class={bentoHeading}>
+            Wear the <em class="italic text-pink/90">field</em>.
+          </h2>
           <V2Cta
             href={MERCH_STORE_URL}
             label="Visit the shop"
             accent="pink"
             external
-            size="sm"
           />
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-          {
-            merchProducts.map((p) => (
-              <a
-                href={`${MERCH_STORE_URL}product/${p.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group block overflow-hidden rounded-lg border border-cream/10 bg-plum-deepest/30 transition hover:border-pink/40"
-              >
-                <div class="aspect-[4/3] overflow-hidden bg-plum-deepest/60">
-                  <img
-                    src={p.imageUrl}
-                    alt={p.name}
-                    loading="lazy"
-                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <div class="px-3 py-2.5">
-                  <h3 class="font-sans font-medium text-[11px] text-cream leading-tight group-hover:text-pink-light transition-colors">
+
+        {/* Product grid — chatter-card flavor */}
+        <div class="p-5 md:p-6">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {
+              merchProducts.map((p) => (
+                <a
+                  href={`${MERCH_STORE_URL}product/${p.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="qubie-mini group relative flex flex-col rounded border border-cream/10 bg-plum-deepest/50 p-4 transition-colors hover:border-pink/40"
+                >
+                  <div class="mb-3 flex items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.2em]">
+                    <span class="text-cream/40">{merchSku(p.slug)}</span>
+                    <span class="text-pink">{p.category.toUpperCase()}</span>
+                  </div>
+                  <div class="mb-3 aspect-[4/3] overflow-hidden rounded border border-cream/10 bg-plum-deepest/60">
+                    <img
+                      src={p.imageUrl}
+                      alt={p.name}
+                      loading="lazy"
+                      class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <h3 class="font-sans font-medium text-[13px] leading-snug text-cream line-clamp-2">
                     {p.name}
                   </h3>
-                  <p class="mt-0.5 font-mono text-[9px] tracking-wide text-cream/50">
-                    From ${p.minPrice.toFixed(2)}
+                  <p class="mt-2 flex items-center gap-2 font-mono text-[10px] tracking-wide text-cream/45">
+                    <span>FROM</span>
+                    <span class="text-pink">${p.minPrice.toFixed(2)}</span>
                   </p>
-                </div>
-              </a>
-            ))
-          }
+                </a>
+              ))
+            }
+          </div>
         </div>
       </article>
     </div>
@@ -761,7 +826,7 @@ const members = [
               </p>
             </div>
           </div>
-          <p class="font-sans text-sm md:text-base text-cream/75 leading-relaxed">
+          <p class="font-sans text-sm md:text-base text-cream leading-relaxed">
             {person.bio}
           </p>
         </div>
