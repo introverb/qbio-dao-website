@@ -499,7 +499,7 @@ const computedSlices = slices.map((s) => {
         <h2 class={`${bentoHeading} mb-10`}>
           QBIO <em class="italic text-pink/90">allocation</em>.
         </h2>
-        <div class="bg-paper rounded-lg p-6 md:p-10 max-w-3xl mx-auto">
+        <div class="bg-paper/75 backdrop-blur-sm rounded-lg p-6 md:p-10 max-w-3xl mx-auto">
           <svg
             viewBox="0 0 540 400"
             preserveAspectRatio="xMidYMid meet"
@@ -510,9 +510,7 @@ const computedSlices = slices.map((s) => {
             aria-labelledby="tokenomics-title-v2"
           >
             <title id="tokenomics-title-v2">QBIO token allocation</title>
-            <g filter="url(#pencil-lg)">
-              {computedSlices.map((s) => <path d={s.path} fill={s.color} />)}
-            </g>
+            {computedSlices.map((s) => <path d={s.path} fill={s.color} />)}
             <defs>
               <clipPath id="tokenomics-logo-clip">
                 <circle cx={_cx} cy={_cy} r="52" />
