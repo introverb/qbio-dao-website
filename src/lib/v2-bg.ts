@@ -32,6 +32,6 @@ export const waveBg = `url("data:image/svg+xml;utf8,${encodeURIComponent(waveSvg
 export const bentoCard =
   "relative bg-plum-deepest rounded-lg border border-cream/10 p-8 md:p-10 lg:p-12 h-full";
 export const bentoHeading =
-  "font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream";
+  "font-display text-3xl md:text-4xl leading-[1.05] tracking-tight text-cream-warm";
 export const labelBase =
   "font-sans text-[11px] tracking-[0.3em] uppercase mb-8";

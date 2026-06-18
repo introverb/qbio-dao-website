@@ -8,7 +8,7 @@ import { dotGraphic } from "../lib/dot-graphic";
 // Chain rendered as a field of dots (same protocol as the science neuron
 // and the qbio-token coin) so the hero graphics share one visual language.
 const chainDotsSvg = await dotGraphic("public/images/graphics/chain.png", {
-  color: "#d57db2",
+  color: "#ffceec",
 });
 
 const activities = [
@@ -144,7 +144,7 @@ const testimonials = [
       <div class="lg:max-w-[58%]">
         <EyebrowLabel accent="pink">Community</EyebrowLabel>
         <h1
-          class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream"
+          class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream-warm"
         >
           How to
           <em class="italic text-pink/90">contribute</em>
@@ -351,7 +351,7 @@ const testimonials = [
                 <p class="font-sans text-[10px] tracking-[0.25em] uppercase text-pink/60 mb-2">
                   {String(i + 1).padStart(2, "0")}
                 </p>
-                <h3 class="font-display text-lg md:text-xl text-cream mb-3 leading-tight">
+                <h3 class="font-display text-lg md:text-xl text-cream-warm mb-3 leading-tight">
                   {g.name}
                 </h3>
                 <p class="font-sans text-[12px] text-cream leading-relaxed">
@@ -447,7 +447,7 @@ const testimonials = [
     <div class="max-w-3xl mx-auto px-6 lg:px-12 text-center">
       <EyebrowLabel accent="pink" class="mb-8">Questions</EyebrowLabel>
       <h2
-        class="font-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream mb-10"
+        class="font-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-cream-warm mb-10"
       >
         Still have <em class="italic text-pink/90">questions</em>?
       </h2>
@@ -497,7 +497,7 @@ const testimonials = [
               />
             </div>
             <div>
-              <h3 class="font-display text-2xl text-cream mb-1">
+              <h3 class="font-display text-2xl text-cream-warm mb-1">
                 {c.name}
               </h3>
               <p class="font-sans text-[10px] tracking-[0.18em] uppercase text-pink">
