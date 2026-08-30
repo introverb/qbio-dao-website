@@ -127,7 +127,11 @@ const timelineEvents = [
 
 const foundations = [
   { label: "FAQ", href: "/faqs", external: false },
-  { label: "Vision paper", href: "#", external: false },
+  {
+    label: "Vision paper",
+    href: "https://drive.google.com/file/d/1FCLowcfBJYEAOneG6ohlpcOL04Oym91G/view",
+    external: true,
+  },
   { label: "Briefs", href: "#", external: false },
   { label: "QBI study — tadpole", href: "#", external: false },
   {
@@ -174,13 +178,13 @@ const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
   <!-- ====================================================================== -->
   <section class="relative pb-16 md:pb-24">
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[77%] xl:w-[70%] lg:translate-x-[10%] pointer-events-none opacity-[0.37] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
+      class="absolute top-0 right-0 w-[110%] sm:w-[88%] lg:w-[77%] xl:w-[70%] translate-x-[30%] lg:translate-x-[10%] pointer-events-none opacity-[0.37] [&_svg]:block [&_svg]:w-full [&_svg]:max-w-none"
       set:html={neuronDotsSvg}
       aria-label="Branching neuron rendered as a field of dots"
     >
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10">
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-28 lg:pt-32 z-10">
       <div class="lg:max-w-[52%]">
         <p class={`${labelBase} text-pink`}>Science</p>
         <h1

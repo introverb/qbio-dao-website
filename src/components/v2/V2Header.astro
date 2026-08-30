@@ -2,6 +2,12 @@
 // V2 header — same structure as the v1 Header but all nav links point to
 // the v2 pages so the v2 site browses as a self-contained whole. Governance
 // and Grants are now active (placeholder pages exist in v2).
+//
+// On < md the nav collapses behind the hamburger, which opens a slide-down
+// panel with the page links plus the social icons (the pinned social rail
+// in V2Layout is hidden on mobile, so the menu is where socials live there).
+import { socials } from "../../lib/socials";
+
 const navItems = [
   { label: "Home", href: "/", inactive: false },
   { label: "Community", href: "/community", inactive: false },
@@ -11,7 +17,7 @@ const navItems = [
 ];
 ---
 
-<header class="absolute top-0 inset-x-0 z-50">
+<header class="absolute top-0 inset-x-0 z-50" data-site-header>
   <div
     class="max-w-7xl mx-auto px-6 lg:px-12 py-6 flex items-center justify-between gap-6"
   >
@@ -51,6 +57,9 @@ const navItems = [
     <button
       type="button"
       aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      data-menu-toggle
       class="md:hidden p-2 text-cream"
     >
       <svg
@@ -63,11 +72,112 @@ const navItems = [
         stroke-linecap="round"
         stroke-linejoin="round"
         aria-hidden="true"
+        data-menu-icon-open
       >
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        data-menu-icon-close
+        class="hidden"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
     </button>
   </div>
+
+  <!-- Mobile menu panel — slides open below the header bar on < md -->
+  <div
+    id="mobile-menu"
+    data-menu-panel
+    class="hidden md:hidden mx-4 rounded-lg border border-cream/15 bg-plum-darkest/95 backdrop-blur-lg shadow-2xl"
+  >
+    <nav aria-label="Primary, mobile" class="flex flex-col px-6 py-4">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class="font-sans text-base text-cream/80 hover:text-cream py-3.5 border-b border-cream/10 last:border-b-0 transition-colors"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div
+      class="flex items-center gap-6 px-6 py-4 border-t border-cream/15"
+      aria-label="Social links"
+    >
+      {
+        socials.map((s) => {
+          const isMail = s.href.startsWith("mailto:");
+          return (
+            <a
+              href={s.href}
+              aria-label={s.label}
+              target={isMail ? undefined : "_blank"}
+              rel={isMail ? undefined : "noopener noreferrer"}
+              class="text-cream/50 hover:text-pink transition-colors"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d={s.path} />
+              </svg>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
 </header>
+
+<script>
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const toggle = header?.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const panel = header?.querySelector<HTMLElement>("[data-menu-panel]");
+  const iconOpen = header?.querySelector<SVGElement>("[data-menu-icon-open]");
+  const iconClose = header?.querySelector<SVGElement>("[data-menu-icon-close]");
+
+  const setOpen = (open: boolean) => {
+    panel?.classList.toggle("hidden", !open);
+    iconOpen?.classList.toggle("hidden", open);
+    iconClose?.classList.toggle("hidden", !open);
+    toggle?.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  };
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    setOpen(!isOpen);
+  });
+
+  // Close when a nav link is tapped or when tapping outside the header.
+  panel?.querySelectorAll("a").forEach((a) =>
+    a.addEventListener("click", () => setOpen(false)),
+  );
+  document.addEventListener("click", (e) => {
+    if (
+      toggle?.getAttribute("aria-expanded") === "true" &&
+      e.target instanceof Node &&
+      !header?.contains(e.target)
+    ) {
+      setOpen(false);
+    }
+  });
+</script>

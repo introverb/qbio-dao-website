@@ -111,7 +111,7 @@ async function computeShapes(
 }
 
 function wrapSvg(result: ShapesResult, color: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${result.width} ${result.height}" preserveAspectRatio="xMidYMid meet" width="100%" height="auto" fill="${color}" aria-hidden="true">${result.shapes.join("")}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${result.width} ${result.height}" preserveAspectRatio="xMidYMid meet" width="100%" fill="${color}" aria-hidden="true">${result.shapes.join("")}</svg>`;
 }
 
 export async function dotGraphic(

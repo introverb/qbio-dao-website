@@ -6,12 +6,13 @@ import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
 import { getQubieCards, QUBIE_SITE_URL } from "../lib/qubie";
 
-// Pulled at build time — top 3 research items + a 5-wide bottom strip
-// mixing 4 chatter items and 1 video, sorted newest-first.
+// Pulled at build time — top 3 research items only. The chatter/video strip
+// was dropped 2026-08 to keep the section compact (per Kyra's feedback);
+// raise the second/third args to bring it back.
 const { research: qubieResearch, chatter: qubieChatter } = await getQubieCards(
   3,
-  4,
-  1,
+  0,
+  0,
 );
 const qubieTotal = qubieResearch.length + qubieChatter.length;
 
@@ -36,6 +37,9 @@ const tldrStats = [
 ] as const;
 
 // Merch — small curated feature pulled from the DAO's Printful storefront.
+// Hidden until the storefront goes public (EU product updates pending) —
+// flip SHOW_MERCH to true to bring the section back.
+const SHOW_MERCH = false;
 const MERCH_STORE_URL = "https://quantum-bio-dao.printful.me/";
 const merchProducts = [
   {
@@ -206,7 +210,7 @@ const members = [
   <section class="relative pb-16 md:pb-24">
     <!-- Cube graphic — enters from upper-right corner -->
     <div
-      class="relative pt-20 lg:pt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[55%] xl:w-[48%] lg:translate-x-[8%] pointer-events-none"
+      class="absolute top-0 right-0 w-[85%] sm:w-[65%] lg:w-[55%] xl:w-[48%] translate-x-[22%] lg:translate-x-[8%] pointer-events-none"
       style="opacity: 0.32;"
     >
       <img
@@ -219,7 +223,7 @@ const members = [
 
     <!-- Title block on the left -->
     <div
-      class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-8 lg:pt-32 z-10"
+      class="relative max-w-7xl mx-auto px-6 lg:px-12 pt-28 lg:pt-32 z-10"
     >
       <div class="lg:max-w-[58%]">
         <EyebrowLabel accent="pink">Quantum Biology DAO</EyebrowLabel>
@@ -239,7 +243,9 @@ const members = [
           community building, open governance, scientific experimentation,
           research grants, and IP development. Together we will understand biology
           at the quantum level. Check out our <a
-            href="#"
+            href="https://drive.google.com/file/d/1FCLowcfBJYEAOneG6ohlpcOL04Oym91G/view"
+            target="_blank"
+            rel="noopener noreferrer"
             class="text-pink hover:text-pink-light underline underline-offset-2"
             >vision paper</a
           >.
@@ -288,11 +294,10 @@ const members = [
               builds open tools, and welcomes anyone who wants to help.
             </p>
             <div class="mt-8 flex flex-col items-start gap-5">
-              <V2Cta
-                href="/explainer"
-                label="Read the full explainer"
-                accent="pink"
-              />
+              {/* "Read the full explainer" CTA removed 2026-08 per Kyra —
+                  /explainer is still a coming-soon stub. Restore it here
+                  (or point it at the explainer Google Doc, as the FAQs
+                  page does) once the full page is ready. */}
               <V2Cta
                 href="https://quantumbiology.community"
                 label="Join the community"
@@ -673,7 +678,9 @@ const members = [
 
       <!-- ============================================================= -->
       <!-- MERCH STORE — console-style panel matching Qubie News   PINK   -->
+      <!-- Hidden behind SHOW_MERCH until the storefront goes public.     -->
       <!-- ============================================================= -->
+      {SHOW_MERCH && (
       <article
         class="lg:col-span-12 overflow-hidden rounded-lg border border-cream/15 bg-plum-deepest/40"
       >
@@ -758,6 +765,7 @@ const members = [
           </div>
         </div>
       </article>
+      )}
     </div>
   </div>
 

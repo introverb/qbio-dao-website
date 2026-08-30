@@ -32,9 +32,10 @@ const { title, description } = Astro.props;
     </div>
 
     <!-- Social icons — pinned just under the nav, right-aligned with the
-         last nav item. Shown on every v2 page. -->
+         last nav item. Desktop only: on mobile it overlapped hero text, so
+         there the same links live inside the hamburger menu instead. -->
     <div
-      class="absolute inset-x-0 z-40 pointer-events-none"
+      class="hidden md:block absolute inset-x-0 z-40 pointer-events-none"
       style="top: 5.5rem;"
       aria-label="Social links"
     >

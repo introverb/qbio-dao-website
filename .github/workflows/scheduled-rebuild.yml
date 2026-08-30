@@ -1,0 +1,38 @@
+# Rebuilds the Cloudflare Pages site on a schedule so the Qubie News panel
+# stays fresh. The feed is fetched at build time (see src/lib/qubie.ts), so
+# without this the homepage only updates when someone pushes a commit.
+#
+# Setup (one-time, done by a repo admin):
+#   1. Cloudflare dashboard → Workers & Pages → qbio-dao-website →
+#      Settings → Builds & deployments → Deploy hooks → "Create deploy hook".
+#      Name it e.g. "scheduled-qubie-refresh", branch: main. Copy the URL.
+#   2. GitHub repo → Settings → Secrets and variables → Actions →
+#      "New repository secret". Name: CLOUDFLARE_DEPLOY_HOOK_URL,
+#      value: the URL from step 1.
+#
+# Until the secret exists, runs of this workflow skip quietly (no failures).
+name: Scheduled site rebuild (Qubie refresh)
+
+on:
+  schedule:
+    # 06:10 and 18:10 UTC — the upstream Qubie feed refreshes twice a day,
+    # so two rebuilds keep the homepage at most ~12h behind it.
+    - cron: "10 6 * * *"
+    - cron: "10 18 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy hook
+        env:
+          HOOK_URL: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK_URL" ]; then
+            echo "CLOUDFLARE_DEPLOY_HOOK_URL secret is not set — skipping."
+            echo "See the comment at the top of this workflow for setup steps."
+            exit 0
+          fi
+          curl -sS -X POST "$HOOK_URL"
+          echo "Deploy hook triggered."
