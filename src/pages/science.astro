@@ -5,94 +5,85 @@ import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { labelBase, bentoCard } from "../lib/v2-bg";
 import { dotGraphic } from "../lib/dot-graphic";
 
-// Five "popular examples" illustrations — linework members of the solid-
-// glyph icon family ("Set C", the site-wide standard): bold geometric
-// strokes (3 in a 120 viewBox ≈ the glyphs' weight at this ~220px cell
-// size) with solid-filled focal elements. Redrawn 2026-08 per Olli.
+// Five "popular examples" — members of the solid-glyph icon family
+// ("Set C", the site-wide standard) at illustration scale. Strict
+// geometry only (circles, ellipses, triangles, symmetric arcs), solid
+// fills for focal elements, and stroke 5 in a 120 viewBox so the
+// proportional weight matches the small glyphs (~5% of canvas).
 const examples: { label: string; svg: string }[] = [
   {
     label: "Photosynthesis",
-    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="30" cy="28" r="8" fill="#d57db2" stroke="none"/>
-      <line x1="30" y1="10" x2="30" y2="16"/>
-      <line x1="30" y1="40" x2="30" y2="46"/>
-      <line x1="12" y1="28" x2="18" y2="28"/>
-      <line x1="42" y1="28" x2="48" y2="28"/>
-      <line x1="17" y1="15" x2="21.5" y2="19.5"/>
-      <line x1="38.5" y1="36.5" x2="43" y2="41"/>
-      <line x1="43" y1="15" x2="38.5" y2="19.5"/>
-      <line x1="21.5" y1="36.5" x2="17" y2="41"/>
-      <path d="M88 42 C 106 60, 104 88, 78 104 C 56 92, 52 62, 66 48 C 72 42, 80 40, 88 42 Z"/>
-      <path d="M84 48 Q 76 72, 72 98"/>
-      <line x1="80" y1="60" x2="67" y2="57"/>
-      <line x1="76" y1="76" x2="62" y2="74"/>
-      <line x1="80" y1="62" x2="93" y2="57"/>
-      <line x1="75" y1="80" x2="89" y2="77"/>
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="32" cy="32" r="10" fill="#d57db2" stroke="none"/>
+      <line x1="32" y1="12" x2="32" y2="18"/>
+      <line x1="32" y1="46" x2="32" y2="52"/>
+      <line x1="12" y1="32" x2="18" y2="32"/>
+      <line x1="46" y1="32" x2="52" y2="32"/>
+      <line x1="17.9" y1="17.9" x2="22.1" y2="22.1"/>
+      <line x1="41.9" y1="41.9" x2="46.1" y2="46.1"/>
+      <line x1="46.1" y1="17.9" x2="41.9" y2="22.1"/>
+      <line x1="22.1" y1="41.9" x2="17.9" y2="46.1"/>
+      <path d="M88 42 A 42 42 0 0 1 68 104 A 42 42 0 0 1 88 42 Z"/>
+      <line x1="84" y1="52" x2="72" y2="94"/>
     </svg>`,
   },
   {
     label: "Bird navigation",
-    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 26 Q60 8, 106 26"/>
-      <path d="M10 40 Q60 20, 110 40"/>
-      <path d="M6 54 Q60 32, 114 54"/>
-      <ellipse cx="54" cy="86" rx="22" ry="11"/>
-      <circle cx="76" cy="79" r="8" fill="#d57db2" stroke="none"/>
-      <path d="M83 76 L97 75 L84 83 Z" fill="#d57db2" stroke="none"/>
-      <path d="M33 84 L17 76 L21 92 Z" fill="#d57db2" stroke="none"/>
-      <path d="M50 76 Q 42 62, 32 56"/>
-      <path d="M56 76 Q 54 60, 47 52"/>
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 28 A 60 60 0 0 1 104 28"/>
+      <path d="M10 44 A 74 74 0 0 1 110 44"/>
+      <ellipse cx="54" cy="86" rx="22" ry="11" fill="#d57db2" stroke="none"/>
+      <circle cx="77" cy="76" r="9" fill="#d57db2" stroke="none"/>
+      <path d="M85 72 L100 73 L85 81 Z" fill="#d57db2" stroke="none"/>
+      <path d="M36 80 L18 70 L24 90 Z" fill="#d57db2" stroke="none"/>
+      <path d="M54 82 L40 58 L66 74 Z" fill="#d57db2" stroke="none"/>
     </svg>`,
   },
   {
     label: "DNA repair",
-    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M44 14 C 44 35, 76 35, 76 56 C 76 77, 44 77, 44 98"/>
-      <path d="M76 14 C 76 35, 44 35, 44 56 C 44 77, 76 77, 76 98"/>
-      <line x1="47" y1="19" x2="73" y2="19"/>
-      <line x1="50" y1="27" x2="70" y2="27"/>
-      <line x1="50" y1="85" x2="70" y2="85"/>
-      <line x1="47" y1="93" x2="73" y2="93"/>
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M46 18 C 46 39, 74 39, 74 60 C 74 81, 46 81, 46 102"/>
+      <path d="M74 18 C 74 39, 46 39, 46 60 C 46 81, 74 81, 74 102"/>
+      <line x1="49" y1="25" x2="71" y2="25"/>
+      <line x1="49" y1="95" x2="71" y2="95"/>
       <g fill="#d57db2" stroke="none">
-        <circle cx="60" cy="35" r="4"/>
-        <circle cx="60" cy="77" r="4"/>
-        <circle cx="44" cy="14" r="3"/>
-        <circle cx="76" cy="14" r="3"/>
-        <circle cx="44" cy="98" r="3"/>
-        <circle cx="76" cy="98" r="3"/>
+        <circle cx="60" cy="39" r="5.5"/>
+        <circle cx="60" cy="81" r="5.5"/>
+        <circle cx="46" cy="18" r="4.5"/>
+        <circle cx="74" cy="18" r="4.5"/>
+        <circle cx="46" cy="102" r="4.5"/>
+        <circle cx="74" cy="102" r="4.5"/>
       </g>
     </svg>`,
   },
   {
     label: "Magnetic sensitivity",
-    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="52" y="42" width="16" height="36" rx="8" fill="#d57db2" stroke="none"/>
-      <path d="M60 24 C 34 24, 34 96, 60 96"/>
-      <path d="M60 24 C 86 24, 86 96, 60 96"/>
-      <path d="M60 10 C 22 10, 22 110, 60 110"/>
-      <path d="M60 10 C 98 10, 98 110, 60 110"/>
-      <circle cx="60" cy="24" r="4" fill="#d57db2" stroke="none"/>
-      <circle cx="60" cy="96" r="4" fill="#d57db2" stroke="none"/>
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="50" y="40" width="20" height="40" rx="10" fill="#d57db2" stroke="none"/>
+      <ellipse cx="60" cy="60" rx="21" ry="35"/>
+      <ellipse cx="60" cy="60" rx="36" ry="50"/>
+      <circle cx="60" cy="25" r="5" fill="#d57db2" stroke="none"/>
+      <circle cx="60" cy="95" r="5" fill="#d57db2" stroke="none"/>
     </svg>`,
   },
   {
     label: "Sense of smell",
-    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="25" y1="66" x2="45" y2="50"/>
-      <line x1="45" y1="50" x2="65" y2="66"/>
-      <line x1="25" y1="66" x2="45" y2="82"/>
-      <line x1="65" y1="66" x2="45" y2="82"/>
-      <line x1="45" y1="50" x2="45" y2="32"/>
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#d57db2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="24" y1="66" x2="44" y2="48"/>
+      <line x1="44" y1="48" x2="64" y2="66"/>
+      <line x1="24" y1="66" x2="44" y2="84"/>
+      <line x1="64" y1="66" x2="44" y2="84"/>
+      <line x1="44" y1="48" x2="44" y2="28"/>
       <g fill="#d57db2" stroke="none">
-        <circle cx="25" cy="66" r="5.5"/>
-        <circle cx="45" cy="50" r="5"/>
-        <circle cx="65" cy="66" r="5.5"/>
-        <circle cx="45" cy="82" r="5"/>
-        <circle cx="45" cy="32" r="4.5"/>
+        <circle cx="24" cy="66" r="7.5"/>
+        <circle cx="44" cy="48" r="7"/>
+        <circle cx="64" cy="66" r="7.5"/>
+        <circle cx="44" cy="84" r="7"/>
+        <circle cx="44" cy="28" r="6"/>
       </g>
-      <path d="M80 50 Q88 58, 96 50 Q104 42, 112 50"/>
-      <path d="M78 66 Q86 74, 94 66 Q102 58, 110 66"/>
-      <path d="M80 82 Q88 90, 96 82 Q104 74, 112 82"/>
+      <path d="M80 48 Q88 40, 96 48 Q104 56, 112 48"/>
+      <path d="M78 66 Q86 58, 94 66 Q102 74, 110 66"/>
+      <path d="M80 84 Q88 76, 96 84 Q104 92, 112 84"/>
     </svg>`,
   },
 ];
