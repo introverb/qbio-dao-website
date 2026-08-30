@@ -791,21 +791,29 @@ const computedSlices = slices.map((s) => {
   /* Dot mask on the coin video — a tileable radial-gradient where each
      5px tile contains a small opaque dot. The video shows through the
      dots; everything else is hidden. Result: the real spinning 3D coin
-     visible as a halftone-style dot field. */
+     visible as a halftone-style dot field.
+
+     A second, big circular fade is composited on top (intersect): the
+     video's background is dark grey rather than true black, so the
+     screen blend was lifting the dots across the WHOLE square frame —
+     a visible rectangular film. Fading the mask out toward the frame's
+     edges dissolves the dots before the square boundary can show. */
   .coin-video {
-    -webkit-mask-image: radial-gradient(
-      circle at center,
-      #000 1.1px,
-      transparent 1.3px
-    );
-    mask-image: radial-gradient(
-      circle at center,
-      #000 1.1px,
-      transparent 1.3px
-    );
-    -webkit-mask-size: 5px 5px;
-    mask-size: 5px 5px;
-    -webkit-mask-repeat: repeat;
-    mask-repeat: repeat;
+    -webkit-mask-image:
+      radial-gradient(circle at center, #000 1.1px, transparent 1.3px),
+      radial-gradient(circle closest-side at center, #000 70%, transparent 97%);
+    mask-image:
+      radial-gradient(circle at center, #000 1.1px, transparent 1.3px),
+      radial-gradient(circle closest-side at center, #000 70%, transparent 97%);
+    -webkit-mask-size:
+      5px 5px,
+      100% 100%;
+    mask-size:
+      5px 5px,
+      100% 100%;
+    -webkit-mask-repeat: repeat, no-repeat;
+    mask-repeat: repeat, no-repeat;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
 </style>
