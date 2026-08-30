@@ -3,8 +3,10 @@ import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
 import SynergyCta from "../components/v2/SynergyCta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
+import QuantumIcon from "../components/v2/QuantumIcon.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
 import { getQubieCards, QUBIE_SITE_URL } from "../lib/qubie";
+import { teamMembers as members } from "../lib/team";
 
 // Pulled at build time — top 3 research items only. The chatter/video strip
 // was dropped 2026-08 to keep the section compact (per Kyra's feedback);
@@ -156,72 +158,6 @@ const accentItalicClass = {
   gold: "text-gold/90",
 } as const;
 
-// Full eleven-person roster, order + titles verbatim from Olli's 2026-08
-// spec (which supersedes Kyra's earlier ten-person list — adds Oliver
-// Carefull). Members without img/bio render as placeholder cards (initials
-// only, not clickable); fill in img/summary/bio as assets arrive and the
-// card upgrades itself. Kyra marked the QBI-affiliated people (Ale,
-// Jennilyn, Clarice) "in blue" — possible accent treatment, awaiting
-// Olli's design call.
-const members = [
-  {
-    name: "Dr. Geoff Anders",
-    role: "Co-founder, Leader of Governance Working Group",
-    img: "/images/team/geoff.jpeg",
-    summary:
-      "CEO of the Quantum Biology Institute and founder of Leverage, focused on supporting revolutionary scientific research.",
-    bio: "Geoff Anders is the founder and CEO of Leverage, a research institute established in 2011 to support revolutionary scientific research. With a background in philosophy and social science, he leads Leverage's internal research and helps external research teams organize to make important scientific breakthroughs. His recent work focuses on the intersection of philosophy, science, and history, as it pertains especially to introspection, cognitive science, and artificial intelligence. Geoff is now the CEO of the Quantum Biology Institute and holds a PhD in Philosophy from Rutgers University and a BS in Economics from the Wharton School at the University of Pennsylvania.",
-  },
-  {
-    name: "Kyra Gardner",
-    role: "Media Director, Leader of Communications Working Group",
-    img: "/images/team/kyra.jpeg",
-    summary:
-      "Communications Working Group Leader and co-founder of Smarter with Science, connecting complex topics to broader audiences.",
-    bio: "Kyra Gardner is the Communications Working Group Leader for the Quantum Biology DAO, where she manages communications and social media. She joined the DAO in January of 2025 and carries out this work through Smarter with Science, a company she co-founded whose team members are also deeply involved in the quantum biology ecosystem. Despite not having as technical of a science background as some of her DAO peers, she enjoys finding ways to connect complex topics to everyday life and make them accessible to broader audiences.",
-  },
-  { name: "Jonathan Heppner", role: "Interim Science Working Group leader" },
-  { name: "Eren Targ", role: "Product Working Group leader" },
-  { name: "Olli Payne", role: "Discord Manager" },
-  {
-    name: "Dr. Alessandro Lodesani",
-    role: "Co-founder, CTO at QBI",
-    img: "/images/team/ale.jpeg",
-    summary:
-      "COO of the Quantum Biology Institute, designing innovative lab equipment and optimizing research operations.",
-    bio: "Alessandro Lodesani is the Institute's Chief Operating Officer, overseeing its daily research operations. With a strong background in physics and engineering, combined with extensive experience in biology research, Alessandro focuses on designing innovative devices and optimizing lab processes. Originally from Italy, Alessandro earned a Bachelor's in Mechanical Engineering and a PhD in Physics, graduating with honors from the Polytechnic University of Milan, with a specialization in spintronics and molecular interfaces. His previous research at MIT focused on topological qubits and superconducting thin films, where he successfully developed the world's most efficient superconducting diode platform. Alessandro then joined the Institute in its early days at UCLA, where he led several projects investigating the influence of weak magnetic fields on biological systems.",
-  },
-  { name: "Oliver Carefull", role: "IP Working Group Leader" },
-  { name: "Cryptonurse", role: "Head Moderator" },
-  { name: "DePaul", role: "Telegram Manager" },
-  {
-    name: "Jennilyn Gaitan",
-    role: "QBI Liaison",
-    img: "/images/team/jen.jpeg",
-    summary:
-      "Operations and administration lead for the Quantum Biology Institute, with two decades of experience refining systems and processes.",
-    bio: "Jennilyn Gaitan graduated with a Bachelor of Science in Electronic Media and Film from Towson University. Since 2004, she has worked in various administrative and operational roles across multiple industries, including retail, higher education, photography, real estate, and small business operations. Jennilyn has a passion for creating and refining the systems and processes that businesses use, to run most efficiently, which has been a hallmark of her career. In November 2023, Jennilyn joined the Quantum Biology Institute, contributing her expertise to the administration and operations of the Institute.",
-  },
-  {
-    name: "Dr. Clarice D. Aiello",
-    role: "Co-founder, CSO at QBI",
-    img: "/images/team/clarice.jpeg",
-    summary:
-      "Quantum engineer exploring how quantum physics informs biology at the nanoscale.",
-    bio: "Clarice is a quantum engineer interested in how quantum physics informs biology at the nanoscale. Born and raised in Brazil, Clarice obtained a Diplome d'Ingenieur in Physics from the Ecole Polytechnique in France and an M.Phil. in Physics from the University of Cambridge, Trinity College, in England; she received her Ph.D. from MIT in Electrical Engineering. She further held postdoctoral appointments in Bioengineering at Stanford, and in Chemistry at Berkeley.",
-  },
-];
-
-// Initials for the placeholder avatars (skips "Dr." honorifics).
-function memberInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter((w) => !w.startsWith("Dr"))
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 ---
 
 <V2Layout
@@ -673,7 +609,7 @@ function memberInitials(name: string): string {
         >
           {
             members.map((person, i) =>
-              person.img ? (
+              person.img && person.bio ? (
                 <button
                   type="button"
                   data-bio-trigger={`home-${i}`}
@@ -702,13 +638,29 @@ function memberInitials(name: string): string {
                     Read bio →
                   </span>
                 </button>
-              ) : (
-                /* Placeholder card — name + title only until photo/bio arrive */
+              ) : person.img ? (
+                /* Photo card — bio pending, so no dialog yet */
                 <div class="flex flex-col items-center text-center">
-                  <div class="w-24 h-24 md:w-28 md:h-28 rounded-full mb-4 border border-dashed border-cream/25 bg-plum-deepest/40 flex items-center justify-center">
-                    <span class="font-display text-xl text-pink/60" aria-hidden="true">
-                      {memberInitials(person.name)}
-                    </span>
+                  <div class="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-plum-deepest mb-4 ring-1 ring-cream/10">
+                    <img
+                      src={person.img}
+                      alt={person.name}
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 class="font-sans font-semibold text-sm text-cream mb-1">
+                    {person.name}
+                  </h3>
+                  <p class="font-sans text-[10px] uppercase tracking-[0.18em] text-pink">
+                    {person.role}
+                  </p>
+                </div>
+              ) : (
+                /* Quantum-icon placeholder — photo/bio pending */
+                <div class="flex flex-col items-center text-center">
+                  <div class="w-24 h-24 md:w-28 md:h-28 rounded-full mb-4 border border-dashed border-cream/25 bg-plum-deepest/40 flex items-center justify-center text-pink/70">
+                    <QuantumIcon name={person.icon ?? "atom"} size={48} />
                   </div>
                   <h3 class="font-sans font-semibold text-sm text-cream mb-1">
                     {person.name}
@@ -726,21 +678,8 @@ function memberInitials(name: string): string {
             rel="noopener noreferrer"
             class="group flex flex-col items-center text-center p-4 -m-4 rounded-2xl hover:bg-pink/10 transition-colors"
           >
-            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full mb-4 border border-dashed border-pink/40 bg-plum-deepest/40 flex items-center justify-center group-hover:border-pink transition-colors">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                class="text-pink/70 group-hover:text-pink transition-colors"
-                aria-hidden="true"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
+            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full mb-4 border border-dashed border-pink/40 bg-plum-deepest/40 flex items-center justify-center text-pink/70 group-hover:border-pink group-hover:text-pink transition-colors">
+              <QuantumIcon name="discord" size={52} />
             </div>
             <h3 class="font-sans font-semibold text-sm text-cream mb-1">
               …and more
