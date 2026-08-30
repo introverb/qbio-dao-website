@@ -77,12 +77,8 @@ const testimonials = [
     author: "Geoff Anders",
     role: "Quantum Biology DAO Co-Founder",
   },
-  {
-    quote:
-      "Governance matters because it gives every member a real voice in shaping the future of quantum biology. I value the token as more than an asset, it's a tool for participation and accountability. Voting on proposals makes me feel like I'm not just a supporter, but a co-creator of this DAO.",
-    author: "Zicjoe",
-    role: "DAO Community Member",
-  },
+  // Zicjoe's governance quote removed 2026-08 — he was quoted on several
+  // pages (per Kyra's feedback); a replacement can slot back in here.
   {
     quote:
       "I joined because I'm fascinated by the interface between matter and mind, and also because I wanted to witness first hand and participate in the creation of an entire new ecosystem, that runs using a new logic of incentivization.",
@@ -681,6 +677,18 @@ const computedSlices = slices.map((s) => {
           </div>
         </div>
 
+        <!-- Stuck? Discord escape hatch (per Kyra's feedback) -->
+        <p class="font-sans text-[13px] text-cream/80 mb-10 leading-relaxed">
+          Stuck on any of these steps? Ask in
+          <a
+            href="https://quantumbiology.community"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-pink hover:text-pink-light underline underline-offset-2"
+            >our Discord</a
+          > — the community is happy to help.
+        </p>
+
         <!-- Contract addresses -->
         <div class="border-t border-cream/10 pt-8 space-y-3">
           <p
@@ -707,7 +715,8 @@ const computedSlices = slices.map((s) => {
         <h2 class={`${bentoHeading} mb-10`}>
           From the <em class="italic text-pink/90">community</em>.
         </h2>
-        <div class="grid md:grid-cols-3 gap-5 md:gap-6">
+        {/* Two-up while the third (replacement) quote is pending. */}
+        <div class="grid md:grid-cols-2 gap-5 md:gap-6">
           {
             testimonials.map((t) => (
               <div class="flex flex-col rounded-lg border border-cream/10 bg-plum-deepest/40 p-6 md:p-7">

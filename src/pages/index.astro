@@ -156,26 +156,34 @@ const accentItalicClass = {
   gold: "text-gold/90",
 } as const;
 
+// Roster order + titles per Kyra's 2026-08 feedback doc. Her full ten-person
+// order is: 1 Geoff, 2 Kyra, 3 Jonathan Heppner (Interim Science WG leader),
+// 4 Eren Targ (Product WG leader), 5 Olli Payne (Discord Manager), 6 Ale,
+// 7 Cryptonurse (Head Moderator), 8 DePaul (Telegram Manager), 9 Jennilyn,
+// 10 Clarice, "...and more". The five newcomers are omitted until we have
+// photos + bios; slot them into that order when assets arrive. Kyra also
+// marked the QBI-affiliated people (Ale, Jennilyn, Clarice) "in blue" —
+// possible accent-color treatment, awaiting Olli's design call.
 const members = [
   {
-    name: "Dr. Clarice D. Aiello",
-    role: "Founder",
-    img: "/images/team/clarice.jpeg",
-    summary:
-      "Quantum engineer exploring how quantum physics informs biology at the nanoscale.",
-    bio: "Clarice is a quantum engineer interested in how quantum physics informs biology at the nanoscale. Born and raised in Brazil, Clarice obtained a Diplome d'Ingenieur in Physics from the Ecole Polytechnique in France and an M.Phil. in Physics from the University of Cambridge, Trinity College, in England; she received her Ph.D. from MIT in Electrical Engineering. She further held postdoctoral appointments in Bioengineering at Stanford, and in Chemistry at Berkeley.",
-  },
-  {
     name: "Dr. Geoff Anders",
-    role: "Founder",
+    role: "Co-founder, Leader of Governance Working Group",
     img: "/images/team/geoff.jpeg",
     summary:
       "CEO of the Quantum Biology Institute and founder of Leverage, focused on supporting revolutionary scientific research.",
     bio: "Geoff Anders is the founder and CEO of Leverage, a research institute established in 2011 to support revolutionary scientific research. With a background in philosophy and social science, he leads Leverage's internal research and helps external research teams organize to make important scientific breakthroughs. His recent work focuses on the intersection of philosophy, science, and history, as it pertains especially to introspection, cognitive science, and artificial intelligence. Geoff is now the CEO of the Quantum Biology Institute and holds a PhD in Philosophy from Rutgers University and a BS in Economics from the Wharton School at the University of Pennsylvania.",
   },
   {
+    name: "Kyra Gardner",
+    role: "Media Director, Leader of Communications Working Group",
+    img: "/images/team/kyra.jpeg",
+    summary:
+      "Communications Working Group Leader and co-founder of Smarter with Science, connecting complex topics to broader audiences.",
+    bio: "Kyra Gardner is the Communications Working Group Leader for the Quantum Biology DAO, where she manages communications and social media. She joined the DAO in January of 2025 and carries out this work through Smarter with Science, a company she co-founded whose team members are also deeply involved in the quantum biology ecosystem. Despite not having as technical of a science background as some of her DAO peers, she enjoys finding ways to connect complex topics to everyday life and make them accessible to broader audiences.",
+  },
+  {
     name: "Dr. Alessandro Lodesani",
-    role: "Founder",
+    role: "Co-founder, CTO at QBI",
     img: "/images/team/ale.jpeg",
     summary:
       "COO of the Quantum Biology Institute, designing innovative lab equipment and optimizing research operations.",
@@ -183,19 +191,19 @@ const members = [
   },
   {
     name: "Jennilyn Gaitan",
-    role: "Operations",
+    role: "QBI Liaison",
     img: "/images/team/jen.jpeg",
     summary:
       "Operations and administration lead for the Quantum Biology Institute, with two decades of experience refining systems and processes.",
     bio: "Jennilyn Gaitan graduated with a Bachelor of Science in Electronic Media and Film from Towson University. Since 2004, she has worked in various administrative and operational roles across multiple industries, including retail, higher education, photography, real estate, and small business operations. Jennilyn has a passion for creating and refining the systems and processes that businesses use, to run most efficiently, which has been a hallmark of her career. In November 2023, Jennilyn joined the Quantum Biology Institute, contributing her expertise to the administration and operations of the Institute.",
   },
   {
-    name: "Kyra Gardner",
-    role: "Media Director",
-    img: "/images/team/kyra.jpeg",
+    name: "Dr. Clarice D. Aiello",
+    role: "Co-founder, CSO at QBI",
+    img: "/images/team/clarice.jpeg",
     summary:
-      "Communications Working Group Leader and co-founder of Smarter with Science, connecting complex topics to broader audiences.",
-    bio: "Kyra Gardner is the Communications Working Group Leader for the Quantum Biology DAO, where she manages communications and social media. She joined the DAO in January of 2025 and carries out this work through Smarter with Science, a company she co-founded whose team members are also deeply involved in the quantum biology ecosystem. Despite not having as technical of a science background as some of her DAO peers, she enjoys finding ways to connect complex topics to everyday life and make them accessible to broader audiences.",
+      "Quantum engineer exploring how quantum physics informs biology at the nanoscale.",
+    bio: "Clarice is a quantum engineer interested in how quantum physics informs biology at the nanoscale. Born and raised in Brazil, Clarice obtained a Diplome d'Ingenieur in Physics from the Ecole Polytechnique in France and an M.Phil. in Physics from the University of Cambridge, Trinity College, in England; she received her Ph.D. from MIT in Electrical Engineering. She further held postdoctoral appointments in Bioengineering at Stanford, and in Chemistry at Berkeley.",
   },
 ];
 ---
@@ -411,9 +419,10 @@ const members = [
               class="font-sans text-[14px] text-cream leading-relaxed space-y-4"
             >
               <p>
-                We made the largest grant ever awarded in quantum biology to
-                the Quantum Biology Institute — a nonprofit lab in Los Angeles
-                funding real scientists doing real experiments.
+                We made the largest grant for quantum biological
+                instrumentation in history to the Quantum Biology Institute — a
+                nonprofit lab in Los Angeles funding real scientists doing real
+                experiments.
               </p>
               <p>
                 The Institute is building a quantum microscope to detect

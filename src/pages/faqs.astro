@@ -4,8 +4,10 @@ import V2Cta from "../components/v2/V2Cta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
 
-const explainerUrl =
-  "https://docs.google.com/document/d/1Eoye_Ltl_DybiZX59V87T3SO1Yx46St9_IBPGBFoSloY/edit?tab=t.0";
+// The old Google Doc URL for the explainer 404s (bad document id) — Kyra
+// flagged the link as broken. Pointing at the on-site /explainer page until
+// someone supplies the correct doc URL (or the full page is built).
+const explainerUrl = "/explainer";
 
 type Block =
   | { kind: "p"; text: string }
@@ -159,7 +161,6 @@ const faqs: FAQ[] = [
             href={explainerUrl}
             label="Read the full explainer"
             accent="pink"
-            external
           />
         </div>
       </div>

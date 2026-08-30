@@ -132,10 +132,13 @@ const foundations = [
     href: "https://drive.google.com/file/d/1FCLowcfBJYEAOneG6ohlpcOL04Oym91G/view",
     external: true,
   },
-  { label: "Briefs", href: "#", external: false },
+  // "Paths to commercialization" = the briefs (retitled per Kyra) — link
+  // pending; same for the tadpole study. A "QBio Ecosystem roadmap" entry
+  // should be added here once Kyra/Olli supply its URL.
+  { label: "Paths to commercialization", href: "#", external: false },
   { label: "QBI study — tadpole", href: "#", external: false },
   {
-    label: "PMC: Quantum biology review",
+    label: "The origins of quantum biology",
     href: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6304024/",
     external: true,
   },
@@ -144,17 +147,13 @@ const foundations = [
     href: "https://www.scientificamerican.com/article/how-migrating-birds-use-quantum-effects-to-navigate/",
     external: true,
   },
-  { label: "TBD", href: "#", external: false },
-  { label: "TBD", href: "#", external: false },
 ];
 
+// Chris Rourk's quote removed 2026-08 — he's no longer the Science Working
+// Group leader (per Kyra). Replacements pending: a quote from Jonathan
+// Heppner (interim SWG leader), and ideally someone other than Zicjoe
+// (who is quoted on other pages) — Kyra suggested Nahuel.
 const testimonials = [
-  {
-    quote:
-      "There is a quantum biology sized hole in biological science that the DAO is needed for - until quantum biology is taught in high school biology classes, it will continue to be needed.",
-    author: "Chris Rourk",
-    role: "Science Working Group Leader",
-  },
   {
     quote:
       "The research we're supporting isn't abstract, it's about unlocking discoveries that impact life itself. Advancing quantum biology through grants ensures ideas with potential don't stay trapped in theory, and the granting process here feels transparent, mission-driven, and built to accelerate breakthroughs.",
@@ -224,7 +223,7 @@ const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
       <h2
         class="font-display text-4xl md:text-5xl leading-[1.05] tracking-tight text-cream-warm mb-8"
       >
-        What is <em class="italic text-pink/90">quantum</em> biology.
+        What is <em class="italic text-pink/90">quantum</em> biology?
       </h2>
       <div
         class="font-sans text-[15px] text-cream leading-relaxed space-y-5"
@@ -271,9 +270,10 @@ const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
         class="font-sans text-[15px] text-cream leading-relaxed space-y-5"
       >
         <p>
-          Researchers are now finding quantum effects at work in photosynthesis,
-          bird navigation, enzyme catalysis, and possibly the sense of smell —
-          phenomena that classical biology has struggled to fully explain.
+          Researchers have found quantum effects at work in photosynthesis,
+          bird navigation, enzyme catalysis, and more. Now, many are wondering
+          if quantum physics holds the key to explaining cellular metabolism,
+          rejuvenation, consciousness, and the origin of life.
         </p>
       </div>
       </div>
@@ -572,9 +572,9 @@ const neuronDotsSvg = await dotGraphic("public/images/graphics/neuron.png", {
             class="font-sans text-[14px] text-cream leading-relaxed space-y-4"
           >
             <p>
-              We made the largest grant ever awarded in quantum biology to the
-              Quantum Biology Institute — a nonprofit lab in Los Angeles funding
-              real scientists doing real experiments.
+              We made the largest grant for quantum biological instrumentation
+              in history to the Quantum Biology Institute — a nonprofit lab in
+              Los Angeles funding real scientists doing real experiments.
             </p>
             <p>
               The Institute is building a quantum microscope to detect electron
