@@ -64,12 +64,12 @@ export const teamMembers: TeamMember[] = [
   },
   { name: "Jonathan Heppner", role: "Science Working Group Leader", icon: "atom" },
   { name: "Eren Targ", role: "Product Working Group leader", icon: "molecule" },
-  { name: "Olli Payne", role: "Discord Manager", img: "/images/team/olli.jpeg" },
   {
     name: "Oliver Carefull",
     role: "IP Working Group Leader",
     img: "/images/team/oliver.jpeg",
   },
+  { name: "Olli Payne", role: "Discord Manager", img: "/images/team/olli.jpeg" },
   { name: "Cryptonurse", role: "Head Moderator", icon: "spin" },
   { name: "DePaul", role: "Telegram Manager", icon: "wave" },
 ];
