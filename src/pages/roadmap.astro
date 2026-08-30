@@ -1,0 +1,300 @@
+---
+import V2Layout from "../components/v2/V2Layout.astro";
+import V2Cta from "../components/v2/V2Cta.astro";
+import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
+import { bentoCard, bentoHeading } from "../lib/v2-bg";
+
+// On-site rendering of the Quantum Biology Ecosystem roadmap, built 2026-08
+// from the roadmap graphic at https://quantumbiology.eco/roadmap
+// ("Version 1.0 | Latest update: 13 October 2024"). The source is a
+// vector image, so its three timelines are transcribed here as data —
+// re-check against the source page when the ecosystem publishes a new
+// version.
+
+interface Milestone {
+  date: string;
+  title: string;
+  body: string;
+  notes?: string[];
+  done?: boolean;
+}
+
+interface Track {
+  org: string;
+  theme: string;
+  accent: "teal" | "pink" | "gold";
+  endpoint: string;
+  milestones: Milestone[];
+}
+
+const tracks: Track[] = [
+  {
+    org: "Quantum Biology Institute",
+    theme: "Research",
+    accent: "teal",
+    endpoint: "New hypotheses examined",
+    milestones: [
+      {
+        date: "Early 2024",
+        title: "Setup",
+        body: "",
+        notes: ["Create hypomagnetic condition"],
+        done: true,
+      },
+      {
+        date: "Late 2024",
+        title: "Experiment #1",
+        body: "Are weak magnetic field effects real in biology?",
+        notes: ["Build TIRF optical microscope"],
+        done: true,
+      },
+      {
+        date: "Early 2026",
+        title: "Experiment #2",
+        body: "Which proteins are sensitive to weak magnetic fields?",
+        notes: ["Add ODMR"],
+      },
+      {
+        date: "Early 2027",
+        title: "Experiment #3",
+        body: "Is the magneto­sensitivity of proteins quantum?",
+      },
+      {
+        date: "Late 2027 – Early 2028",
+        title: "Experiment #4",
+        body: "Can quantum magnetosensitivity survive in cells?",
+        notes: ["Artificial conditions", "Natural conditions"],
+      },
+      {
+        date: "2029",
+        title: "Experiment #5",
+        body: "Can quantum magnetosensitivity be usefully harnessed?",
+      },
+    ],
+  },
+  {
+    org: "Quantum Biology DAO",
+    theme: "Community",
+    accent: "pink",
+    endpoint: "New DAOs seeded",
+    milestones: [
+      {
+        date: "Late 2024",
+        title: "Setup",
+        body: "",
+        notes: ["Launch governance token"],
+        done: true,
+      },
+      {
+        date: "Late 2025",
+        title: "Experiment #1.5",
+        body: "Test immediate public implications",
+        notes: ["Check 5G"],
+      },
+      {
+        date: "Mid 2026 – Late 2026",
+        title: "Experiment #2.5",
+        body: "Test alternative hypotheses",
+        notes: ["Magnetite chunks?", "Conduction channels?"],
+      },
+      {
+        date: "Mid 2027",
+        title: "Experiment #3.5",
+        body: "Explore competing paradigms",
+        notes: ["Bioelectricity?"],
+      },
+      {
+        date: "Early 2029",
+        title: "Experiment #4.5",
+        body: "Resolve scientific controversies",
+        notes: ["Look in microtubules", "Build ESR STM microscope"],
+      },
+    ],
+  },
+  {
+    org: "Quantum Biology Incubator",
+    theme: "Industry",
+    accent: "gold",
+    endpoint: "New companies incubated",
+    milestones: [
+      {
+        date: "Mid 2025",
+        title: "Setup",
+        body: "",
+      },
+      {
+        date: "Late 2025",
+        title: "Task A",
+        body: "Systematically screen biocompounds for in vitro magnetosensitivity",
+      },
+      {
+        date: "Mid 2026",
+        title: "Task B",
+        body: "Commercialize byproducts of experimentation",
+        notes: ["Screening services", "Company #1"],
+      },
+      {
+        date: "Late 2027",
+        title: "Task C",
+        body: "Re-screen functional biocompounds for in vivo magnetofluorescence",
+        notes: ["Microscope services", "Next gen TIRF quantum microscope"],
+      },
+      {
+        date: "Late 2028",
+        title: "Task D",
+        body: "Harness weak magnetic field effects for commercial purposes",
+        notes: ["Incubation services", "Company #2"],
+      },
+    ],
+  },
+];
+
+const accentText = {
+  teal: "text-teal",
+  pink: "text-pink",
+  gold: "text-gold",
+} as const;
+
+const accentBorder = {
+  teal: "border-teal/40",
+  pink: "border-pink/40",
+  gold: "border-gold/40",
+} as const;
+
+const accentDot = {
+  teal: "bg-teal",
+  pink: "bg-pink",
+  gold: "bg-gold",
+} as const;
+---
+
+<V2Layout
+  title="Roadmap — Quantum Biology DAO"
+  description="The Quantum Biology Ecosystem roadmap — research, community, and industry milestones for the Institute, the DAO, and the Incubator."
+>
+  <!-- ====================================================================== -->
+  <!-- HERO                                                                   -->
+  <!-- ====================================================================== -->
+  <section class="relative pt-28 lg:pt-40 pb-16 md:pb-24">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="max-w-3xl">
+        <EyebrowLabel accent="pink">Roadmap</EyebrowLabel>
+        <h1
+          class="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.95] tracking-tight text-cream-warm"
+        >
+          Research, <em class="italic text-pink/90">community</em>
+          <span class="block">and industry.</span>
+        </h1>
+        <p
+          class="mt-8 font-sans text-[15px] text-cream leading-relaxed max-w-xl"
+        >
+          The Quantum Biology Ecosystem roadmap runs on three tracks — the
+          Institute's experiments, the DAO's community science, and the
+          Incubator's path to commercialization — each feeding the others on
+          the way to a self-sustaining quantum biology industry.
+        </p>
+        <p class="mt-4 font-mono text-[11px] tracking-[0.15em] uppercase text-cream/45">
+          Version 1.0 · Latest update: 13 October 2024
+        </p>
+        <div class="mt-10 flex flex-col items-start gap-5">
+          <V2Cta
+            href="https://quantumbiology.eco/roadmap"
+            label="View the source roadmap"
+            accent="pink"
+            external
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- THREE TRACKS                                                           -->
+  <!-- ====================================================================== -->
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pb-16 md:pb-24">
+    <div class="grid lg:grid-cols-3 gap-6 lg:gap-7">
+      {
+        tracks.map((track) => (
+          <article class={bentoCard}>
+            <EyebrowLabel accent={track.accent}>{track.theme}</EyebrowLabel>
+            <h2 class="font-display text-2xl md:text-3xl leading-[1.05] tracking-tight text-cream-warm mb-10">
+              Quantum Biology{" "}
+              <em class={`italic ${accentText[track.accent]}`}>
+                {track.org.replace("Quantum Biology ", "")}
+              </em>
+            </h2>
+            <ol class="relative border-l border-dashed border-cream/15 ml-2 space-y-10">
+              {track.milestones.map((m) => (
+                <li class="relative pl-7">
+                  <span
+                    class={`absolute -left-[7px] top-1 h-3.5 w-3.5 rounded-full ring-4 ring-plum-darkest ${
+                      m.done ? accentDot[track.accent] : "bg-plum-deepest border " + accentBorder[track.accent]
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-cream/45 mb-1">
+                    {m.date}
+                    {m.done && (
+                      <span class={`ml-2 ${accentText[track.accent]}`}>✓ done</span>
+                    )}
+                  </p>
+                  <h3 class="font-sans font-semibold text-[15px] text-cream">
+                    {m.title}
+                  </h3>
+                  {m.body && (
+                    <p class="mt-1 font-sans text-[13px] text-cream/70 leading-relaxed">
+                      {m.body}
+                    </p>
+                  )}
+                  {m.notes && (
+                    <div class="mt-2 flex flex-wrap gap-1.5">
+                      {m.notes.map((n) => (
+                        <span class="rounded border border-cream/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-cream/50">
+                          {n}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+              <li class="relative pl-7">
+                <span
+                  class={`absolute -left-[7px] top-1 h-3.5 w-3.5 rounded-full ring-4 ring-plum-darkest ${accentDot[track.accent]}`}
+                  aria-hidden="true"
+                />
+                <h3 class={`font-sans font-semibold text-[15px] ${accentText[track.accent]}`}>
+                  {track.endpoint}
+                </h3>
+              </li>
+            </ol>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- How the tracks connect -->
+    <article class={`${bentoCard} mt-6 lg:mt-7`}>
+      <EyebrowLabel accent="pink">How the tracks connect</EyebrowLabel>
+      <h2 class={`${bentoHeading} mb-6`}>
+        Three tracks, one <em class="italic text-pink/90">field</em>.
+      </h2>
+      <div class="font-sans text-[14px] text-cream leading-relaxed space-y-4 max-w-3xl">
+        <p>
+          The tracks are deliberately interlocked. The DAO's community
+          experiments (#1.5–#4.5) run between and feed into the Institute's
+          flagship experiments (#1–#5), testing public implications and
+          alternative hypotheses so the core research stays focused. The
+          Incubator's tasks pick up what the science produces: Task A feeds
+          screening into Experiment #2, Task C's re-screening supports
+          Experiment #4, and Task D commercializes what Experiment #5
+          demonstrates — with instruments like the TIRF optical microscope,
+          ODMR, and the ESR STM microscope built along the way.
+        </p>
+        <p>
+          Each track ends by seeding the next generation: new hypotheses
+          examined, new DAOs seeded, new companies incubated.
+        </p>
+      </div>
+    </article>
+  </div>
+</V2Layout>

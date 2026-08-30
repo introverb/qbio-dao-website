@@ -3,11 +3,100 @@ import V2Layout from "../components/v2/V2Layout.astro";
 import V2Cta from "../components/v2/V2Cta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
+
+// Full explainer page, built 2026-08 from the "Quantum Biology DAO
+// Explainer" Google Doc. BODY TEXT IS VERBATIM from the doc — do not
+// edit copy here without Kyra's sign-off; the only changes made were
+// mechanical (markdown-escape cleanup, two bit/ly→bit.ly typo fixes in
+// link hrefs, and the doc's internal TOC links becoming page anchors).
+
+const lk = "text-pink hover:text-pink-light underline underline-offset-2";
+
+const toc = [
+  { label: "Vision", href: "#vision" },
+  { label: "Governance", href: "#governance" },
+  { label: "Committees", href: "#committees" },
+  { label: "Activities", href: "#activities" },
+  { label: "Team", href: "#team" },
+  { label: "Affiliates", href: "#affiliates" },
+  { label: "History", href: "#history" },
+  { label: "More Info", href: "#more-info" },
+];
+
+const budgetRows = [
+  ["1", "Science Admin", "$10,000", "Jointly executed", "Science", "Roadmapping & grant administration"],
+  ["2", "Media", "$60,000", "Media Director", "Communications", "Twitter/X, YouTube"],
+  ["3", "Community", "$10,000", "Jointly executed", "Communications", "Discord, TG, Twitter/X replies"],
+  ["4", "Education", "$10,000", "Jointly executed", "Communications", "TBD"],
+  ["5", "Operations", "$10,000", "TBD", "Operations", "Tracking contributions, legal"],
+  ["6", "Technology", "$10,000", "TBD", "TBD", "Website, web3"],
+  ["7", "Other", "$10,000", "—", "—", "Everything else"],
+];
+
+const proposals = [
+  { id: "DP-1", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xedf4358db1235da966d4fa90c1a8faef492dc307a34dfdc9631dfbb1251b0341", text: "Establishes DAO governance framework.", status: "passed" },
+  { id: "DP-2", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x3ccd7983951b97f43e278f8c696baab9558a3a7f02d5b9c6767c1756272e9768", text: "Makes QBIO transferable and tradeable on Uniswap/Ethereum.", status: "passed" },
+  { id: "DP-3", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x13baa8fbcc280c96437f17a32ca1e81170aaef08958b4ae717b41ce992abc967", text: "Deploys QBIO on Raydium/Solana.", status: "passed" },
+  { id: "DP-4", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x247a55a49740a77a7b333b7bae8e5a649564c30c0b50f5679ef21237bc3fecf1", text: "Creates working groups (committees) framework.", status: "passed" },
+  { id: "DP-5", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xe3511ee7b39235b7a0925b7833e75d94834a9c803c3659839a3b53ac3cc33534", text: "Funds the Quantum Biology Institute for February 2025.", status: "passed" },
+  { id: "DP-6", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xdd3ebe7a06076b6e7ff58ee81f8b83cf9ee672c05953a59f33b35957860d682e", text: "Establishes the Quantum Biology DAO budget for 2025.", status: "passed" },
+  { id: "DP-7", href: "https://docs.google.com/document/d/1yPQVMjD92QQ0Qh8lnUkBePKTREFpYITEiMm1doW02wI/edit?tab=t.0", text: "Funds the Quantum Biology Institute for March 2025.", status: "passed" },
+  { id: "DP-8", href: "https://common.xyz/quantum-biology-dao/discussion/775364-discussion-about-quantum-biology-institute-annual-2025-budget-proposal-v11", text: "Funds the Quantum Biology Institute’s proposed annual budget.", status: "rejected" },
+  { id: "DP-9", href: "https://common.xyz/quantum-biology-dao/discussion/943443-discussion-about-quantum-biology-institute-tideover-budget-for-april-25-proposal-v-10", text: "Funds the Quantum Biology Institute for April 2025.", status: "rejected" },
+  { id: "DP-10", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xcd1fa9db619dc3603e643fd260af7ad965dade885597b6ee6eaf1c531cba0615", text: "Freezes Phase 2 of DAO governance while it is repaired.", status: "passed" },
+  { id: "DP-11", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xae25b8a08ae6b31e7e269de05e8163e97403364dd801f72c83fa9f94636c1330", text: "Funds the Quantum Biology Institute for April 2025.", status: "passed" },
+  { id: "DP-12", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x883fbb311a315ac795235f11fec526729040be9cf092e3962a9222a7023ea8fd", text: "Funds the Quantum Biology Institute for May 2025.", status: "passed" },
+  { id: "DP-13", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xf2d9c8a30093aa202b115f3edc1b8720d150187cd374edf31ca27155f7a2b89d", text: "Extends freeze of Phase 2 of DAO governance.", status: "passed" },
+  { id: "DP-14", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x2b40e07d8a0931ecc8a9f3db374484eb16c625a3df3e988de65042b9ae1b5c88", text: "Reactivates Phase 2 of DAO governance and adds a token gate.", status: "passed" },
+  { id: "DP-15", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x085c8d22e05852bae6c65dd14136780dff8e783abd145d4b3c281e83bfc43b14", text: "Updates working groups (committees) and adds committee leaders.", status: "passed" },
+  { id: "DP-16", href: "https://snapshot.box/#/s:qbio.eth/proposal/0xda568d857cb4b0bce0d54f51c2b027058ea5866fc7a2d3f5083bad8358fd5d15", text: "Funds the Quantum Biology Institute for June 2025.", status: "quorum not met" },
+  { id: "DP-17", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x5f24a4727ba8c1e62526ba53f2bb7579c81170b6dc3dbfe5c9d3342b27903678", text: "Institutes a provision treasury mgmt plan while a new one is created.", status: "passed" },
+  { id: "DP-18", href: "https://docs.google.com/document/d/19al9qcwnCLOOsslvrAduNKvSky7LINos2b1tr1mEujs/edit?tab=t.0", text: "Various small governance amendments.", status: "not advanced" },
+  { id: "DP-19", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x68973a16167b5cb4a3f02887eaa4727317b3517a7c3eb5711f4bad5cb90ebada", text: "Funds the Quantum Biology Institute for June 2025.", status: "passed" },
+  { id: "DP-20", href: "https://snapshot.box/#/s:qbio.eth/proposal/0x42f9b095a0c1167f133ff847d79c997a1a2733c4fae875138d366c4b1573e188", text: "Grants 500 ETH for the Quantum Biology Institute.", status: "passed" },
+];
+
+const briefs = [
+  { label: "Testing the Quantum Biology Hypothesis", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb385784f0d72af43d762_Testing%20the%20Quantum%20Biology%20Hypothesis.pdf" },
+  { label: "Building the Quantum Biology Industry", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb4a7c723328fe4985c0a_Building%20the%20Quantum%20Biology%20Industry.pdf" },
+  { label: "Quantum Biology and Artificial Intelligence", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb4a7c723328fe4985c0a_Building%20the%20Quantum%20Biology%20Industry.pdf" },
+  { label: "Quantum Biology and Biomanufacturing", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb47fe99c37c91cd73995_Quantum%20Biology%20and%20Biomanufacturing.pdf" },
+  { label: "Quantum Biology and Brain Function", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb4698a58096f36449d46_Quantum%20Biology%20and%20Brain%20Function.pdf" },
+  { label: "Quantum Biology and Defense", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb452c723328fe497fa2c_Quantum%20Biology%20and%20Defense.pdf" },
+  { label: "Quantum Biology and Drug Development", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb442355e8d795d8989b5_Quantum%20Biology%20and%20Drug%20Development.pdf" },
+  { label: "Quantum Biology and Health", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb42be3c2bef5a19dcbe8_Quantum%20Biology%20and%20Health.pdf" },
+  { label: "Quantum Biology and Longevity", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb415c723328fe497be71_Quantum%20Biology%20and%20Longevity.pdf" },
+  { label: "Quantum Biology and Nanotechnology", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb401eded77b18683cd19_Quantum%20Biology%20and%20Nanotechnology.pdf" },
+  { label: "Quantum Biology and Quantum Computing", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb3ecf1feed336336b74f_Quantum%20Biology%20and%20Quantum%20Computing.pdf" },
+  { label: "Quantum Biology and Space Exploration", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb3d84967a8e0af8e6428_Quantum%20Biology%20and%20Space%20Exploration.pdf" },
+  { label: "Quantum Biology and The Future", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb3c32ff8cf317de3256d_Quantum%20Biology%20and%20the%20Future.pdf" },
+  { label: "Quantum Biology and Whole Brain Emulation", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb3abf429315322fd8dd6_Quantum%20Biology%20and%20Whole%20Brain%20Emulation.pdf" },
+  { label: "Quantum Biology as an Experiment in Open Science", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb398e6e2cd36cbd5db94_Quantum%20Biology%20as%20an%20Experiment%20in%20Open%20Science.pdf" },
+  { label: "The Tadpole Experiment", href: "https://cdn.prod.website-files.com/6683bbfaeb9eda2dfe4bdcde/670fb36db5dc042daeec9f22_The%20Tadpole%20Experiment.pdf" },
+];
+
+const historySummary = [
+  "Pre-History 📜  ???",
+  "Incubation 🌱  April-November 2024",
+  "Debut 🕺  November 2024",
+  "Token Auction 🪙 December 2024",
+  "Initial Setup 🏗️ December 2024-January 2025",
+  "Token Launch 🚀 January 2025",
+  "Two Crashes ☄️ January-February 2025",
+  "Two Hacks 🔓  March-April 2025",
+  "Recovery 💪  May 2025",
+  "Setup Complete ☑️ May 2025",
+  "First Major Grant 💰 June 2025",
+  "Next Steps 🛣️  June 2025-",
+];
+
+const bodyText = "font-sans text-[15px] text-cream leading-relaxed space-y-5";
+const h3Class = "font-display text-xl md:text-2xl text-cream-warm mt-10 mb-4";
 ---
 
 <V2Layout
   title="Explainer — Quantum Biology DAO"
-  description="The Quantum Biology DAO, explained — vision, governance, committees, and history."
+  description="The Quantum Biology DAO, explained — vision, governance, committees, activities, team, affiliates, and history."
 >
   <!-- ====================================================================== -->
   <!-- HERO                                                                   -->
@@ -25,9 +114,19 @@ import { bentoCard, bentoHeading } from "../lib/v2-bg";
         <p
           class="mt-8 font-sans text-[15px] text-cream leading-relaxed max-w-xl"
         >
-          A founder-led, community-centric organization advancing the field of
-          quantum biology, governed by the QBIO token. The full explainer —
-          vision, governance, committees, and history — is on its way.
+          The Quantum Biology DAO is a founder-led community-centric
+          organization with the mission of advancing the field of quantum
+          biology. It uses a crypto token, QBIO, for governance. The DAO has
+          its own budget, committees, and priorities, and is now both the
+          largest organization in the field of quantum biology and the premier
+          funder, with the best social media profile and the most competitive
+          games of quantum biology trivia. Anyone can help us push forward the
+          field — just join the <a
+            href="https://quantumbiology.community"
+            target="_blank"
+            rel="noopener noreferrer"
+            class={lk}>Discord</a
+          >!
         </p>
         <div class="mt-10 flex flex-col items-start gap-5">
           <V2Cta
@@ -42,19 +141,1438 @@ import { bentoCard, bentoHeading } from "../lib/v2-bg";
   </section>
 
   <!-- ====================================================================== -->
-  <!-- PLACEHOLDER BODY — full explainer content TBD                          -->
+  <!-- BODY                                                                   -->
   <!-- ====================================================================== -->
   <div class="relative max-w-7xl mx-auto px-6 lg:px-12 pb-16 md:pb-24">
-    <article class={`${bentoCard} lg:col-span-12`}>
-      <EyebrowLabel accent="pink">Coming soon</EyebrowLabel>
-      <h2 class={`${bentoHeading} mb-6 max-w-3xl`}>
-        The full <em class="italic text-pink/90">explainer</em> is being prepared.
-      </h2>
-      <p class="font-sans text-[14px] text-cream leading-relaxed max-w-3xl">
-        We're turning the Quantum Biology DAO explainer into a full page. In the
-        meantime, the homepage TL;DR covers the essentials, and the community
-        Discord is the best place to dive in.
-      </p>
-    </article>
+    <div class="grid gap-6 lg:gap-7">
+
+      <!-- Table of contents -->
+      <article class={bentoCard}>
+        <EyebrowLabel accent="pink">Contents</EyebrowLabel>
+        <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {
+            toc.map((t) => (
+              <a
+                href={t.href}
+                class="group flex items-center justify-between gap-3 rounded-md border border-cream/10 hover:border-pink/40 hover:bg-pink/5 transition-colors px-4 py-4"
+              >
+                <span class="font-sans text-[13px] text-cream/85 leading-snug">
+                  {t.label}
+                </span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="shrink-0 text-pink/60 group-hover:text-pink transition-colors"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </a>
+            ))
+          }
+        </div>
+      </article>
+
+      <!-- VISION -->
+      <article id="vision" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">Vision</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          The <em class="italic text-pink/90">vision</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            Biology runs on the laws of quantum physics. It’s a hard truth,
+            because math is hard, but it’s a necessary one, because we don’t
+            get to choose what our biology is or isn’t made of.
+          </p>
+          <p>
+            Quantum mechanics was developed in the early 1900s. It’s been
+            almost a hundred years since then. Theorists as early as
+            Schrödinger postulated a role for quantum physics in biology.
+            Decades have passed, and the evidence for quantum effects in
+            biology has mounted. Now, with the help of cutting edge technology
+            from quantum sensing and new organizational structures, like the
+            Quantum Biology DAO, it is possible to finally investigate quantum
+            states inside cells at room temperature and learn how they work.
+          </p>
+          <p>
+            Our goal isn’t just learning, however. We want to change the
+            world. The knowledge that comes from advancing the basic science
+            of quantum biology will give rise to an entire industry of quantum
+            biological applications.
+          </p>
+          <p>
+            Our first stop is biomanufacturing. Companies are growing wheat,
+            coffee, and more inside bioreactors specially designed to make
+            cells multiply. They aren’t using all of the tools nature gives
+            us, though, because they aren’t using quantum. Quantum physics
+            explains how weak magnetic fields, like the Earth’s magnetic
+            field, which life evolved within, can have effects in biology —
+            like cell division rate. Biologists haven’t been able to apply
+            magnetic fields to samples, at least, not easily, because they
+            haven’t had the instruments or the knowledge of quantum physics.
+          </p>
+          <p>
+            The Quantum Biology DAO is paving the way. We’re building the
+            instruments biologists need to work with weak magnetic fields.
+            We’re funding the basic science so they can understand the quantum
+            states they’re interacting with. You can imagine
+            magnetically-powered bioreactors churning out more stuff now and
+            in the future when we’re in space or on other planets.
+          </p>
+          <p>
+            Biomanufacturing is just the first step. After that, the real
+            target is health. Weak magnetic fields impact many aspects of the
+            cells, potentially including cell-wide phenomena such as
+            metabolism and apoptosis — which means, keeping cells healthy and
+            clearing out senescent cells.
+          </p>
+          <p>
+            Companies are already using weak magnetic fields to improve
+            people’s health. Novocure, a publicly traded company with over a
+            billion-dollar market cap, uses weak magnetic fields to treat
+            cancer. Other companies have used weak magnetic fields to reduce
+            symptoms from diabetes. They haven’t been able to systematically
+            tune their effects or intelligently search for new ones, though,
+            because they don’t have the underlying formulas that tell them how
+            quantum effects work in biology.
+          </p>
+          <p>
+            The real future quantum biology offers is one where we, as a
+            species, have mastered quantum effects in biology and, along with
+            that, weak magnetic field effects. Weak magnetic fields are cheap
+            to produce, don’t require surgery or pills, and can be carefully
+            targeted and controlled using smart clothing and a cell phone. We
+            imagine a future with over-the-air updates making your clothing
+            and your environment better able to produce the right sorts of
+            magnetic fields to make ourselves healthier, more energetic, and
+            able to live a lot longer.
+          </p>
+          <p>
+            Those aren’t the only effects we look forward to. Even though weak
+            magnetic fields are important, they aren’t the only point of
+            quantum biology. Quantum biology includes prolonging room
+            temperature superpositions, something that quantum computing
+            desperately needs to learn how to do. It also covers potentially
+            more efficient processes for generating energy, like nature
+            already does with photosynthesis in the cell, and greater
+            knowledge of chemical interactions, including molecular
+            recognition which is relevant to drug discovery.
+          </p>
+          <p>
+            Getting to these effects requires serious translational efforts —
+            translating basic science to practical applications and
+            translating the deep mysteries of quantum physics into a language
+            that everyone, including biologists, can understand. The Quantum
+            Biology DAO is positioned to perform these translational efforts,
+            building new instruments, funding crucial research, and putting
+            into place everything else needed for the field of quantum biology
+            to succeed and the industry of quantum biology to be born.
+          </p>
+          <p>Join us! And may the quantum be with you!</p>
+        </div>
+      </article>
+
+      <!-- GOVERNANCE -->
+      <article id="governance" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">Governance</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          How the DAO <em class="italic text-pink/90">governs</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            The Quantum Biology DAO governs by proposals which are made by DAO
+            contributors and voted on in accordance with the DAO’s system of
+            governance. There are three phases of governance, each intended to
+            give different stakeholders a voice. Two of the phases use <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x2b40e07d8a0931ecc8a9f3db374484eb16c625a3df3e988de65042b9ae1b5c88"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>QBIO</a
+            >, which is an Ethereum-based crypto token, to manage voting
+            power. The DAO passes proposals pertaining to governance,
+            committees, grants, treasury management, the QBIO token, and any
+            other topic related to advancing the field of quantum biology.
+          </p>
+          <p>
+            As a legal entity, the DAO is currently represented by the Quantum
+            Biology DAO Association, a Swiss association incorporated in the
+            canton of Zug.
+          </p>
+
+          <h3 class={h3Class}>Phases of Governance</h3>
+          <p>
+            The Quantum Biology DAO has three phases of governance, which are
+            described in detail in proposals <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0xedf4358db1235da966d4fa90c1a8faef492dc307a34dfdc9631dfbb1251b0341"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-1</a
+            > and <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x2b40e07d8a0931ecc8a9f3db374484eb16c625a3df3e988de65042b9ae1b5c88"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-14</a
+            >.
+          </p>
+          <p>
+            Phase 1 is <strong class="text-cream-warm">drafting in Discord</strong>.
+            In the DAO’s community Discord, there is a <a
+              href="https://discord.com/channels/1248368139436163143/1299694115759460362"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>channel</a
+            > for proposals. Any member of the community may make a proposal.
+            Proposals are typically given their own sub-channel and then
+            debated by the community. The authors of the proposals may make
+            revisions in response to feedback. Once a sufficient number of 👍s
+            are received, including enough from DAO Core Contributors, the
+            proposal passes on to Phase 2.
+          </p>
+          <p>
+            Phase 2 is <strong class="text-cream-warm">discussion and voting on Common</strong>.
+            The DAO uses a website called <a
+              href="https://common.xyz/quantum-biology-dao/discussions?tab=all"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Common</a
+            >, which hosts public discussion and voting by communities. When a
+            proposal reaches Phase 2, it is posted to Common. It stays there
+            for 1 day (fast), 3 days (normal), or 7 days (slow), depending on
+            the speed the proposal was set at. During that time, anyone may
+            post a public comment; in order to vote, a person must connect a
+            wallet holding 10,000 QBIO. To move from Phase 2 to Phase 3, at
+            least 10 votes must be cast and a majority must be in favor. This
+            phase is meant to be “1 person, 1 vote” and provides greater power
+            to small token holders.
+          </p>
+          <p>
+            Phase 3 is <strong class="text-cream-warm">token voting on Snapshot</strong>.
+            For the final phase of governance, the DAO uses a website called <a
+              href="https://snapshot.box/#/s:qbio.eth/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Snapshot</a
+            >, which lets people connect their wallets and vote using their
+            tokens. To pass Phase 3, at least 3% of tokens must be used vote
+            and a majority of votes must be in favor. This phase is meant to
+            be “1 token, 1 vote” and provides greater power to large token
+            holders.
+          </p>
+          <p>
+            DAO governance can be modified through DAO proposals. This
+            happened before, when a flaw in Phase 2 was identified and
+            patched.
+          </p>
+
+          <h3 class={h3Class}>The QBIO Token</h3>
+          <p>
+            The Quantum Biology DAO uses a blockchain-based electronic token
+            called <a
+              href="https://etherscan.io/token/0x3e6a1b21bd267677fa49be6425aebe2fc0f89bde"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>QBIO</a
+            > for governance. Tokens were initially auctioned off in December
+            2024 in order to raise money for the DAO. Tokens were also given
+            to DAO co-founders and to BIO Protocol in return for helping
+            incubate and launch the DAO.
+          </p>
+          <p>
+            The QBIO token is now available for purchase on the decentralized
+            exchanges <a
+              href="https://app.uniswap.org/explore/pools/ethereum/0x4830570554606cBc37478AB773fde991261FD99C"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Uniswap</a
+            > for Ethereum users and <a
+              href="https://raydium.io/swap/?inputMint=sol&outputMint=qbioCGDnUBGX5qcK1Fc4zg19GaQEPmxHFMPMZQm4LZ8"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Raydium</a
+            > for Solana users. The contract addresses are:
+          </p>
+          <ul class="space-y-2">
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>Ethereum — <code class="font-mono text-[12px] text-cream/70 break-all">0x3e6a1b21bd267677fa49be6425aebe2fc0f89bde</code></span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>Solana — <code class="font-mono text-[12px] text-cream/70 break-all">qbioCGDnUBGX5qcK1Fc4zg19GaQEPmxHFMPMZQm4LZ8</code></span>
+            </li>
+          </ul>
+          <p>
+            People sometimes speculate on crypto tokens. However, QBIO is not
+            a security and its being available for trade on decentralized
+            exchanges is not meant to suggest any probability of economic
+            return or any existing or future economic rights in the DAO’s
+            treasury or assets. QBIO is a governance token. Holding it allows
+            one to participate in the governance of the Quantum Biology DAO.
+            The purpose of the Quantum Biology DAO is to advance the field of
+            quantum biology, and the decisions of its token holders will
+            determine how it does that.
+          </p>
+
+          <h3 class={h3Class}>Annual 2025 Budget</h3>
+          <p>
+            The DAO has a budget of $120,000 for February 2025 through January
+            2026. It is allocated as follows; details are included in <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0xdd3ebe7a06076b6e7ff58ee81f8b83cf9ee672c05953a59f33b35957860d682e"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-6</a
+            >.
+          </p>
+        </div>
+
+        <div class="mt-6 overflow-x-auto rounded-lg border border-cream/10">
+          <table class="w-full min-w-[640px] text-left">
+            <caption class="sr-only">
+              Quantum Biology DAO budget, February 2025 through January 2026
+            </caption>
+            <thead>
+              <tr class="border-b border-cream/10 bg-plum-deepest/50">
+                <th class="px-4 py-3 font-mono text-[10px] tracking-[0.2em] uppercase text-pink/80">#</th>
+                <th class="px-4 py-3 font-mono text-[10px] tracking-[0.2em] uppercase text-pink/80">Function</th>
+                <th class="px-4 py-3 font-mono text-[10px] tracking-[0.2em] uppercase text-pink/80">Amount</th>
+                <th class="px-4 py-3 font-mono text-[10px] tracking-[0.2em] uppercase text-pink/80">Position</th>
+                <th class="px-4 py-3 font-mono text-[10px] tracking-[0.2em] uppercase text-pink/80">Working Group</th>
+                <th class="px-4 py-3 font-mono text-[10px] tracking-[0.2em] uppercase text-pink/80">Covers</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                budgetRows.map((row) => (
+                  <tr class="border-b border-cream/5">
+                    {row.map((cell) => (
+                      <td class="px-4 py-3 font-sans text-[13px] text-cream/85">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              }
+              <tr class="bg-plum-deepest/30">
+                <td class="px-4 py-3"></td>
+                <td class="px-4 py-3 font-sans text-[13px] font-semibold text-cream">Total</td>
+                <td class="px-4 py-3 font-sans text-[13px] font-semibold text-cream">$120,000</td>
+                <td class="px-4 py-3" colspan="3"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class={`${bodyText} max-w-3xl mt-6`}>
+          <p>
+            The $60,000 for Media is allocated to Kyra Gardner at <a
+              href="https://smarterwith.science/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Smarter With Science</a
+            >, who maintains a constant stream of social media content for the
+            DAO across multiple social media channels. The remaining funds are
+            being spent as needed on relevant DAO functions, including in some
+            cases community awards.
+          </p>
+
+          <h3 class={h3Class}>Passed Proposals</h3>
+          <p>
+            To date, the Quantum Biology DAO has considered twenty proposals,
+            of which sixteen reached Phase 3 and were passed, one reached
+            Phase 3 but quorum was not met, two reached Phase 2 and were
+            defeated, and one was left in Phase 1 and has not yet advanced.
+            These proposals are:
+          </p>
+          <ul class="space-y-2">
+            {
+              proposals.map((p) => (
+                <li class="flex gap-3">
+                  <span class="text-pink/70 shrink-0">—</span>
+                  <span>
+                    <a
+                      href={p.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class={lk}
+                    >
+                      {p.id}
+                    </a>{" "}
+                    — {p.text}{" "}
+                    <span class="text-cream/50">({p.status})</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </article>
+
+      <!-- COMMITTEES -->
+      <article id="committees" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">Committees</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          The <em class="italic text-pink/90">committees</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            The DAO conducts its business through a set of committees (or
+            “working groups”). Right now, there are five committees: Science,
+            Communications, Product, Treasury, and Operations. Each committee
+            has one or more leaders. The details of how committees work are
+            described in <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x247a55a49740a77a7b333b7bae8e5a649564c30c0b50f5679ef21237bc3fecf1"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-4</a
+            > and <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x085c8d22e05852bae6c65dd14136780dff8e783abd145d4b3c281e83bfc43b14"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-15</a
+            >.
+          </p>
+
+          <h3 class={h3Class}>Science</h3>
+          <p>
+            The Science committee reviews papers and discusses hypotheses
+            pertaining to quantum biology, contributes to the DAO’s scientific
+            planning, helps to determine priorities for grants to scientists
+            and advises the DAO on science-related matters. It is currently
+            led by Chris Rourk.
+          </p>
+
+          <h3 class={h3Class}>Communications</h3>
+          <p>
+            The Communications committee manages social media and the
+            community Discord, maintains community engagement and motivation,
+            enforces community standards, and leads the effort to educate
+            people about quantum biology and the Quantum Biology DAO. It is
+            led by Kyra Gardner.
+          </p>
+
+          <h3 class={h3Class}>Product</h3>
+          <p>
+            The Product committee designs instruments to be used in quantum
+            biology research, with an eye to commercialization. This involves
+            identifying market opportunities and potential customers, as well
+            as making and executing marketing and distribution plans. It is
+            led by Geoff Anders and Alessandro Lodesani.
+          </p>
+
+          <h3 class={h3Class}>Treasury</h3>
+          <p>
+            The Treasury committee develops and executes the strategy for
+            managing the DAO’s treasury. It is led by Mike Montague.
+          </p>
+
+          <h3 class={h3Class}>Operations</h3>
+          <p>
+            The Operations committee tracks contributions from community
+            members, manages scheduling, tracks spending, and maintains legal
+            compliance. It is led by Jennilyn Gaitan.
+          </p>
+        </div>
+      </article>
+
+      <!-- ACTIVITIES -->
+      <article id="activities" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">Activities</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          What the DAO <em class="italic text-pink/90">does</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            The governance system of the DAO exists in order to harness the
+            energy of a growing community of supporters of the field of
+            quantum biology and to direct the resources of the DAO to
+            advancing the field of quantum biology. Some of the DAO’s work has
+            already been completed; other projects are being worked on right
+            now.
+          </p>
+
+          <h3 class={h3Class}>Work So Far</h3>
+          <p>The DAO has accomplished several major tasks so far.</p>
+          <ul class="space-y-4">
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <strong class="text-cream-warm">Fundraise.</strong> The
+                co-founders of the DAO, Geoff Anders, Clarice Aiello, and
+                Alessandro Lodesani, ran a large promotional campaign to raise
+                money for the DAO. This succeeded, with QBIO tokens being
+                auctioned off for $6.8 million.
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <strong class="text-cream-warm">Token launch.</strong> With
+                the assistance of BIO Protocol and the encouragement of the
+                community, the DAO launched the QBIO token, making it
+                transferable and publicly tradeable. The token is now
+                available on Ethereum (via Uniswap) and Solana (via Raydium).
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <strong class="text-cream-warm">Community building.</strong>
+                Through ups and downs, many people, including Geoff Anders,
+                Kyra Gardner, Jennilyn Gaitan, Stanley Bishop, Cryptonurse,
+                Holypanetone, TheWeb5sASI, Royalty, DePaul, Kenichi, iFun,
+                Scagria, Nonye, Michael_019, Timmygram and others, helped to
+                grow and build the community. Through that work, there are now
+                more than 50 people actively involved in the DAO.
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <strong class="text-cream-warm">Organizational setup.</strong>
+                The DAO also set up its own governance structure and
+                committees, selected committee leaders, divided tasks, and
+                took steps to ensure organizational efficiency.
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <strong class="text-cream-warm">First major grant.</strong>
+                The Quantum Biology DAO gave its first major grant, of 500 ETH
+                (~$1.3 million at the time) to the Quantum Biology Institute
+                to support its foundational work in the field of quantum
+                biology. QBI’s major project is creating a microscope capable
+                of detecting quantum states inside cells and room temperature,
+                and also applying magnetic fields to probe and interact with
+                those quantum states. It’s very exciting work, and it is only
+                possible now because of the DAO’s support.
+              </span>
+            </li>
+          </ul>
+
+          <h3 class={h3Class}>New Priorities</h3>
+          <p>The DAO has several top priorities at the moment.</p>
+          <p>
+            <strong class="text-cream-warm">A new scientific granting process</strong>
+            — The DAO needs to set up a granting process that will guide its
+            future grants to scientists who will advance the field of quantum
+            biology. Researchers and academics are thoroughly dissatisfied
+            with the granting system that currently exists. We have the
+            opportunity to improve on it!
+          </p>
+          <p class="text-cream/60 text-[13px]">The entire DAO will cover this.</p>
+          <p>
+            <strong class="text-cream-warm">Health effects from weak magnetic fields</strong>
+            — The biggest and most immediate point of contact between people’s
+            everyday lives and quantum biology are the potential health
+            effects of weak magnetic fields. These are frequently ignored
+            because the fields are thought to be too weak; however, there are
+            quantum effects that are strong precisely when the fields are
+            weak. These may be effects that researchers and government bodies
+            looking at health effects are unaware of.
+          </p>
+          <p class="text-cream/60 text-[13px]">The Science committee will cover this.</p>
+          <p>
+            <strong class="text-cream-warm">DAO website refresh</strong> — The
+            DAO’s <a
+              href="http://quantumbiology.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>website</a
+            > is sorely out of date. It was current in December 2024 when the
+            initial fundraise took place. However, a lot has happened in the
+            months since then.
+          </p>
+          <p class="text-cream/60 text-[13px]">The Communications committee will cover this.</p>
+          <p>
+            <strong class="text-cream-warm">First patent and tokenized IP</strong>
+            — One reason scientists do not look into quantum biology is that
+            they do not know how to apply magnetic fields to biological
+            samples. The first step in solving this is to create an
+            easy-to-use adjustable magnetic ring that biologists can use in
+            experiments. This can be patented and then tokenized, with
+            ownership of the tokens determining licensing rights. Getting a
+            patent will demonstrate commercial opportunities within quantum
+            biology and tokenization will demonstrate a practical use case
+            for blockchain technology.
+          </p>
+          <p class="text-cream/60 text-[13px]">
+            This is the Product committee’s first project. See <a
+              href="/roadmap"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>the Quantum Biology DAO’s product roadmap</a
+            >.
+          </p>
+          <p>
+            <strong class="text-cream-warm">Treasury management strategy</strong>
+            — Thus far, the DAO has simply held ETH and staked some of that
+            ETH. It is important to develop a new treasury management plan in
+            communication with the DAO’s stakeholders, designed to optimize
+            the DAO’s management of risk.
+          </p>
+          <p class="text-cream/60 text-[13px]">This is the Treasury committee’s aim.</p>
+        </div>
+      </article>
+
+      <!-- TEAM -->
+      <article id="team" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">Team</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          The <em class="italic text-pink/90">team</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            The Quantum Biology DAO was originally founded by Geoff Anders,
+            Alessandro Lodesani, and Clarice Aiello. It is now composed of its
+            Core Contributors, committee leaders and participants, QBIO token
+            holders and other members of the community lurking in the Discord
+            or elsewhere.
+          </p>
+
+          <h3 class={h3Class}>Core Contributors</h3>
+          <p>
+            Core Contributors to the DAO are people who put substantial effort
+            into making the DAO work. They have special powers, which include
+            approving proposals to pass from Phase 1 to Phase 2 of governance
+            and directing the committees; details are described in <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0xedf4358db1235da966d4fa90c1a8faef492dc307a34dfdc9631dfbb1251b0341"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-1</a
+            >.
+          </p>
+          <p>The current list of Core Contributors is:</p>
+          <ul class="space-y-2">
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Geoff Anders</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Alessandro Lodesani</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Clarice Aiello</span></li>
+          </ul>
+          <p>
+            There are several people who are prospective Core Contributors.
+            That means that they are not Core Contributors yet, but are on
+            their way. These are:
+          </p>
+          <ul class="space-y-2">
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Kyra Gardner</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Mike Montague</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Jennilyn Gaitan</span></li>
+          </ul>
+          <p>
+            Over time, in accordance with the ethos of progressive
+            decentralization, it is expected that the number of Core
+            Contributors will increase and the dependence of the DAO on any
+            single person or group of people will decrease.
+          </p>
+
+          <h3 class={h3Class}>Committee Leaders</h3>
+          <p>
+            DAO committee leaders are selected by DAO proposal. Their powers
+            and responsibilities are described in <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x247a55a49740a77a7b333b7bae8e5a649564c30c0b50f5679ef21237bc3fecf1"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-4</a
+            > and <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x085c8d22e05852bae6c65dd14136780dff8e783abd145d4b3c281e83bfc43b14"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-15</a
+            >.
+          </p>
+          <p>The current committee leaders are:</p>
+          <ul class="space-y-2">
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Geoff Anders — Product</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Alessandro Lodesani — Product</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Kyra Gardner — Communications</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Mike Montague — Treasury</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Jennilyn Gaitan — Operations</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Chris Rourk — Science</span></li>
+          </ul>
+          <p>
+            By default, committee leaders retain their positions for one year.
+            The current set of leaders was affirmed at the end of May, 2025 in
+            <a
+              href="https://snapshot.box/#/s:qbio.eth/proposal/0x085c8d22e05852bae6c65dd14136780dff8e783abd145d4b3c281e83bfc43b14"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>DP-15</a
+            >.
+          </p>
+
+          <h3 class={h3Class}>Community Members</h3>
+          <p>
+            Beyond leaders, the DAO has many community members. Community
+            members attend DAO committee meetings, vote on DAO proposals, join
+            in fun activities like the semi-monthly quantum biology trivia
+            contest, and so forth.
+          </p>
+          <p>
+            There are presently more than twenty-five community members, not
+            counting Core Contributors and committee leaders, including
+            Royalty, Kenichi, Mikasa | Scribe, iFun, Scagria, Nonye, DePaul,
+            Cryptonurse, Gavin, TheWeb5’sASI, Eagleye, gbarbied, goldenGM,
+            Erik Van Winkle, Odetta, James Sinka, Limbofeather, Michael_019,
+            Misery, Olli Payne, Reneedaos, Stanley Bishop (aka Science
+            Stanley), Silent Spring | Product, Timmygram, Zicjoe, Leo Boltz,
+            Ash Manchester, and others.
+          </p>
+
+          <h3 class={h3Class}>Token Holders</h3>
+          <p>
+            Many participants in the DAO are token holders, which means that
+            they own one or more wallets that contain QBIO, the Quantum
+            Biology DAO’s governance token. Being a token holder means having
+            at least 1 QBIO, though there are hundreds of small token holders
+            and approximately 25 large token holders, with more than 1,000,000
+            QBIO each.
+          </p>
+
+          <h3 class={h3Class}>Service Providers</h3>
+          <p>
+            The Quantum Biology DAO works with a few service providers who are
+            close enough to count as part of the community. These are <a
+              href="https://smarterwith.science/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Smarter With Science</a
+            >, a science education firm, and <a
+              href="https://www.bio.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>BIO Protocol</a
+            >, the Decentralized Science token launch platform that provided
+            incubation services for and helped launch the Quantum Biology
+            DAO.
+          </p>
+
+          <h3 class={h3Class}>Mascot</h3>
+          <p>
+            The DAO’s mascot, chosen through a community mascot design
+            contest, is Qubie, the quantum biology fish. Qubie is a new member
+            of the team and we expect great things!
+          </p>
+        </div>
+      </article>
+
+      <!-- AFFILIATES -->
+      <article id="affiliates" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">Affiliates</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          The <em class="italic text-pink/90">affiliates</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            The Quantum Biology DAO is affiliated with a number of groups,
+            movements, and organizations, including many similar DAOs. The
+            most important of these are the Quantum Biology Ecosystem, the
+            Decentralized Science movement, and the BIO ecosystem.
+          </p>
+
+          <h3 class={h3Class}>Quantum Biology Ecosystem</h3>
+          <p>
+            The <a
+              href="http://quantumbiology.eco"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Quantum Biology Ecosystem</a
+            > is a network of three organizations:
+          </p>
+          <ul class="space-y-2">
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Quantum Biology Institute</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Quantum Biology DAO</span></li>
+            <li class="flex gap-3"><span class="text-pink/70 shrink-0">—</span><span>Quantum Biology Incubator</span></li>
+          </ul>
+          <p>
+            The <a
+              href="http://quantumbiology.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Quantum Biology Institute</a
+            > is a 501(c)(3) non-profit organization located in California. It
+            is devoted to performing the basic research needed to lay the
+            foundation for the field of quantum biology. It has a lab in Los
+            Angeles, where it is building a microscope that will allow it to
+            examine quantum states inside cells at room temperature. It also
+            has a smaller lab hosted at the J. Craig Venter Institute in
+            Maryland, where microbiology experiments are performed to better
+            understand the effects of weak magnetic fields in biology.
+          </p>
+          <p>
+            The Quantum Biology Institute was originally founded by Clarice
+            Aiello in 2024. It is now led by Anna Stillwell, with support from
+            the team, which includes Alessandro Lodesani, Mike Montague,
+            Jennilyn Gaitain, and others.
+          </p>
+          <p>
+            The <a
+              href="http://quantumbiology.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Quantum Biology DAO</a
+            > is the organization described in this document! It was conceived
+            in April 2024 and debuted in November 2024. It differs from the
+            Institute in that it involves many different people, is officially
+            headquartered in Switzerland rather than Los Angeles, and is
+            focused on the translational efforts needed to bridge from the
+            basic science to commercialization, rather than simply on the
+            basic science.
+          </p>
+          <p>
+            During the initial DAO fundraise, Geoff Anders and Clarice Aiello
+            pitched the entire Quantum Biology Ecosystem, as a
+            three-organization structure needed to build a new industry. The
+            Quantum Biology DAO was explained as the second of three
+            organizations, with the intention that half of the money raised
+            would go to the Quantum Biology Institute and half to the rest of
+            the field. This was explained with the proviso that, since final
+            decision making power at the DAO rests with the token holders, all
+            allocations of money would be subject to the token holders’
+            approval.
+          </p>
+          <p>
+            The <a
+              href="http://quantumbiology.inc"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Quantum Biology Incubator</a
+            > [website is being reposted] is a new organization, ready to be
+            founded, which will help equip startups in the quantum biology
+            space with the scientific knowledge, cutting edge technology, and
+            business know-how needed to succeed. According to the Quantum
+            Biology Ecosystem <a
+              href="/roadmap"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>roadmap</a
+            >, the Incubator is slated to launch in mid-2025:
+          </p>
+          <p>
+            In order to keep the three organizations distinct but aligned,
+            each was given its own overlapping but related mission. Also, it
+            was planned that the Quantum Biology Institute and the Quantum
+            Biology DAO would both receive a portion of equity from the
+            Quantum Biology Incubator. If everything goes according to plan,
+            every successful exit of an incubated company will feed money back
+            into the system, helping to fund the Institute and the DAO. In
+            this way, it becomes possible for quantum biology to become a
+            completely self-sustaining sector.
+          </p>
+          <p>
+            The Quantum Biology Ecosystem website also contains a large number
+            of <a
+              href="http://quantumbiology.eco#briefs"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>briefs</a
+            >, designed to teach people about the relationship between quantum
+            biology and other fields. These include:
+          </p>
+          <ul class="space-y-2">
+            {
+              briefs.map((b) => (
+                <li class="flex gap-3">
+                  <span class="text-pink/70 shrink-0">—</span>
+                  <a
+                    href={b.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={lk}
+                  >
+                    {b.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+
+          <h3 class={h3Class}>Decentralized Science (“DeSci”)</h3>
+          <p>
+            Decentralized Science, or “DeSci,” is a movement that has existed
+            at least since 2018. Originally beginning with elements of the
+            Open Science movement, as well as the advent of preprint servers,
+            Decentralized Science moved onto the blockchain, with many groups
+            launching crypto-native organizations seeking to improve science
+            through the use of blockchain technology.
+          </p>
+          <p>
+            One important aspect of DeSci has been the adoption of DAOs. “DAO”
+            stands for “Decentralized Autonomous Organization,” a special type
+            of organization that should be made possible by the blockchain.
+            Over the years, different teams have experimented with different
+            degrees of decentralization and autonomy, with the general
+            consensus now being that decentralization and autonomy are good
+            and that a progressive move towards each over time is the best
+            overall strategy.
+          </p>
+          <p>
+            The Quantum Biology DAO is a member of the Decentralized Science
+            movement. We have participated in several DeSci conferences,
+            including DeSci Bangkok and DeSci London, and have attended DeSci
+            events at larger crypto conferences including ETH Denver. We
+            expect that DAO community members will continue to participate in
+            and contribute to the DeSci movement, at least in the form of
+            participation, if not (eventually) in the form of leadership.
+          </p>
+          <p>
+            As a DAO, the Quantum Biology DAO has the goal of progressively
+            moving towards greater decentralization and autonomy. That means
+            that the DAO is aiming to cause power at the DAO to be held by
+            more and more people over time and for the DAO to operate in an
+            increasingly automatic way over time. Premature decentralization
+            and premature automation are two major causes of DAO failure, so
+            we are being careful. But these are ideals we take seriously and
+            believe we are making progress towards.
+          </p>
+
+          <h3 class={h3Class}>BIO Ecosystem</h3>
+          <p>
+            One of the most prominent organizations in DeSci right now is <a
+              href="https://www.bio.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>BIO Protocol</a
+            >, the organization affiliated with the <a
+              href="https://coinmarketcap.com/currencies/bio/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>BIO</a
+            > token. BIO Protocol incubates and launches DeSci DAOs, which
+            then become part of its ecosystem. The BIO Ecosystem now contains
+            many DAOs, including <a href="https://www.vitadao.com/" target="_blank" rel="noopener noreferrer" class={lk}>VitaDAO</a> (longevity),
+            <a href="https://www.hairdao.xyz/" target="_blank" rel="noopener noreferrer" class={lk}>HairDAO</a> (baldness),
+            <a href="https://www.valleydao.bio/" target="_blank" rel="noopener noreferrer" class={lk}>ValleyDAO</a> (synthetic biology),
+            <a href="https://www.athenadao.co/" target="_blank" rel="noopener noreferrer" class={lk}>AthenaDAO</a> (women’s health),
+            <a href="https://www.cryodao.org/" target="_blank" rel="noopener noreferrer" class={lk}>CryoDAO</a> (cryopreservation),
+            <a href="https://www.psydao.io/" target="_blank" rel="noopener noreferrer" class={lk}>PsyDAO</a> (psychedelics),
+            <a href="https://www.cerebrumdao.com/" target="_blank" rel="noopener noreferrer" class={lk}>Cerebrum DAO</a> (brain health),
+            <a href="https://www.mycodao.com/" target="_blank" rel="noopener noreferrer" class={lk}>MycoDAO</a> (fungi),
+            <a href="https://www.spinedao.com/" target="_blank" rel="noopener noreferrer" class={lk}>SpineDAO</a> (spine health),
+            <a href="https://www.longcovidlabs.org/" target="_blank" rel="noopener noreferrer" class={lk}>Long Covid Labs</a> (long covid),
+            <a href="https://www.curetopia.xyz/" target="_blank" rel="noopener noreferrer" class={lk}>Curetopia</a> (rare diseases),
+            and, of course, the <a href="http://quantumbiology.xyz" target="_blank" rel="noopener noreferrer" class={lk}>Quantum Biology DAO</a> (quantum biology).
+          </p>
+          <p>
+            BIO Protocol arose from an earlier organization, <a
+              href="https://www.molecule.to/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Molecule</a
+            >, which has pioneered different means to put science and
+            intellectual property onto the blockchain. There are now a network
+            of organizations with the BIO ecosystem working together to
+            advance the cause of science through the DeSci movement and web3.
+          </p>
+        </div>
+      </article>
+
+      <!-- HISTORY -->
+      <article id="history" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">History</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          A pretty <em class="italic text-pink/90">wild ride</em> so far.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            Despite its relative short history, the Quantum Biology DAO has
+            had a pretty wild ride so far! Read on to learn about the ups and
+            downs, as well as accomplishments and next steps.
+          </p>
+          <p>As a summary, the history of the DAO can be broken down as follows:</p>
+          <ul class="space-y-2">
+            {
+              historySummary.map((h) => (
+                <li class="flex gap-3">
+                  <span class="text-pink/70 shrink-0">—</span>
+                  <span>{h}</span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <h3 class={h3Class}>Pre-History 📜</h3>
+          <p>
+            For several years, Clarice Aiello had been advocating for
+            resources and attention to go to the field of quantum biology.
+            With her training as a quantum engineer and experience in quantum
+            sensing, she realized that it was likely that biological cells
+            were engaging in quantum sensing also — but that very few people
+            had realized this.
+          </p>
+          <p>
+            Why did few people believe that cells were engaged in quantum
+            sensing? Most scientists were unfamiliar with quantum physics and
+            were scared of the mathematics. Those that did study quantum
+            phenomena usually did so under very controlled circumstances,
+            frequently at very low temperatures. These scientists, including
+            those working on quantum computers, found it extremely difficult
+            to preserve quantum states for long periods of time, and so it was
+            believed that quantum states could not exist for long enough in
+            the chaotic environment of the cell to be biologically relevant.
+          </p>
+          <p>
+            However, there was evidence that cells were somehow preserving and
+            relying on quantum states, despite being very complicated and
+            existing at room temperature. This evidence came primarily in the
+            form of effects from weak magnetic fields. Many organisms
+            experienced effects from weak magnetic fields, including fields as
+            weak as the one produced by the Earth. These effects had been
+            observed for decades and—this was the important part—in most cases
+            there weren’t good classical (meaning, non-quantum) explanations
+            for how the effects came about.
+          </p>
+          <p>
+            Rather than argue, Clarice set out to build a microscope capable
+            of looking inside cells and seeing whether quantum states actually
+            did last for long enough to be biologically relevant. She created
+            a research plan and tried to raise money. While she was successful
+            to a degree, it was hard to find the institutional support she
+            needed, so she ended up leaving academia and striking out on her
+            own.
+          </p>
+          <p>
+            Just before leaving, Clarice happened to reach out to an
+            organization called Leverage (<a
+              href="http://leverage.institute"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>leverage.institute</a
+            >). Leverage specializes in helping scientific fields that are
+            stuck to become unstuck. In 2023, she had several conversations
+            with the Leverage CEO, Geoff Anders. Geoff became convinced that
+            quantum biology was an extremely important field and that it could
+            be unstuck with the right effort.
+          </p>
+          <p>
+            In April 2024, Geoff and Leverage team decided to go all in on
+            quantum biology. Geoff and Clarice joined forces, and together
+            they reached out to everyone in their combined networks, from
+            contacts in government and defense to tech and crypto billionaires
+            to colleagues at NIH and NASA, and more. One of the groups they
+            reached out to was BIO Protocol, where Geoff and Clarice met Paul
+            Kohlhaas, BIO’s CEO, and James Sinka, BIO’s Science Lead.
+          </p>
+
+          <h3 class={h3Class}>Incubation 🌱</h3>
+          <p>
+            Initially, Geoff and Clarice were wary. This was crypto, after
+            all. Clarice did not have any experience with crypto. Geoff had
+            previously advised a crypto project and thus had some familiarity,
+            but neither had previously encountered BIO or “decentralized
+            science.” The people seemed genuine, however, and the ideas seemed
+            excellent. So Geoff and Clarice began developing the plan for the
+            Quantum Biology DAO.
+          </p>
+          <p>
+            The process of incubation involved developing a bunch of ideas and
+            materials which would be used as part of the DAO fundraise.
+            Importantly, Geoff and Clarice were trying to raise between $5-20
+            million for quantum biology, and were still trying to raise money
+            from government sources, philanthropists, and others during this
+            time. Peter Thiel had suggested he would put in $5 million,
+            conditional on another $15 million being raised. Geoff and Clarice
+            thought they could raise $10 million from philanthropists and $5
+            million more from the DAO, which would be enough to unlock the
+            last $5 million.
+          </p>
+          <p>
+            While speaking to so many parties, Geoff developed the design for
+            the Quantum Biology Ecosystem, which included three organizations
+            and a place for anyone with money to contribute. The Institute
+            could raise money from government sources and philanthropists. The
+            DAO could raise money from crypto investors. The Incubator could
+            raise money from VCs. Together, the three organizations made it
+            possible to speak to everyone interested and turn no one away.
+          </p>
+          <p>
+            Not everything went according to plan, however. One government
+            source, which had credibly indicated a desire to put in several
+            million dollars, had its own funding reallocated. One
+            philanthropist, who had indicated serious interest initially,
+            vanished near the end. It was too early for VCs and the best
+            philanthropic opportunity wasn’t closing. It was now November 2024
+            and Clarice’s money had run out. Geoff had scrounged up enough
+            money to keep the Institute running and fund the Tadpole
+            Experiment, an experiment which showed that biological effects
+            from weak magnetic fields were real. The science was good, but
+            where was the money?
+          </p>
+
+          <h3 class={h3Class}>Debut 🕺</h3>
+          <p>
+            The team at BIO Protocol strongly encouraged Geoff and Clarice to
+            travel to Thailand for DeSci Bangkok and Devcon 7. The two decided
+            to go. On stage at DeSci Bangkok, Geoff presented the Quantum
+            Biology DAO for the first time. Crypto VCs were interested. Geoff
+            and Clarice were invited to a special Binance event. Things were
+            on a knife’s edge. Should they launch the DAO, even though the
+            rest of the money had not been secured? The choice may have been
+            DeSci or nothing.
+          </p>
+          <p>
+            At the Binance event, two special guests were announced: Vitalik
+            Buterin, creator of Ethereum, and CZ, founder of Binance. Both
+            gave the nod to DeSci. This was an important area, they said.
+            Geoff and Clarice each ended up with a moment to talk with Vitalik
+            and Clarice spoke briefly with CZ. Not enough time, however, to
+            really lay out the vision.
+          </p>
+          <p>
+            As Geoff and Clarice returned to the US, DeSci was exploding as a
+            sector. Tons of interest was pouring in. The original plan with
+            BIO had been to launch the Quantum Biology DAO in April 2025. It
+            was now December 2024. Geoff and Clarice pulled in Alessandro
+            Lodesani, the other scientist at the Quantum Biology Institute,
+            and the three moved up the timeline and took the plunge… which
+            meant launching immediately.
+          </p>
+
+          <h3 class={h3Class}>Token Auction 🪙</h3>
+          <p>
+            From December 4 through December 16, Geoff, Clarice, and Ale
+            worked non-stop. Tons of materials had already been created.
+            Oliver Carefull, at Leverage, had turned Clarice’s research plan
+            and Geoff’s vision for the Quantum Biology Ecosystem into a
+            compelling roadmap. The Leverage team had also taken scientific
+            material from Clarice and turned it into more than a dozen briefs
+            that related quantum biology to many other fields. Si Mclennan,
+            sponsored by BIO and in collaboration with Oliver, produced four
+            beautiful websites, one each for the Institute, DAO, and
+            Incubator, and one of the Quantum Biology Ecosystem itself.
+          </p>
+          <p>
+            Geoff and Clarice, now joined by Ale, did non-stop X spaces at all
+            hours, public interviews with scientists, conversations with
+            crypto VCs, and produced new materials essentially non-stop.
+            Materials included the Quantum Biology DAO <a
+              href="http://bit.ly/qbiodaovision"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Vision Paper</a
+            >, <a
+              href="http://bit.ly/qbiodaoroadmap"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Roadmap</a
+            >, and <a
+              href="http://bit.ly/qbiodaodeck"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>Deck</a
+            >, as well as a growing list of advisors and endorsements,
+            including a key endorsement at the last minute from a member of
+            Merck Group, who wrote that Merck Group was interested in quantum
+            biology — of the exact sort that we were working on.
+          </p>
+          <p>
+            The auction, which began on December 4, had a minimum threshold of
+            $500 thousand. Had anything less been raised, the auction would
+            have failed and all money would have been refunded. We hit $500
+            thousand within seventeen minutes. By the end of the first day, we
+            were at just over $750 thousand, which certainly wasn’t bad. The
+            team, however, had already decided that we needed to raise between
+            $2 million and $2.5 million if the project would actually be able
+            to proceed. Quantum instrumentation is expensive, which was one
+            big reason this had never been done before.
+          </p>
+          <p>
+            At that point, people were still allowed to retract their bids.
+            The total amount in went up and down, then, for the next week,
+            hovering between $750 thousand and $900 thousand. After day 8,
+            however, the amount pledged in bids began to rise. We hit $1
+            million by the weekend, and $1.4 million twelve hours before the
+            close. In the last twelve hours, or really the last four, the
+            auction went crazy. Bids started pouring in, and in the last few
+            minutes we hit an asymptote. The auction closed and we had raised
+            $6.8 million.
+          </p>
+          <p>
+            Where did the $6.8 million come from? On a technical level, the
+            auction worked by allowing people to place bids. A weighted
+            average of bids was then calculated, a single closing price
+            determined, and all bids below that price rejected and refunded.
+            All bids that were not rejected then paid the closing price. Of
+            $8.2 million bid, $1.4 million of bids were rejected, leaving $6.8
+            million for us. It also so happened that ETH had spiked at that
+            exact moment, putting it just below its three-year high.
+          </p>
+          <p>
+            In terms of who contributed, it’s hard to say. The blockchain is
+            pseudonymous. A plot of the successful bids, however, was like the
+            function f(x) = 1 / x. In other words, it was a smooth curve. A
+            small number of large bids, a medium number of medium-sized bids,
+            a large number of small bids. It seemed like everyone was on our
+            side and agreed: now was the time for quantum biology.
+          </p>
+
+          <h3 class={h3Class}>Initial Setup 🏗️</h3>
+          <p>
+            After the auction, the team was exhausted. It was also the
+            holidays, so Geoff, Clarice, and Ale took a week off. Little did
+            they realize, crypto never sleeps. It’s 24/7. By the time the
+            three logged back in, the community Discord was full of people
+            clamoring for the token to be launched. We had raised money
+            through the auction, but we hadn’t made the new QBIO token, which
+            we had auctioned off, transferable or tradeable.
+          </p>
+          <p>
+            The team quickly moved to rectify the situation. They apologized
+            for the delay, created the DAO’s governance system, and then made
+            two proposals, one to make QBIO transferable and tradeable on the
+            Ethereum blockchain, and the other to bridge to Solana, making
+            QBIO accessible there as well. The proposals passed by a wide
+            margin with many votes in favor.
+          </p>
+          <p>
+            The Ethereum launch happened soon after. The Solana launch was
+            delayed due to technical difficulties from one of BIO’s providers.
+            The token eventually became available on the Solana blockchain in
+            March. In the meantime, the DAO co-founders created the DAO’s
+            committees (aka “working groups) and passed a budget for the DAO.
+            They also began proposing monthly grants to tide over the Quantum
+            Biology Institute, where Clarice and Ale were working. This was
+            enough to set up the DAO in a basic sense, though, of course,
+            trouble was coming.
+          </p>
+
+          <h3 class={h3Class}>Token Launch 🚀</h3>
+          <p>
+            In the auction, 15% of the total supply of QBIO had been sold.
+            Many people now had QBIO burning a hole in their pockets. QBIO,
+            one will recall, is a governance token. It is a utility token
+            meant to be used to vote on what the Quantum Biology DAO does.
+            Nevertheless, people may have reasons to want to sell their QBIO
+            tokens and do something else with their money. That’s perfectly
+            legitimate as well.
+          </p>
+          <p>
+            For whatever reason, there was substantial pressure to make the
+            QBIO token tradeable. BIO had not yet built infrastructure to
+            ensure that new DeSci DAO tokens would be available for public
+            trade right away. So holders of QBIO had been waiting for almost a
+            month with the proposal to make QBIO tradeable passed.
+          </p>
+          <p>
+            As the date of the token launch approached, advisors to the
+            Quantum Biology DAO became nervous. Some reached out and suggested
+            in strong terms that launching the token now would be a mistake.
+            The co-founders of the DAO consulted an independent advisor and
+            heard the same message: now was a bad time to launch. Was it
+            macroeconomic conditions? Was it the fact that the TRUMP token was
+            set to launch essentially the same day?
+          </p>
+          <p>
+            The team quickly made a new proposal to delay the launch, but the
+            community voted it down. There was now no choice. The team, with
+            BIO’s technical assistance, unlocked the QBIO token and made it
+            available for trade on Uniswap, a decentralized exchange on the
+            Ethereum blockchain. QBIO began trading on January 17th, 2025.
+          </p>
+
+          <h3 class={h3Class}>Two Crashes ☄️</h3>
+          <p>
+            The Quantum Biology DAO team then experienced two crashes. The
+            first was the QBIO token. It was initially listed at $0.03588,
+            down from its auction price of $0.04583, since ETH had come back
+            down. It then dropped to $0.005183 before recovering to $0.02094
+            and then going into a steady decline.
+          </p>
+          <p>
+            At its lowest point in January, QBIO was down 85.6% from its
+            listing price and 88.7% from the original auction price. Other
+            biology-related DAO tokens at the time <a
+              href="https://dexscreener.com/ethereum/0x9c4980635d980611cecdbca74773e240ffa44240"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>also</a
+            > <a
+              href="https://dexscreener.com/ethereum/0xcab7d1c2777488b85ed301c3944cdbd6bb30bf72"
+              target="_blank"
+              rel="noopener noreferrer"
+              class={lk}>crashed</a
+            >, so it may have been market conditions or DeSci falling out of
+            the limelight. In fact, QBIO did better than many other tokens,
+            but that didn’t mean the crash was good.
+          </p>
+          <p>
+            The QBIO token crash was then followed by another crash: Ethereum.
+            ETH had been at nearly $4,000 when the QBIO auction closed. By the
+            end of February and into March 2025, ETH was on its way down, and
+            would eventually bottom around $1,400. That may or may not have
+            impacted the QBIO token, but it certainly impacted the Quantum
+            Biology DAO’s cash reserves, which were still being held
+            exclusively in ETH.
+          </p>
+
+          <h3 class={h3Class}>Voting Battle ⚔️</h3>
+          <p>
+            Right on the heels of two crashes, the DAO had a huge clash over
+            governance. This was, in some sense, all part of the plan: DAO
+            governance is real and there were competing visions for the future
+            of the DAO.
+          </p>
+          <p>
+            The battle was sparked by a proposal to fund the Quantum Biology
+            Institute, which had been circulating a proposed annual budget,
+            covering all of its instrument, personnel, location, and other
+            costs. The Institute team discussed it with their partners and the
+            DAO discussed it with the community. The important point about the
+            annual budget was that the price tag was high: $3.4 million.
+          </p>
+          <p>
+            A proposal to fund the QBI budget passed from drafting (Phase 1)
+            to discussion and voting on Common (Phase 2). It looked like the
+            proposal was going to pass, but then a large number of negative
+            votes materialized as if out of nowhere. Spam filled the comments
+            and there was a race between positive and negative votes, with
+            negative votes winning out in the end.
+          </p>
+          <p>
+            Next, a proposal to fund QBI just for one month, as a tideover
+            budget, also failed, again with a large number of negative votes
+            and this time with a DAO community member being impersonated in
+            the comments. Members of the DAO tried to identify any person who
+            had voted negatively, since everyone who had spoken up in earlier
+            discussions was in favor of funding the Institute. No one was
+            identified, and there <em>had</em> been signs of irregularities in
+            the voting, so the DAO voted to deactivate Phase 2 for repair.
+          </p>
+          <p>
+            For the next few months, proposals went straight from Phase 1
+            (drafting on Discord) to Phase 3 (token voting on Snapshot).
+          </p>
+          <p>
+            During this time, two different visions of DAO governance were
+            presented. One side, led by Geoff Anders and Alessandro Lodesani,
+            proposed adding a token gate of 10,000 QBIO to Phase 2 to make it
+            harder for people to vote with multiple accounts, and sending
+            known community participants 10,000 QBIO from the DAO treasury so
+            they would be able to vote in Phase 2. The other side, led by
+            Clarice Aiello and the BIO team, argued in favor of simplifying
+            governance by removing Phase 2 and token-gating (i.e., having a
+            token ownership requirement) for participating in drafting on the
+            Discord.
+          </p>
+          <p>
+            After lengthy discussion, the issue was put to a vote in the
+            Discord. The first proposal won out by a margin of 15-8. It then
+            passed Phase 3. Phase 2 was reinstantiated with a token gate of
+            10,000 QBIO and a list of 40 community participants were given the
+            option to receive 10,000 QBIO from the DAO treasury.
+          </p>
+
+          <h3 class={h3Class}>Recovery 💪</h3>
+          <p>
+            Two token crashes and a voting battle took up a bunch of
+            attention. The DAO, however, bounced back. Starting in April and
+            then going into May, ETH began its recovery, reaching back to
+            $1,800 and then $2,500. The QBIO price also began to recover, with
+            sequences of purchases at one point leading the QBIO price to
+            triple.
+          </p>
+          <p>
+            A long discussion about how to fix Phase 2 of governance occurred,
+            with one side arguing in favor of simpler, more centralized
+            governance and the other side arguing for a token gate. In May
+            2025, the token gate side won out, Phase 2 was reinstalled, and
+            DAO governance repaired. The source of the Twitter hack was also
+            discovered and everyone received a primer on taking better
+            security measures.
+          </p>
+          <p>
+            Throughout, morale at the Quantum Biology DAO remained very high.
+            One key contributor was the fact that the community stayed
+            positive. Maybe all the speculators left when the token crashed
+            initially. Maybe the people who want to stick around for trivia
+            and fun DAO mascots are people who don’t like FUD. Whatever the
+            reason, the community stayed positive and the DAO overall stayed
+            confident and ready to win.
+          </p>
+
+          <h3 class={h3Class}>Setup Complete ☑️</h3>
+          <p>
+            The DAO was now started to mature. DAO governance had been
+            upgraded. New committees were added and committee leaders
+            selected. Everyone was ready to go.
+          </p>
+
+          <h3 class={h3Class}>First Major Grant 💰</h3>
+          <p>
+            In June 2025, the DAO made its first major grant. It had been
+            funding the Quantum Biology Institute month-to-month from February
+            through June, but now voted to set aside 500 ETH for the Institute
+            to draw on as needed. This was one of the two main reasons the DAO
+            had been founded in the first place.
+          </p>
+
+          <h3 class={h3Class}>Next Steps 🛣️</h3>
+          <p>
+            What’s next? The DAO’s next steps, after having funded the Quantum
+            Biology Institute, is to figure out what else is necessary to
+            advance the rest of the field. There are instruments to build,
+            other research avenues to fund, and more. The DAO is ready, the
+            future is bright — and may the quantum be with you!
+          </p>
+        </div>
+      </article>
+
+      <!-- MORE INFO -->
+      <article id="more-info" class={`${bentoCard} scroll-mt-28`}>
+        <EyebrowLabel accent="pink">More Info</EyebrowLabel>
+        <h2 class={`${bentoHeading} mb-8`}>
+          Keep <em class="italic text-pink/90">exploring</em>.
+        </h2>
+        <div class={`${bodyText} max-w-3xl`}>
+          <p>
+            To learn more about the Quantum Biology DAO and to track progress
+            in the field of quantum biology overall, please check out these
+            resources:
+          </p>
+          <ul class="space-y-2">
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <a
+                  href="http://quantumbiology.substack.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class={lk}>Quantum Biology Weekly Digest</a
+                > — weekly news about the Institute, DAO, and more
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <a
+                  href="http://bit.ly/qbiodaovision"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class={lk}>Quantum Biology DAO Vision Paper</a
+                > — original vision statement used for the auction
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-pink/70 shrink-0">—</span>
+              <span>
+                <a
+                  href="http://bit.ly/qbiodaodeck"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class={lk}>Quantum Biology DAO Deck</a
+                > — original deck used for the auction
+              </span>
+            </li>
+          </ul>
+        </div>
+      </article>
+    </div>
   </div>
 </V2Layout>

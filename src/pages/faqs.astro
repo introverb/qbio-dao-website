@@ -4,9 +4,8 @@ import V2Cta from "../components/v2/V2Cta.astro";
 import EyebrowLabel from "../components/v2/EyebrowLabel.astro";
 import { bentoCard, bentoHeading } from "../lib/v2-bg";
 
-// The old Google Doc URL for the explainer 404s (bad document id) — Kyra
-// flagged the link as broken. Pointing at the on-site /explainer page until
-// someone supplies the correct doc URL (or the full page is built).
+// The full explainer now lives on-site as a branded page (built 2026-08
+// from the explainer Google Doc, verbatim). Opens in a new tab per Olli.
 const explainerUrl = "/explainer";
 
 type Block =
@@ -161,6 +160,7 @@ const faqs: FAQ[] = [
             href={explainerUrl}
             label="Read the full explainer"
             accent="pink"
+            external
           />
         </div>
       </div>
